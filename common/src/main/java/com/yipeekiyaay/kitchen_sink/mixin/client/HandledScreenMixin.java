@@ -42,8 +42,6 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Shadow protected int y;
 
-    @Shadow @Nullable protected Slot focusedSlot;
-
     @Shadow
     public abstract boolean mouseReleased(double mouseX, double mouseY, int button);
 

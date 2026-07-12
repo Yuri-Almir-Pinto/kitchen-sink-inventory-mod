@@ -33,7 +33,7 @@ public class SlotlessInventory {
         }
     }
 
-    public void resetPos(int topX, int topY) {
+    public void resetPos() {
         for (SlotlessItem item : this.items) {
             item.randomizePos();
         }

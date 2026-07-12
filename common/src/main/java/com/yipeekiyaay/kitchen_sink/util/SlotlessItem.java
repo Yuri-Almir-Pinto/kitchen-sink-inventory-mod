@@ -16,7 +16,7 @@ public class SlotlessItem {
         this.setPos(x, y);
     }
 
-    public SlotlessItem(ItemStack stack, int topX, int topY) {
+    public SlotlessItem(ItemStack stack) {
         this.setItemStack(stack);
         this.randomizePos();
     }
