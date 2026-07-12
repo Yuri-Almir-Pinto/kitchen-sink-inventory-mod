@@ -1,6 +1,5 @@
 package com.yipeekiyaay.kitchen_sink.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.yipeekiyaay.kitchen_sink.util.SlotlessArea;
 import com.yipeekiyaay.kitchen_sink.util.SlotlessItem;
 import net.minecraft.client.MinecraftClient;

@@ -18,7 +18,7 @@ public class SlotlessItem {
 
     public SlotlessItem(ItemStack stack, int topX, int topY) {
         this.setItemStack(stack);
-        this.randomizePos(topX, topY);
+        this.randomizePos();
     }
 
     public double getX() {
@@ -41,7 +41,7 @@ public class SlotlessItem {
         return this.count == 0 || this.stack.isEmpty();
     }
 
-    public void randomizePos(int topX, int topY) {
+    public void randomizePos() {
         var centerY = 27 - 8;
         var centerX = 63 - 8;
 

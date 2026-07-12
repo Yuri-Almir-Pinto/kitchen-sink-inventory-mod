@@ -1,10 +1,8 @@
 package com.yipeekiyaay.kitchen_sink.util;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +21,7 @@ public class SlotlessArea {
     private int x;
     private int y;
     private Identifier renderTexture;
-    private SlotlessInventory inventory = new SlotlessInventory();
+    private final SlotlessInventory inventory = new SlotlessInventory();
 
     public SlotlessInventory getInventory() {
         return this.inventory;
