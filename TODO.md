@@ -1,0 +1,3 @@
+- Remover a renderização dos itens sob a área slotless
+- Remover a interação com os slots sob a área slotless
+- Implementar o "backend" da área slotless
