@@ -49,11 +49,6 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Shadow @Nullable protected Slot focusedSlot;
 
-    @Shadow private ItemStack quickMovingStack;
-
-    @Shadow
-    private @Nullable Slot lastClickedSlot;
-
     protected HandledScreenMixin(Text title) {
         super(title);
     }

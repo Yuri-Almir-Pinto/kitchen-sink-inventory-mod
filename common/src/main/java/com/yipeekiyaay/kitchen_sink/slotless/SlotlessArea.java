@@ -80,12 +80,6 @@ public class SlotlessArea {
         return this;
     }
 
-    public SlotlessArea setOtherType() {
-        this.areaType = "other";
-
-        return this;
-    }
-
     public SlotlessArea setSlotlessInventory(SlotlessInventory inventory) {
         if (inventory == null) return this;
 
@@ -96,10 +90,6 @@ public class SlotlessArea {
 
     public SlotlessArea setPos(Slot slot) {
         return this.setPos(slot.x, slot.y);
-    }
-
-    public boolean isValid() {
-        return this.renderTexture != null && this.width > 0 && this.height > 0;
     }
 
     public @Nullable SlotlessItem getHoveredItem(double mouseX, double mouseY) {
@@ -122,9 +112,5 @@ public class SlotlessArea {
 
     public boolean isInventoryArea() {
         return Objects.equals(this.areaType, "inventory");
-    }
-
-    public boolean isOtherArea() {
-        return Objects.equals(this.areaType, "other");
     }
 }

@@ -1,14 +1,12 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class SlotlessAreaManager {
@@ -73,12 +71,6 @@ public class SlotlessAreaManager {
     public Optional<SlotlessArea> getInventoryArea() {
         return this.slotlessAreaInfos.stream()
                 .filter(SlotlessArea::isInventoryArea)
-                .findFirst();
-    }
-
-    public Optional<SlotlessArea> getOtherArea() {
-        return this.slotlessAreaInfos.stream()
-                .filter(SlotlessArea::isOtherArea)
                 .findFirst();
     }
 

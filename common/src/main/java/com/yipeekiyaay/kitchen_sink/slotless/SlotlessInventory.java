@@ -8,27 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class SlotlessInventory {
-    private UUID inventoryId;
     private final List<SlotlessItem> items = new ArrayList<>();
-
-    public SlotlessInventory(UUID inventoryId) {
-        this.inventoryId = inventoryId;
-    }
-
-    public SlotlessInventory() {
-        this.inventoryId = UUID.randomUUID();
-    }
-
-    public void setInventoryId(UUID inventoryId) {
-        this.inventoryId = inventoryId;
-    }
-
-    public UUID getInventoryId() {
-        return this.inventoryId;
-    }
 
     public List<SlotlessItem> getItems() {
         return this.items;
@@ -58,12 +40,6 @@ public class SlotlessInventory {
     public void addItem(ItemStack stack, int x, int y) {
         if (!stack.isEmpty()) {
             this.addItem(new SlotlessItem(stack, x, y));
-        }
-    }
-
-    public void resetPos() {
-        for (SlotlessItem item : this.items) {
-            item.randomizePos();
         }
     }
 
@@ -116,7 +92,6 @@ public class SlotlessInventory {
     }
 
     public void writeNbt(DynamicRegistryManager registries, NbtCompound nbtInventoryCompound) {
-        nbtInventoryCompound.putUuid("slotlessInventoryId", this.inventoryId);
         var nbtItemList = new NbtList();
 
         for (SlotlessItem item : this.items) {
@@ -130,19 +105,8 @@ public class SlotlessInventory {
         nbtInventoryCompound.put("slotlessInventoryItems", nbtItemList);
     }
 
-    public static SlotlessInventory fromNbt(DynamicRegistryManager registries, NbtCompound nbtInventoryCompound) {
-        var slotlessInventory = new SlotlessInventory();
-
-        slotlessInventory.readNbt(registries, nbtInventoryCompound);
-
-        return slotlessInventory;
-    }
-
     public void readNbt(DynamicRegistryManager registries, NbtCompound nbtInventoryCompound) {
         this.clear();
-
-        var inventoryId = nbtInventoryCompound.getUuid("slotlessInventoryId");
-        this.setInventoryId(inventoryId);
 
         var nbtItemList = nbtInventoryCompound.getList("slotlessInventoryItems", 10);
         for (int i = 0; i < nbtItemList.size(); i++) {

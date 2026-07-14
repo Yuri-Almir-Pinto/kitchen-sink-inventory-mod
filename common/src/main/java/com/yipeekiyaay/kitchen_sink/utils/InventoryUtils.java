@@ -12,48 +12,41 @@ import java.util.Collections;
 import java.util.List;
 
 public class InventoryUtils {
-    public static boolean transferFromTo(ItemStack from, ItemStack to) {
-        if (!ItemStack.areItemsAndComponentsEqual(from, to)) return false;
+    public static void transferFromTo(ItemStack from, ItemStack to) {
+        if (!ItemStack.areItemsAndComponentsEqual(from, to)) return;
 
         var toTransfer = Math.min(from.getCount(), to.getMaxCount() - to.getCount());
-        if (toTransfer <= 0) return false;
+        if (toTransfer <= 0) return;
 
         from.setCount(from.getCount() - toTransfer);
         to.setCount(to.getCount() + toTransfer);
-
-        return true;
     }
 
-    public static boolean transferFromTo(ItemStack from, Slot to) {
-        if (from.isEmpty()) return false;
+    public static void transferFromTo(ItemStack from, Slot to) {
+        if (from.isEmpty()) return;
+        var initialCount = to.getStack().getCount();
 
         var toStack = to.getStack();
 
-        if (!toStack.isEmpty() && !ItemStack.areItemsAndComponentsEqual(from, toStack)) return false;
+        if (!toStack.isEmpty() && !ItemStack.areItemsAndComponentsEqual(from, toStack)) return;
 
-        var transferred = false;
         if (toStack.isEmpty()) {
             to.setStack(from.copyAndEmpty());
-            transferred = true;
         } else {
-            transferred = transferFromTo(from, toStack);
+            transferFromTo(from, toStack);
         }
 
-        if (transferred) {
+        if (initialCount != to.getStack().getCount()) {
             to.markDirty();
         }
-
-        return transferred;
     }
 
     public enum DistributionForm {
-        sequential, refillFirst, refillOnly
+        refillFirst, refillOnly
     }
 
-    public static boolean distributeItemStacks(ItemStack stack, List<Slot> inventory, int startIndex, int endIndex, DistributionForm form) {
-        if (stack.isEmpty() || inventory.isEmpty()) return false;
-
-        var succeeded = false;
+    public static void distributeItemStacks(ItemStack stack, List<Slot> inventory, int startIndex, int endIndex, DistributionForm form) {
+        if (stack.isEmpty() || inventory.isEmpty()) return;
 
         if (form == DistributionForm.refillFirst) {
             for (var i = startIndex; i <= endIndex; i++) {
@@ -62,11 +55,10 @@ public class InventoryUtils {
                 if (!slot.canInsert(stack) || !ItemStack.areItemsAndComponentsEqual(stack, slot.getStack()))
                     continue;
 
-                if (transferFromTo(stack, slot))
-                    succeeded = true;
+                transferFromTo(stack, slot);
             }
 
-            if (stack.isEmpty()) return succeeded;
+            if (stack.isEmpty()) return;
         }
 
         for (int i = startIndex; i <= endIndex; i++) {
@@ -77,22 +69,18 @@ public class InventoryUtils {
             if (form == DistributionForm.refillOnly && !ItemStack.areItemsAndComponentsEqual(stack, slot.getStack()))
                 continue;
 
-            if (transferFromTo(stack, slot)) {
-                succeeded = true;
-            }
+            transferFromTo(stack, slot);
         }
-
-        return succeeded;
     }
 
-    public static boolean distributeItemStacks(ItemStack stack, List<Slot> inventory, DistributionForm form) {
-        if (inventory.isEmpty()) return false;
+    public static void distributeItemStacks(ItemStack stack, List<Slot> inventory, DistributionForm form) {
+        if (inventory.isEmpty()) return;
 
-        return distributeItemStacks(stack, inventory, 0, inventory.size() - 1, form);
+        distributeItemStacks(stack, inventory, 0, inventory.size() - 1, form);
     }
 
-    public static boolean distributeItemStacks(ItemStack stack, List<Slot> inventory) {
-        return distributeItemStacks(stack, inventory, DistributionForm.refillFirst);
+    public static void distributeItemStacks(ItemStack stack, List<Slot> inventory) {
+        distributeItemStacks(stack, inventory, DistributionForm.refillFirst);
     }
 
     public static List<Slot> getSimilar(ItemStack similarTo, List<Slot> inventory) {
@@ -147,6 +135,7 @@ public class InventoryUtils {
         return !isCraftingInventory(slot) && !isCraftingResultInventory(slot) && !isPlayerInventory(slot);
     }
 
+    @SuppressWarnings("unused")
     public static InventoryGroup from(List<Slot> slots) {
         var group = new InventoryGroup();
 

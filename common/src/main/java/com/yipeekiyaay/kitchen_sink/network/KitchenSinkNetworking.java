@@ -1,7 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.network;
 
 import com.yipeekiyaay.kitchen_sink.network.packets.*;
-import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import dev.architectury.networking.NetworkManager;
 
 public class KitchenSinkNetworking {
