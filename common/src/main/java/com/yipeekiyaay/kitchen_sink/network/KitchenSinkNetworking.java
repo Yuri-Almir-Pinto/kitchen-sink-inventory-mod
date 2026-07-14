@@ -2,6 +2,8 @@ package com.yipeekiyaay.kitchen_sink.network;
 
 import com.yipeekiyaay.kitchen_sink.network.packets.*;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
 
 public class KitchenSinkNetworking {
     public static void init() {
@@ -27,16 +29,23 @@ public class KitchenSinkNetworking {
         );
 
         NetworkManager.registerReceiver(
-                NetworkManager.c2s(),
+                NetworkManager.Side.C2S,
                 ClickSlotItemC2SPacket.TYPE,
                 ClickSlotItemC2SPacket.CODEC,
                 ClickSlotItemC2SPacket::handle
         );
+
+        if (Platform.getEnv() == EnvType.SERVER) {
+            NetworkManager.registerS2CPayloadType(
+                    SyncSlotlessInventoryS2CPacket.TYPE,
+                    SyncSlotlessInventoryS2CPacket.CODEC
+            );
+        }
     }
 
     public static void initClient() {
         NetworkManager.registerReceiver(
-                NetworkManager.s2c(),
+                NetworkManager.Side.S2C,
                 SyncSlotlessInventoryS2CPacket.TYPE,
                 SyncSlotlessInventoryS2CPacket.CODEC,
                 SyncSlotlessInventoryS2CPacket::handle

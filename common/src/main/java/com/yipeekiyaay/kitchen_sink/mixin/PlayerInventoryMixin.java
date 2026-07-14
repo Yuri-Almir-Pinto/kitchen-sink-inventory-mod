@@ -54,18 +54,53 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
         for (int i = 0; i < nbtList.size(); i++) {
             NbtCompound compound = nbtList.getCompound(i);
-            if (compound.getByte("Slot") == 99 && compound.contains("slotlessInventoryId")) { // 10 is the internal NbtCompound ID type
+            if (compound.getByte("Slot") == 99 && compound.contains("slotlessInventoryItems")) {
                 this.kitchen_sink$slotlessInventory.readNbt(registries, compound);
                 break;
             }
         }
     }
 
+    @Inject(method = "dropAll", at = @At("TAIL"))
+    public void kitchen_sink$dropAllSlotless(CallbackInfo ci) {
+        for (var item : kitchen_sink$slotlessInventory.getItems()) {
+            while (!item.isEmpty()) {
+                var stack = item.pickStack(false);
+
+                this.player.dropItem(stack, true, false);
+            }
+        }
+
+        kitchen_sink$slotlessInventory.clearEmpty();
+    }
+
+    @Inject(method = "clone", at = @At("TAIL"))
+    public void kitchen_sink$cloneSlotless(PlayerInventory other, CallbackInfo ci) {
+        var otherSlotlessInventory = ((ISlotlessInventory) other).kitchen_sink$getSlotlessInventory();
+
+        otherSlotlessInventory.clear();
+
+        otherSlotlessInventory.addAll(kitchen_sink$slotlessInventory.getItems());
+    }
+
+    @Inject(method = "clear", at = @At("TAIL"))
+    public void kitchen_sink$clearSlotless(CallbackInfo ci) {
+        kitchen_sink$slotlessInventory.clear();
+    }
+
     @Inject(method = "updateItems", at = @At("HEAD"))
     public void kitchen_sink$updateItems(CallbackInfo ci) {
+        var isServer = !player.getWorld().isClient();
         for (var i = 9; i < main.size(); i++) {
             if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
-            kitchen_sink$slotlessInventory.addItem(new SlotlessItem(main.get(i).copyAndEmpty()));
+            if (isServer)
+                kitchen_sink$slotlessInventory.addItem(new SlotlessItem(main.get(i).copyAndEmpty()));
+            else
+                kitchen_sink$slotlessInventory.addItem(new SlotlessItem(main.get(i).copy()));
+        }
+
+        for (var item : kitchen_sink$slotlessInventory.getItems()) {
+            item.getStack().inventoryTick(player.getWorld(), player, 9, false); // 9 is the first slot of the main inventory.
         }
     }
 

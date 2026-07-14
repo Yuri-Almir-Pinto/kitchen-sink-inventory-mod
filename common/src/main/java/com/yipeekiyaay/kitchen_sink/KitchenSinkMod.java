@@ -5,6 +5,11 @@ import com.yipeekiyaay.kitchen_sink.network.packets.SyncSlotlessInventoryS2CPack
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.predicate.entity.DamageSourcePredicate;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 
 public final class KitchenSinkMod {
     public static final String MOD_ID = "kitchen_sink";
@@ -13,19 +18,21 @@ public final class KitchenSinkMod {
         KitchenSinkNetworking.init();
 
         PlayerEvent.PLAYER_JOIN.register(player -> {
-            if (!player.getWorld().isClient()) {
-                var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory().getItems();
+            var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory().getItems();
 
-                NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
-            }
+            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
         });
 
         PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> {
-            if (!player.getWorld().isClient()) {
-                var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory().getItems();
+            var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory().getItems();
 
-                NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
-            }
+            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
+        });
+
+        PlayerEvent.CHANGE_DIMENSION.register((player, oldLevel, newLevel) -> {
+            var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory().getItems();
+
+            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
         });
     }
 }
