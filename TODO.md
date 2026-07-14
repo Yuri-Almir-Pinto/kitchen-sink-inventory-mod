@@ -14,6 +14,6 @@
 
 ## Bugs
 
-- Consertar a barrinha de durabilidade não aparecendo na area slotless
+- Consertar barrinha de durabilidade clippando para dentro da slotless area =w='
 - Consertar comando de clear e gamerule de keep inventory não funcionando
 - Consertar inventário slotless não aparecendo no modo criativo

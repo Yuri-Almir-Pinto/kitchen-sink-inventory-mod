@@ -60,11 +60,9 @@ public class SlotlessGuiRenderer {
 
         context.getMatrices().translate((float) x, (float) y, 0.0F);
 
-        context.drawItemWithoutEntity(item.getStack(), 0, 0);
+        context.drawItem(item.getStack(), 0, 0);
 
-        if (item.getCount() > 1) {
-            renderItemInfo(context, item);
-        }
+        renderItemInfo(context, item);
 
         context.getMatrices().pop();
     }
