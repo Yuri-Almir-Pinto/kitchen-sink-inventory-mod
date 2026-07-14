@@ -1,4 +1,4 @@
-package com.yipeekiyaay.kitchen_sink.util;
+package com.yipeekiyaay.kitchen_sink.slotless;
 
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class SlotlessAreaManager {
     ArrayList<SlotlessArea> slotlessAreaInfos = new ArrayList<>();
@@ -28,24 +30,26 @@ public class SlotlessAreaManager {
                         new SlotlessArea()
                                 .setPos(slot)
                                 .setSize27()
+                                .setInventoryType()
                 );
             }
 
-            if (handler instanceof GenericContainerScreenHandler && slot.getIndex() == 0 && !(slot.inventory instanceof PlayerInventory)) {
-                var render = new SlotlessArea()
-                        .setPos(slot);
-
-                int containerSize = handler.slots.size() - 36;
-
-                if (containerSize == 27) { // single chest
-                    render.setSize27();
-                } else if (containerSize == 54) { // double chest
-                    render.setSize54();
-                }
-
-                if (render.isValid())
-                    renderList.add(render);
-            }
+//            if (handler instanceof GenericContainerScreenHandler && slot.getIndex() == 0 && !(slot.inventory instanceof PlayerInventory)) {
+//                var render = new SlotlessArea()
+//                        .setPos(slot)
+//                        .setOtherType();
+//
+//                int containerSize = handler.slots.size() - 36;
+//
+//                if (containerSize == 27) { // single chest
+//                    render.setSize27();
+//                } else if (containerSize == 54) { // double chest
+//                    render.setSize54();
+//                }
+//
+//                if (render.isValid())
+//                    renderList.add(render);
+//            }
         }
 
         this.from(renderList);
@@ -64,6 +68,18 @@ public class SlotlessAreaManager {
         }
 
         return null;
+    }
+
+    public Optional<SlotlessArea> getInventoryArea() {
+        return this.slotlessAreaInfos.stream()
+                .filter(SlotlessArea::isInventoryArea)
+                .findFirst();
+    }
+
+    public Optional<SlotlessArea> getOtherArea() {
+        return this.slotlessAreaInfos.stream()
+                .filter(SlotlessArea::isOtherArea)
+                .findFirst();
     }
 
     public boolean isContained(int x, int y, int height, int width) {

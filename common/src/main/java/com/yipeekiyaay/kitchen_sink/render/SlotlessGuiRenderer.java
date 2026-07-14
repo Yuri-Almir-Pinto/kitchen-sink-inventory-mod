@@ -1,7 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.render;
 
-import com.yipeekiyaay.kitchen_sink.util.SlotlessArea;
-import com.yipeekiyaay.kitchen_sink.util.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

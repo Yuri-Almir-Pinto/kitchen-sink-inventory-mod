@@ -1,13 +1,12 @@
-package com.yipeekiyaay.kitchen_sink.util;
+package com.yipeekiyaay.kitchen_sink.slotless;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SlotlessArea {
     private static final Identifier KITCHEN_SINK_27_TEXTURE =
@@ -21,7 +20,8 @@ public class SlotlessArea {
     private int x;
     private int y;
     private Identifier renderTexture;
-    private final SlotlessInventory inventory = new SlotlessInventory();
+    private String areaType;
+    private SlotlessInventory inventory = new SlotlessInventory();
 
     public SlotlessInventory getInventory() {
         return this.inventory;
@@ -71,26 +71,25 @@ public class SlotlessArea {
         this.x = x - 1; // Reduce 1 to be perfectly placed over the given slot.
         this.y = y - 1;
 
-        net.minecraft.item.Item[] itemPalette = {
-                Items.DIAMOND,
-                Items.DIRT,
-                Items.CRAFTING_TABLE,
-                Items.GOLD_INGOT,
-                Items.CHEST,
-                Items.IRON_INGOT,
-                Items.ANVIL
-        };
+        return this;
+    }
 
-        inventory.clear();
+    public SlotlessArea setInventoryType() {
+        this.areaType = "inventory";
 
-        for (int i = 0; i < 1200; i++) {
-            net.minecraft.item.Item selectedItem = itemPalette[i % itemPalette.length];
+        return this;
+    }
 
-            SlotlessItem item = new SlotlessItem(new ItemStack(selectedItem), this.x, this.y);
-            item.setCount(64);
+    public SlotlessArea setOtherType() {
+        this.areaType = "other";
 
-            inventory.addItem(item);
-        }
+        return this;
+    }
+
+    public SlotlessArea setSlotlessInventory(SlotlessInventory inventory) {
+        if (inventory == null) return this;
+
+        this.inventory = inventory;
 
         return this;
     }
@@ -119,5 +118,13 @@ public class SlotlessArea {
         }
 
         return null;
+    }
+
+    public boolean isInventoryArea() {
+        return Objects.equals(this.areaType, "inventory");
+    }
+
+    public boolean isOtherArea() {
+        return Objects.equals(this.areaType, "other");
     }
 }
