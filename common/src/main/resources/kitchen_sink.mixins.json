@@ -7,7 +7,8 @@
     "client.HandledScreenMixin"
   ],
   "mixins": [
-    "PlayerInventoryMixin"
+    "PlayerInventoryMixin",
+    "ScreenHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,17 +3,14 @@
 ## Refatoração
 
 - Atualizar o packet de mover item para receber o index, x e y no lugar do SlotlessItem completo.
-- Alterar o "lado" dos inventários slotless de uma string para uma Enum.
+- Alterar o "lado" dos inventários slotless de uma ‘string’ para uma Enum.
 
 ## Atualizações
 
 - Implementar dropar direto do inventário slotless
-- Implementar jogar direto pra hotbar (apretando 1-9) direto do inventário slotless
-- Alterar para o mine jogar itens pegos diretos no inventário slotless para evitar spill over por quantidade excessiva de item
-- Adicionar funcionalidade para os itens irem direto para o slotless quando pegando do chão, se existirem no slotless ao invés da hotbar
-- Fazer com que o reposicionamento seja diferenciado do click com tanto a distância do click e release (atual), quanto pelo tempo levado para dar release do mouse (Não implementado)
-- Fazer com que, ao dar shift-click nos slots livres do inventário com espaço na hotbar, o item vá para a hotbar ao invés do slotless storage
-- Fazer com que shift-click da fornalha (E semelhantes) vá para os slotless storage se houver item do mesmo tipo lá, e para a hotbar se não houver.
+- Implementar jogar direto pra hotbar (apertando 1-9) direto do inventário slotless
+- Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
+- Rouba- quero dizer, *aprender* com o Subpocket e desabilitar o Z buffer para os itens do slotless, eliminando Z-Fighting.
 
 ## Bugs
 

@@ -38,9 +38,15 @@ public class SlotlessInventory {
     }
 
     public void addItem(ItemStack stack, int x, int y) {
-        if (!stack.isEmpty()) {
-            this.addItem(new SlotlessItem(stack, x, y));
-        }
+        if (stack.isEmpty()) return;
+
+        this.addItem(new SlotlessItem(stack, x, y));
+    }
+
+    public void addItem(ItemStack stack) {
+        if (stack.isEmpty()) return;
+
+        this.addItem(new SlotlessItem(stack));
     }
 
     public @Nullable SlotlessItem getItem(ItemStack stack) {
@@ -53,6 +59,17 @@ public class SlotlessInventory {
         }
 
         return null;
+    }
+
+    public boolean hasItem(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+
+        for (var item : items) {
+            if (item.isEmpty()) continue;
+            if (ItemStack.areItemsAndComponentsEqual(item.getStack(), stack)) return true;
+        }
+
+        return false;
     }
 
     public void clear() {

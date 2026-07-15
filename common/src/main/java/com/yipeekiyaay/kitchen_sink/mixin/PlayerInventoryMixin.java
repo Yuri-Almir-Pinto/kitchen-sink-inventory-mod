@@ -2,7 +2,6 @@ package com.yipeekiyaay.kitchen_sink.mixin;
 
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -90,17 +89,43 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
     @Inject(method = "updateItems", at = @At("HEAD"))
     public void kitchen_sink$updateItems(CallbackInfo ci) {
-        var isServer = !player.getWorld().isClient();
         for (var i = 9; i < main.size(); i++) {
             if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
-            if (isServer)
-                kitchen_sink$slotlessInventory.addItem(new SlotlessItem(main.get(i).copyAndEmpty()));
-            else
-                kitchen_sink$slotlessInventory.addItem(new SlotlessItem(main.get(i).copy()));
+
+            kitchen_sink$slotlessInventory.addItem(main.get(i).copyAndEmpty());
         }
 
         for (var item : kitchen_sink$slotlessInventory.getItems()) {
             item.getStack().inventoryTick(player.getWorld(), player, 9, false); // 9 is the first slot of the main inventory.
+        }
+    }
+
+    @Inject(method = "getEmptySlot", at = @At("RETURN"), cancellable = true)
+    public void kitchen_sink$getEmptySlot(CallbackInfoReturnable<Integer> cir) {
+        var inForbiddenArea = (cir.getReturnValue() % 9) >= 7 && cir.getReturnValue() > 8;
+
+        if (!inForbiddenArea) return;
+
+        for (var i = 9; i < main.size(); i++) {
+            if ((i % 9) >= 7 || !main.get(i).isEmpty()) continue;
+
+            cir.setReturnValue(i);
+            return;
+        }
+    }
+
+    @Inject(method = "getOccupiedSlotWithRoomForStack", at = @At("RETURN"), cancellable = true)
+    public void kitchen_sink$getOccupiedSlotWithRoomForStack(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        var slot = cir.getReturnValue();
+
+        if (slot > -1) return;
+        if (!kitchen_sink$slotlessInventory.hasItem(stack)) return;
+
+        for (var i = 9; i < main.size(); i++) {
+            if ((i % 9) >= 7 || !main.get(i).isEmpty()) continue;
+
+            cir.setReturnValue(i);
+            return;
         }
     }
 

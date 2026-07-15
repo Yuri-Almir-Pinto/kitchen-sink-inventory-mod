@@ -1,6 +1,5 @@
 package com.yipeekiyaay.kitchen_sink.mixin.client;
 
-import com.yipeekiyaay.kitchen_sink.network.packets.ClickSlotItemC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.MoveSlotlessItemC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.PickSlotlessItemC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.PutSlotlessItemC2SPacket;
@@ -15,13 +14,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,10 +41,6 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Shadow protected int x;
 
     @Shadow protected int y;
-
-    @Shadow private boolean doubleClicking;
-
-    @Shadow @Nullable protected Slot focusedSlot;
 
     protected HandledScreenMixin(Text title) {
         super(title);
@@ -87,22 +80,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("HEAD"), cancellable = true)
     protected void kitchen_sink$onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
-        var d = kitchen_sink$data;
         if (slot != null && kitchen_sink$manager.isContained(slot))
             ci.cancel();
-
-        if (slot != null && !slot.getStack().isEmpty() && actionType == SlotActionType.PICKUP) {
-            d.lastItemStackClicked = slot.getStack().copy();
-        }
-
-        if (slot != null && !slot.getStack().isEmpty() && (actionType == SlotActionType.QUICK_MOVE)) {
-            if (client != null && client.player != null) {
-                NetworkManager.sendToServer(new ClickSlotItemC2SPacket(slotId, actionType, ItemStack.EMPTY, Screen.hasShiftDown()));
-                ClickSlotItemC2SPacket.handleCommon(slotId, actionType, client.player, ItemStack.EMPTY, Screen.hasShiftDown());
-            }
-
-            ci.cancel();
-        }
     }
 
     @Inject(method = "drawMouseoverTooltip", at = @At("HEAD"), cancellable = true)
@@ -184,7 +163,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         );
     }
 
-    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "mouseReleased", at = @At("HEAD"))
     public void kitchen_sink$mouseReleasedMixing(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (button > 1) return;
 
@@ -192,22 +171,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         int guiMouseX = (int) mouseX - this.x;
         int guiMouseY = (int) mouseY - this.y;
 
-        if (d.moving == null || d.clickX == null || d.clickY == null || d.currentArea == null) {
-            if (doubleClicking && focusedSlot != null && d.lastItemStackClicked != null && !d.lastItemStackClicked.isEmpty() && kitchen_sink$manager.hasArea()) {
-                cir.setReturnValue(true);
-                if (client != null && client.player != null) {
-                    NetworkManager.sendToServer(new ClickSlotItemC2SPacket(focusedSlot.id, SlotActionType.PICKUP_ALL, d.lastItemStackClicked, Screen.hasShiftDown()));
-                    ClickSlotItemC2SPacket.handleCommon(focusedSlot.id, SlotActionType.PICKUP_ALL, client.player, d.lastItemStackClicked, Screen.hasShiftDown());
-                }
-            }
-
-
-            return;
-        }
+        if (d.moving == null || d.clickX == null || d.clickY == null || d.clickTime == null || d.currentArea == null) return;
 
         NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving));
 
-        if (Math.abs(d.clickX - guiMouseX) <= 3 && Math.abs(d.clickY - guiMouseY) <= 3) {
+        if (Math.abs(d.clickX - guiMouseX) <= 3 && Math.abs(d.clickY - guiMouseY) <= 3 && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
             var index = d.currentArea.getInventory().getItems().size() - 1;
             var hasShiftDown = Screen.hasShiftDown();
 

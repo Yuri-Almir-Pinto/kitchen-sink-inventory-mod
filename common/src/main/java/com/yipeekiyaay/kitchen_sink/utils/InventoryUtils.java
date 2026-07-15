@@ -83,17 +83,6 @@ public class InventoryUtils {
         distributeItemStacks(stack, inventory, DistributionForm.refillFirst);
     }
 
-    public static List<Slot> getSimilar(ItemStack similarTo, List<Slot> inventory) {
-        var similar = new ArrayList<Slot>(inventory.size());
-
-        for (var slot : inventory) {
-            if (ItemStack.areItemsAndComponentsEqual(similarTo, slot.getStack()))
-                similar.add(slot);
-        }
-
-        return similar;
-    }
-
     public static class InventoryGroup {
         public List<Slot> hotbar = Collections.emptyList();
         public List<Slot> main = Collections.emptyList();
@@ -110,29 +99,9 @@ public class InventoryUtils {
         private InventoryGroup() {
         }
 
-        public boolean isPlayerInventory() {
-            return container.isEmpty();
-        }
-
-        public boolean isContainer() {
+        public boolean hasContainer() {
             return !container.isEmpty();
         }
-    }
-
-    public static boolean isCraftingInventory(Slot slot) {
-        return slot.inventory instanceof CraftingInventory;
-    }
-
-    public static boolean isCraftingResultInventory(Slot slot) {
-        return slot.inventory instanceof CraftingResultInventory;
-    }
-
-    public static boolean isPlayerInventory(Slot slot) {
-        return slot.inventory instanceof PlayerInventory;
-    }
-
-    public static boolean isContainer(Slot slot) {
-        return !isCraftingInventory(slot) && !isCraftingResultInventory(slot) && !isPlayerInventory(slot);
     }
 
     @SuppressWarnings("unused")

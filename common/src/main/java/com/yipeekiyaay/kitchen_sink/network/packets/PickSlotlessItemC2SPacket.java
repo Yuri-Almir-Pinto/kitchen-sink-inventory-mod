@@ -54,7 +54,7 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
 
             var inventoryGroup = InventoryUtils.from(screen.slots);
 
-            var slotsToMove = inventoryGroup.isPlayerInventory() ? inventoryGroup.hotbar : inventoryGroup.container;
+            var slotsToMove = !inventoryGroup.hasContainer() ? inventoryGroup.hotbar : inventoryGroup.container;
 
             InventoryUtils.distributeItemStacks(itemToMove, slotsToMove);
 
