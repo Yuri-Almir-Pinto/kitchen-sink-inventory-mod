@@ -10,12 +10,9 @@
 - Implementar dropar direto do inventário slotless
 - Implementar jogar direto pra hotbar (apertando 1-9) direto do inventário slotless
 - Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
-- Rouba- quero dizer, *aprender* com o Subpocket e desabilitar o Z buffer para os itens do slotless, eliminando Z-Fighting.
 
 ## Bugs
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
 - Consertar comando de clear e gamerule de keep inventory não funcionando
 - Consertar inventário slotless não aparecendo no modo criativo
-- Consertar não sendo possível craftar com shift click, e não sendo possível clicar rapidamente para craftar.
-- O tooltip de outros mods não aparece quando o item está no slotless storage

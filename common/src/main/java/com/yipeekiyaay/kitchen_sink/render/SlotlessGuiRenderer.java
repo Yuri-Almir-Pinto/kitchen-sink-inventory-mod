@@ -1,14 +1,12 @@
 package com.yipeekiyaay.kitchen_sink.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.util.math.MathHelper;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Locale;
 
@@ -37,19 +35,19 @@ public class SlotlessGuiRenderer {
         );
 
         var items = area.getItems();
-        for (var i = 0; i < items.size(); i++) {
-            var item = items.get(i);
+        for (var item : items) {
             double absoluteX = area.getX() + item.getX();
             double absoluteY = area.getY() + item.getY();
 
-            context.getMatrices().push();
-            context.getMatrices().translate(0, 0, i * 8);
+            context.draw();
+
+            // OpenGL on mac is problematic I guess? Idk, but if Subpocket was using it, who am I to disagree? =w=
+            // Disables depth, forcing all the items to appear on drawn order.
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
             SlotlessGuiRenderer.renderSlotlessItem(context, item, absoluteX, absoluteY);
-            context.getMatrices().pop();
         }
 
         context.disableScissor();
-
         context.getMatrices().pop();
     }
 
@@ -62,17 +60,9 @@ public class SlotlessGuiRenderer {
 
         context.drawItem(item.getStack(), 0, 0);
 
-        renderItemInfo(context, item);
+        context.drawItemInSlot(textRenderer, item.getStack(), 0, 0, "");
 
-        context.getMatrices().pop();
-    }
-
-    private static void renderItemInfo(DrawContext context, SlotlessItem item) {
-        if (item.isEmpty()) return;
-
-        var stack = item.getStack();
-        long count = item.getCount();
-
+        var count = item.getCount();
         if (count != 1) {
             boolean isHighCount = count > 99;
             String countText = formatCount(count);
@@ -83,7 +73,8 @@ public class SlotlessGuiRenderer {
 
             if (isHighCount) {
                 float scale = 0.50F;
-                float textX = 32.0F - textWidth;
+
+                float textX = 32.0F - textWidth; // at 0.5x scale, 16x16 behaves like 32x32
                 float textY = 32.0F - textRenderer.fontHeight;
 
                 context.getMatrices().scale(scale, scale, 1.0F);
@@ -95,36 +86,7 @@ public class SlotlessGuiRenderer {
             context.getMatrices().pop();
         }
 
-        if (stack.isItemBarVisible()) {
-            int step = stack.getItemBarStep();
-            int color = stack.getItemBarColor() | 0xFF000000;
-
-            context.fill(RenderLayer.getGuiOverlay(), 2, 13, 15, 15, 0xFF000000);
-            context.fill(RenderLayer.getGuiOverlay(), 2, 13, 2 + step, 14, color);
-        }
-
-        if (client.player != null) {
-            float cooldownProgress = client.player.getItemCooldownManager().getCooldownProgress(
-                    stack.getItem(),
-                    client.getRenderTickCounter().getTickDelta(true)
-            );
-
-            if (cooldownProgress > 0.0F) {
-                int top = MathHelper.floor(16.0F * (1.0F - cooldownProgress));
-                int bottom = top + MathHelper.ceil(16.0F * cooldownProgress);
-                context.fill(RenderLayer.getGuiOverlay(), 0, top, 16, bottom, Integer.MAX_VALUE);
-            }
-        }
-    }
-
-    public static void renderSlotlessItemTooltip(DrawContext context, SlotlessItem item, int absMouseX, int absMouseY) {
-        var tooltip = item.getStack().getTooltip(
-                Item.TooltipContext.create(client.world),
-                client.player,
-                client.options.advancedItemTooltips ? TooltipType.Default.ADVANCED : TooltipType.Default.BASIC
-        );
-
-        context.drawTooltip(textRenderer, tooltip, item.getStack().getTooltipData(), absMouseX, absMouseY);
+        context.getMatrices().pop();
     }
 
     private static String formatCount(long count) {

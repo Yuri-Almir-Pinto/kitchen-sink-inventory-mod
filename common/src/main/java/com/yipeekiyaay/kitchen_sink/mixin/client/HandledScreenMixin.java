@@ -8,6 +8,7 @@ import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessAreaManager;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.utils.DummySlot;
 import com.yipeekiyaay.kitchen_sink.utils.ScreenHandlingData;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.DrawContext;
@@ -19,12 +20,15 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -41,6 +45,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Shadow protected int x;
 
     @Shadow protected int y;
+
+    @Shadow protected @Nullable Slot focusedSlot;
 
     protected HandledScreenMixin(Text title) {
         super(title);
@@ -71,6 +77,37 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         }
     }
 
+    @Redirect(
+            method = "drawMouseoverTooltip",
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;focusedSlot:Lnet/minecraft/screen/slot/Slot;", opcode = Opcodes.GETFIELD)
+    )
+    private Slot kitchen_sink$redirectFocusedSlot(HandledScreen<?> screen, DrawContext context, int x, int y) {
+        int guiMouseX = x - this.x;
+        int guiMouseY = y - this.y;
+        var area = kitchen_sink$manager.getArea(guiMouseX, guiMouseY);
+
+        if (area != null && kitchen_sink$data.moving == null) {
+            SlotlessItem item = area.getHoveredItem(guiMouseX, guiMouseY);
+
+            if (item == null || item.isEmpty()) return focusedSlot;
+
+            return DummySlot.getDummySlotWith(item.getStack());
+        }
+
+        return this.focusedSlot;
+    }
+
+    @Inject(method = "drawMouseoverTooltip", at = @At("HEAD"))
+    public void kitchen_sink$drawMouseoverTooltipPushMatrix(DrawContext context, int x, int y, CallbackInfo ci) {
+        context.getMatrices().push();
+        context.getMatrices().translate(0, 0, 50);
+    }
+
+    @Inject(method = "drawMouseoverTooltip", at = @At("TAIL"))
+    public void kitchen_sink$drawMouseoverTooltipPopMatrix(DrawContext context, int x, int y, CallbackInfo ci) {
+        context.getMatrices().pop();
+    }
+
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$drawSlotsMixin(DrawContext context, Slot slot, CallbackInfo ci) {
         if (kitchen_sink$manager.isContained(slot)) {
@@ -82,25 +119,6 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     protected void kitchen_sink$onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
         if (slot != null && kitchen_sink$manager.isContained(slot))
             ci.cancel();
-    }
-
-    @Inject(method = "drawMouseoverTooltip", at = @At("HEAD"), cancellable = true)
-    public void kitchen_sink$drawMouseoverTooltipMixing(DrawContext context, int x, int y, CallbackInfo ci) {
-        var d = kitchen_sink$data;
-        int guiMouseX = x - this.x;
-        int guiMouseY = y - this.y;
-
-        if (!kitchen_sink$manager.isContained(guiMouseX, guiMouseY) || d.moving != null)
-            return;
-
-        ci.cancel();
-
-        var area = kitchen_sink$manager.getArea(guiMouseX, guiMouseY);
-        SlotlessItem item = null;
-        if (area != null)
-            item = area.getHoveredItem(guiMouseX, guiMouseY);
-        if (item != null && !item.isEmpty())
-            SlotlessGuiRenderer.renderSlotlessItemTooltip(context, item, x, y);
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
