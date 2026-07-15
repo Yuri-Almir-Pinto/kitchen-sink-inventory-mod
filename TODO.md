@@ -7,7 +7,6 @@
 
 ## Atualizações
 
-- Implementar jogar direto pra hotbar (apertando 1-9) direto do inventário slotless
 - Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
 
 ## Bugs

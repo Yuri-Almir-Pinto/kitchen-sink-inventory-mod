@@ -1,9 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.mixin.client;
 
-import com.yipeekiyaay.kitchen_sink.network.packets.DropSlotlessItemC2SPacket;
-import com.yipeekiyaay.kitchen_sink.network.packets.MoveSlotlessItemC2SPacket;
-import com.yipeekiyaay.kitchen_sink.network.packets.PickSlotlessItemC2SPacket;
-import com.yipeekiyaay.kitchen_sink.network.packets.PutSlotlessItemC2SPacket;
+import com.yipeekiyaay.kitchen_sink.network.packets.*;
 import com.yipeekiyaay.kitchen_sink.render.SlotlessGuiRenderer;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
@@ -126,26 +123,48 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         var client = ClientUtils.getClient();
-        if (!client.options.dropKey.matchesKey(keyCode, scanCode)) return;
+        var pressedDrop = client.options.dropKey.matchesKey(keyCode, scanCode);
+        var pressedHotbarKey = -1;
+
+        for (var i = 0; i < 9; i++) {
+            var key = client.options.hotbarKeys[i];
+            if (key.matchesKey(keyCode, scanCode)) {
+                pressedHotbarKey = i;
+                break;
+            }
+        }
+
+        if (!pressedDrop && pressedHotbarKey == -1) return;
+
         int mouseX = ClientUtils.getScaledMouseX() - x;
         int mouseY = ClientUtils.getScaledMouseY() - y;
         var area = kitchen_sink$manager.getArea(mouseX, mouseY);
         if (area == null) return;
+        var itemIndex = area.getHoveredItemIndex(mouseX, mouseY);
 
         cir.setReturnValue(true);
 
-        var index = area.getHoveredItemIndex(mouseX, mouseY);
+        if (pressedDrop) {
+            if (itemIndex == -1) return;
 
-        if (index == -1) return;
+            var slotlessItem = area.getItems().get(itemIndex);
 
-        var slotlessItem = area.getItems().get(index);
+            if (slotlessItem == null || slotlessItem.isEmpty()) return;
 
-        if (slotlessItem == null || slotlessItem.isEmpty()) return;
+            if (client.player != null) {
+                NetworkManager.sendToServer(new DropSlotlessItemC2SPacket(itemIndex, Screen.hasControlDown()));
+                DropSlotlessItemC2SPacket.handleCommon(itemIndex, Screen.hasControlDown(), client.player);
+            }
+        } else {
+            var itemX = mouseX - area.getX() - 8;
+            var itemY = mouseY - area.getY() - 8;
 
-        if (client.player != null) {
-            NetworkManager.sendToServer(new DropSlotlessItemC2SPacket(index, Screen.hasControlDown()));
-            DropSlotlessItemC2SPacket.handleCommon(index, Screen.hasControlDown(), client.player);
+            if (client.player != null) {
+                NetworkManager.sendToServer(new SwapSlotlessItemC2SPacket(itemIndex, pressedHotbarKey, itemX, itemY));
+                SwapSlotlessItemC2SPacket.handleCommon(itemIndex, pressedHotbarKey, itemX, itemY, client.player);
+            }
         }
+
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
