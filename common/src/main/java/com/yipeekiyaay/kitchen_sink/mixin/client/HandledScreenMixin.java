@@ -1,5 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.mixin.client;
 
+import com.yipeekiyaay.kitchen_sink.network.packets.DropSlotlessItemC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.MoveSlotlessItemC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.PickSlotlessItemC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.PutSlotlessItemC2SPacket;
@@ -8,6 +9,7 @@ import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessAreaManager;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.utils.ClientUtils;
 import com.yipeekiyaay.kitchen_sink.utils.DummySlot;
 import com.yipeekiyaay.kitchen_sink.utils.ScreenHandlingData;
 import dev.architectury.networking.NetworkManager;
@@ -119,6 +121,31 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     protected void kitchen_sink$onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
         if (slot != null && kitchen_sink$manager.isContained(slot))
             ci.cancel();
+    }
+
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    public void kitchen_sink$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        var client = ClientUtils.getClient();
+        if (!client.options.dropKey.matchesKey(keyCode, scanCode)) return;
+        int mouseX = ClientUtils.getScaledMouseX() - x;
+        int mouseY = ClientUtils.getScaledMouseY() - y;
+        var area = kitchen_sink$manager.getArea(mouseX, mouseY);
+        if (area == null) return;
+
+        cir.setReturnValue(true);
+
+        var index = area.getHoveredItemIndex(mouseX, mouseY);
+
+        if (index == -1) return;
+
+        var slotlessItem = area.getItems().get(index);
+
+        if (slotlessItem == null || slotlessItem.isEmpty()) return;
+
+        if (client.player != null) {
+            NetworkManager.sendToServer(new DropSlotlessItemC2SPacket(index, Screen.hasControlDown()));
+            DropSlotlessItemC2SPacket.handleCommon(index, Screen.hasControlDown(), client.player);
+        }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)

@@ -94,13 +94,22 @@ public class SlotlessItem {
     public ItemStack pickStack(boolean half) {
         if (this.isEmpty()) return ItemStack.EMPTY;
 
-        var amountToPick = (int) Math.min(this.stack.getMaxCount(), this.count);
+        var maxStackCount = Math.min(count, getStack().getMaxCount());
 
-        if (half)
-            amountToPick = Math.ceilDiv(amountToPick, 2);
+        var amountToPick = (int) (half ? Math.ceilDiv(maxStackCount, 2) : maxStackCount);
+
+        return pickStack(amountToPick);
+    }
+
+    public ItemStack pickStack(int amount) {
+        if (this.isEmpty()) return ItemStack.EMPTY;
+
+        var amountToPick = (int) Math.min(count, Math.min(this.stack.getMaxCount(), amount));
 
         this.setCount(this.count - amountToPick);
+
         var stackReturned = this.stack.copy();
+
         stackReturned.setCount(amountToPick);
 
         return stackReturned;

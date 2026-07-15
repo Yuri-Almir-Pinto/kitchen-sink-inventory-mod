@@ -92,7 +92,7 @@ public class SlotlessArea {
         return this.setPos(slot.x, slot.y);
     }
 
-    public @Nullable SlotlessItem getHoveredItem(double mouseX, double mouseY) {
+    public int getHoveredItemIndex(double mouseX, double mouseY) {
         var items = this.getItems();
 
         var x = mouseX - this.getX();
@@ -103,11 +103,19 @@ public class SlotlessArea {
 
             if (item.getX() <= x && item.getX() + 16 >= x
                     && item.getY() <= y && item.getY() + 16 >= y) {
-                return item;
+                return i;
             }
         }
 
-        return null;
+        return -1;
+    }
+
+    public @Nullable SlotlessItem getHoveredItem(double mouseX, double mouseY) {
+        var index = getHoveredItemIndex(mouseX, mouseY);
+
+        if (index == -1) return null;
+
+        return getItems().get(index);
     }
 
     public boolean isInventoryArea() {
