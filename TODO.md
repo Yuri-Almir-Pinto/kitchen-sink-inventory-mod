@@ -7,7 +7,6 @@
 
 ## Atualizações
 
-- Implementar dropar direto do inventário slotless
 - Implementar jogar direto pra hotbar (apertando 1-9) direto do inventário slotless
 - Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
 
@@ -16,3 +15,4 @@
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
 - Consertar comando de clear e gamerule de keep inventory não funcionando
 - Consertar inventário slotless não aparecendo no modo criativo
+- Consertar desync causado ao coletar uma quantidade excessiva de itens do chão (O servidor parece sincronizar os slots antes do cliente terminar de processar e guardar tudo no slotless storage localmente, causando um desync)
