@@ -14,4 +14,4 @@
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
 - Consertar comando de clear e gamerule de keep inventory não funcionando
 - Consertar inventário slotless não aparecendo no modo criativo
-- Consertar desync causado ao coletar uma quantidade excessiva de itens do chão (O servidor parece sincronizar os slots antes do cliente terminar de processar e guardar tudo no slotless storage localmente, causando um desync)
+- Consertar ao passar todos os itens de um container para um inventário, eles estarem indo para slots que não deviam também, além de não puxar *todos* os itens (Espaço é infinito afinal, deve puxar todos)

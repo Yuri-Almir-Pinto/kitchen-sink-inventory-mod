@@ -1,12 +1,17 @@
 package com.yipeekiyaay.kitchen_sink.mixin;
 
+import com.yipeekiyaay.kitchen_sink.network.packets.InsertSlotlessItemS2CPacket;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,10 +22,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
+
 @Mixin(PlayerInventory.class)
 public class PlayerInventoryMixin implements ISlotlessInventory {
     @Unique
     private final SlotlessInventory kitchen_sink$slotlessInventory = new SlotlessInventory();
+
+    @Unique
+    private final ArrayList<SlotlessItem> kitchen_sink$pendingSyncItems = new ArrayList<>();
 
     @Shadow
     @Final
@@ -98,6 +108,15 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         for (var item : kitchen_sink$slotlessInventory.getItems()) {
             item.getStack().inventoryTick(player.getWorld(), player, 9, false); // 9 is the first slot of the main inventory.
         }
+
+        if (this.player instanceof ServerPlayerEntity serverPlayer && !this.kitchen_sink$pendingSyncItems.isEmpty()) {
+            NetworkManager.sendToPlayer(
+                    serverPlayer,
+                    new InsertSlotlessItemS2CPacket(new ArrayList<>(this.kitchen_sink$pendingSyncItems))
+            );
+
+            this.kitchen_sink$pendingSyncItems.clear();
+        }
     }
 
     @Inject(method = "getEmptySlot", at = @At("RETURN"), cancellable = true)
@@ -127,6 +146,58 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             cir.setReturnValue(i);
             return;
         }
+    }
+
+    @Inject(method = "insertStack(ILnet/minecraft/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
+    public void kitchen_sink$insertStack(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (slot != -1 || stack.isEmpty()) return;
+        if (player.getWorld().isClient()) return;
+
+        var firstEmpty = -1;
+        var i = 0;
+        while (!stack.isEmpty() && i < 36) {
+            if (!stack.isStackable()) {
+                if (main.get(i).isEmpty()) {
+                    main.set(i, stack.copyAndEmpty());
+                    main.get(i).setBobbingAnimationTime(5);
+                    cir.setReturnValue(true);
+                    return;
+                }
+            } else {
+                if (main.get(i).isEmpty() && firstEmpty == -1) {
+                    firstEmpty = i;
+                } else if (!main.get(i).isEmpty()) {
+                    InventoryUtils.transferFromTo(stack, main.get(i));
+                }
+
+                if (stack.isEmpty()) {
+                    cir.setReturnValue(true);
+                    return;
+                }
+            }
+
+            i++;
+        }
+
+        var slotlessHasItem = kitchen_sink$slotlessInventory.hasItem(stack);
+        if (!stack.isEmpty() && firstEmpty != -1 && firstEmpty < 9 && !slotlessHasItem) {
+            main.set(firstEmpty, stack.copyAndEmpty());
+            main.get(firstEmpty).setBobbingAnimationTime(5);
+            cir.setReturnValue(true);
+            return;
+        }
+
+        if (stack.isEmpty()) return;
+
+        ItemStack stackToSend = stack.copy();
+
+        kitchen_sink$slotlessInventory.addItem(stack.copyAndEmpty());
+
+        if (this.player instanceof ServerPlayerEntity) {
+            this.kitchen_sink$pendingSyncItems.add(new SlotlessItem(stackToSend));
+        }
+
+        cir.setReturnValue(true);
     }
 
 
