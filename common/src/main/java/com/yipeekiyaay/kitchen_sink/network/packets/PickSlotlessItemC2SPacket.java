@@ -2,13 +2,14 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
-import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Identifier;
 
 public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boolean isHoldingSfhit) implements CustomPayload {
@@ -30,7 +31,7 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
     public static void handle(PickSlotlessItemC2SPacket payload, NetworkManager.PacketContext context) {
         context.queue(() -> {
             var index = payload.slotlessItemIndex();
-            var button = payload.button(); // 0 Left, 1 Right
+            var button = payload.button();
             var player = context.getPlayer();
 
             handleCommon(index, button, payload.isHoldingSfhit(), player);
@@ -38,7 +39,8 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
     }
 
     public static void handleCommon(int index, int button, boolean isHoldingSfhit, PlayerEntity player) {
-        var slotlessInventory = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory();
+        var inventory = player.getInventory();
+        var slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
         var screen = player.currentScreenHandler;
         var playerItems = slotlessInventory.getItems();
 
@@ -48,22 +50,28 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
 
         if (!isHoldingSfhit || button != 0) {
             screen.setCursorStack(item.pickStack(button == 1));
-            slotlessInventory.clearEmpty();
         } else {
             var itemToMove = item.pickStack(false);
 
-            var inventoryGroup = InventoryUtils.from(screen.slots);
+            for (var i = 0; i < screen.slots.size(); i++) {
+                var slot = screen.slots.get(i);
 
-            var slotsToMove = !inventoryGroup.hasContainer() ? inventoryGroup.hotbar : inventoryGroup.container;
+                if (!(slot.inventory instanceof PlayerInventory)) continue;
+                if (slot.getIndex() < 9 || slot.getIndex() >= 36) continue;
+                if ((slot.getIndex() % 9) >= 7) continue;
+                if (!slot.getStack().isEmpty()) continue;
 
-            InventoryUtils.distributeItemStacks(itemToMove, slotsToMove);
+                slot.setStack(itemToMove);
+                screen.onSlotClick(i, 0, SlotActionType.QUICK_MOVE, player);
 
-            if (!itemToMove.isEmpty())
-                item.add(itemToMove);
+                if (!slot.getStack().isEmpty())
+                    item.add(slot.getStack().copyAndEmpty());
+                break;
+            }
 
-            if (itemToMove.isEmpty())
-                slotlessInventory.clearEmpty();
         }
 
+        if (item.isEmpty())
+            slotlessInventory.clearEmpty();
     }
 }
