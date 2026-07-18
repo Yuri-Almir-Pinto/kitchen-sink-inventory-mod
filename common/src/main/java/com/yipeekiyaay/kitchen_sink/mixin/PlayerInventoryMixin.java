@@ -45,7 +45,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         return this.kitchen_sink$slotlessInventory;
     }
 
-    @Inject(method = "writeNbt", at = @At("HEAD"))
+    @Inject(method = "writeNbt", at = @At("RETURN"))
     public void kitchen_sink$writeNbt(NbtList nbtList, CallbackInfoReturnable<NbtList> cir) {
         var registries = this.player.getRegistryManager();
 
@@ -54,20 +54,25 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         this.kitchen_sink$slotlessInventory.writeNbt(registries, slotlessData);
 
         slotlessData.putByte("Slot", (byte) 99);
-        nbtList.add(slotlessData);
+        cir.getReturnValue().add(slotlessData);
     }
 
     @Inject(method = "readNbt", at = @At("HEAD"))
-    public void kitchen_sink$saveNbt(NbtList nbtList, CallbackInfo ci) {
+    public void kitchen_sink$readNbt(NbtList nbtList, CallbackInfo ci) {
         var registries = this.player.getRegistryManager();
 
+        var nbtIndex = -1;
         for (int i = 0; i < nbtList.size(); i++) {
             NbtCompound compound = nbtList.getCompound(i);
             if (compound.getByte("Slot") == 99 && compound.contains("slotlessInventoryItems")) {
                 this.kitchen_sink$slotlessInventory.readNbt(registries, compound);
+                nbtIndex = i;
                 break;
             }
         }
+
+        if (nbtIndex != -1)
+            nbtList.remove(nbtIndex);
     }
 
     @Inject(method = "dropAll", at = @At("TAIL"))
