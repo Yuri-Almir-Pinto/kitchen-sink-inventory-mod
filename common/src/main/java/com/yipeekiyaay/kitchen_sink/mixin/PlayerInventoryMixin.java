@@ -99,6 +99,8 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
     @Inject(method = "updateItems", at = @At("HEAD"))
     public void kitchen_sink$updateItems(CallbackInfo ci) {
+        if (player.isCreative()) return;
+
         for (var i = 9; i < main.size(); i++) {
             if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
 
@@ -121,6 +123,8 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
     @Inject(method = "getEmptySlot", at = @At("RETURN"), cancellable = true)
     public void kitchen_sink$getEmptySlot(CallbackInfoReturnable<Integer> cir) {
+        if (player.isCreative()) return;
+
         var inForbiddenArea = (cir.getReturnValue() % 9) >= 7 && cir.getReturnValue() > 8;
 
         if (!inForbiddenArea) return;
@@ -135,6 +139,8 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
     @Inject(method = "getOccupiedSlotWithRoomForStack", at = @At("RETURN"), cancellable = true)
     public void kitchen_sink$getOccupiedSlotWithRoomForStack(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if (player.isCreative()) return;
+
         var slot = cir.getReturnValue();
 
         if (slot > -1) return;
@@ -150,6 +156,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
     @Inject(method = "insertStack(ILnet/minecraft/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$insertStack(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (player.isCreative()) return;
         if (slot != -1 || stack.isEmpty()) return;
         if (player.getWorld().isClient()) return;
 

@@ -30,6 +30,7 @@ public abstract class ScreenHandlerMixin {
 
     @Inject(method = "internalOnSlotClick", at = @At("RETURN"))
     public void kitchen_sink$internalOnSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
+        if (player.isCreative()) return;
         if (actionType != SlotActionType.PICKUP_ALL) return;
         if (getCursorStack().isEmpty() || !getCursorStack().isStackable()) return;
         if (getCursorStack().getCount() == getCursorStack().getMaxCount()) return;
@@ -52,17 +53,21 @@ public abstract class ScreenHandlerMixin {
 
         var allowedSlots = new ArrayList<Slot>(36);
         SlotlessInventory slotlessInventory = null;
+        PlayerEntity player = null;
 
         for (var i = startIndex; i < endIndex; i++) {
             var slot = slots.get(i);
             var index = slot.getIndex();
 
-            if (slot.inventory instanceof PlayerInventory playerInventory && (index % 9) < 7 && index > 8) {
+            if (slot.inventory instanceof PlayerInventory playerInventory && index > 8) {
                 if (slotlessInventory == null)
                     slotlessInventory = ((ISlotlessInventory) playerInventory).kitchen_sink$getSlotlessInventory();
                 allowedSlots.add(slot);
+                player = playerInventory.player;
             }
         }
+
+        if (player == null || player.isCreative()) return;
 
         if (allowedSlots.isEmpty() || slotlessInventory == null || !slotlessInventory.hasItem(stack)) return;
 

@@ -2,10 +2,7 @@ package com.yipeekiyaay.kitchen_sink.mixin.client;
 
 import com.yipeekiyaay.kitchen_sink.network.packets.*;
 import com.yipeekiyaay.kitchen_sink.render.SlotlessGuiRenderer;
-import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessAreaManager;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.*;
 import com.yipeekiyaay.kitchen_sink.utils.ClientUtils;
 import com.yipeekiyaay.kitchen_sink.utils.DummySlot;
 import com.yipeekiyaay.kitchen_sink.utils.ScreenHandlingData;
@@ -51,7 +48,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         super(title);
     }
 
-    @Inject(method = "init", at = @At("TAIL"))
+    @Inject(method = "init", at = @At("RETURN"))
     protected void kitchen_sink$initSlotlessAreas(CallbackInfo ci) {
         kitchen_sink$manager.from(this.handler);
         kitchen_sink$data.handler = this.handler;
@@ -68,10 +65,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "render", at = @At("TAIL"))
     public void kitchen_sink$renderKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (!kitchen_sink$manager.hasArea())
-            return;
+        if (client == null || client.player == null || client.player.isCreative()) return;
+        if (!kitchen_sink$manager.hasArea()) return;
 
         for (SlotlessArea area : kitchen_sink$manager.getAreas()) {
+            area.updateRender();
             SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y);
         }
     }
@@ -81,6 +79,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;focusedSlot:Lnet/minecraft/screen/slot/Slot;", opcode = Opcodes.GETFIELD)
     )
     private Slot kitchen_sink$redirectFocusedSlot(HandledScreen<?> screen, DrawContext context, int x, int y) {
+        if (client == null || client.player == null || client.player.isCreative()) return focusedSlot;
         int guiMouseX = x - this.x;
         int guiMouseY = y - this.y;
         var area = kitchen_sink$manager.getArea(guiMouseX, guiMouseY);
@@ -98,30 +97,36 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "drawMouseoverTooltip", at = @At("HEAD"))
     public void kitchen_sink$drawMouseoverTooltipPushMatrix(DrawContext context, int x, int y, CallbackInfo ci) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, 50);
     }
 
     @Inject(method = "drawMouseoverTooltip", at = @At("TAIL"))
     public void kitchen_sink$drawMouseoverTooltipPopMatrix(DrawContext context, int x, int y, CallbackInfo ci) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
         context.getMatrices().pop();
     }
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$drawSlotsMixin(DrawContext context, Slot slot, CallbackInfo ci) {
-        if (kitchen_sink$manager.isContained(slot)) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
+
+        if (kitchen_sink$manager.isContained(slot))
             ci.cancel();
-        }
     }
 
     @Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("HEAD"), cancellable = true)
     protected void kitchen_sink$onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
+
         if (slot != null && kitchen_sink$manager.isContained(slot))
             ci.cancel();
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
         var client = ClientUtils.getClient();
         var pressedDrop = client.options.dropKey.matchesKey(keyCode, scanCode);
         var pressedHotbarKey = -1;
@@ -169,6 +174,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$mouseClickedMixing(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
         if (button > 1) return;
 
         var d = kitchen_sink$data;
@@ -208,6 +214,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "mouseDragged", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$mouseDraggedMixing(double mouseX, double mouseY, int button, double deltaX, double deltaY, CallbackInfoReturnable<Boolean> cir) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
         if (button > 1) return;
 
         var d = kitchen_sink$data;
@@ -229,6 +236,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "mouseReleased", at = @At("HEAD"))
     public void kitchen_sink$mouseReleasedMixing(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (client == null || client.player == null || client.player.isCreative()) return;
         if (button > 1) return;
 
         var d = kitchen_sink$data;

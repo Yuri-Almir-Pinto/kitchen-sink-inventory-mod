@@ -1,6 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -12,13 +13,11 @@ public class SlotlessArea {
     private static final Identifier KITCHEN_SINK_27_TEXTURE =
             Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/kitchen_sink_27_gui.png");
 
-    private static final Identifier KITCHEN_SINK_54_TEXTURE =
-            Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/kitchen_sink_54_gui.png");
-
     private int width;
     private int height;
     private int x;
     private int y;
+    private List<Slot> slots;
     private Identifier renderTexture;
     private String areaType;
     private SlotlessInventory inventory = new SlotlessInventory();
@@ -51,14 +50,6 @@ public class SlotlessArea {
         return this.inventory.getItems();
     }
 
-    public SlotlessArea setSize54() {
-        this.height = 108;
-        this.width = 126;
-        this.renderTexture = SlotlessArea.KITCHEN_SINK_54_TEXTURE;
-
-        return this;
-    }
-
     public SlotlessArea setSize27() {
         this.height = 54;
         this.width = 126;
@@ -68,8 +59,8 @@ public class SlotlessArea {
     }
 
     public SlotlessArea setPos(int x, int y) {
-        this.x = x - 1; // Reduce 1 to be perfectly placed over the given slot.
-        this.y = y - 1;
+        this.x = x;
+        this.y = y;
 
         return this;
     }
@@ -89,7 +80,36 @@ public class SlotlessArea {
     }
 
     public SlotlessArea setPos(Slot slot) {
-        return this.setPos(slot.x, slot.y);
+        return this.setPos(slot.x - 1, slot.y - 1);
+    }
+
+    public SlotlessArea setSlots(List<Slot> slots) {
+        this.slots = slots;
+
+        return this;
+    }
+
+    private boolean shouldRender = true;
+    public boolean shouldRender() {
+        return shouldRender;
+    }
+
+
+    public void updateRender() {
+        if (slots == null) {
+            shouldRender = true;
+            return;
+        }
+
+        for (Slot slot : slots) {
+            if (slot.getIndex() == 9 && slot.inventory instanceof PlayerInventory) {
+                this.setPos(slot);
+                shouldRender = true;
+                return;
+            }
+        }
+
+        shouldRender = false;
     }
 
     public int getHoveredItemIndex(double mouseX, double mouseY) {
