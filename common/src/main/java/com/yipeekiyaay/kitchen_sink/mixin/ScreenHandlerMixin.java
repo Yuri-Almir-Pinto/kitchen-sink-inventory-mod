@@ -52,7 +52,6 @@ public abstract class ScreenHandlerMixin {
         if (stack.isEmpty()) return;
 
         var allowedSlots = new ArrayList<Slot>(slots.size());
-        var hotbarSlots = new ArrayList<Slot>(9);
         SlotlessInventory slotlessInventory = null;
         PlayerEntity player = null;
 
@@ -64,8 +63,6 @@ public abstract class ScreenHandlerMixin {
                     slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
                 if (player == null)
                     player = inventory.player;
-                if (slot.getIndex() < 9)
-                    hotbarSlots.add(slot);
             }
 
             allowedSlots.add(slot);
@@ -80,19 +77,6 @@ public abstract class ScreenHandlerMixin {
             InventoryUtils.transferFromTo(stack, slot.getStack());
 
             if (stack.isEmpty()) {
-                cir.setReturnValue(true);
-                return;
-            }
-        }
-
-        // If it does not have the same stack, but it's not fromLast, the fill up would have begun from the main inventory anyway
-        // meaning from the slotless storage. So it only makes sense to begin filling the hotbar when it's fromLast and slotless storage
-        // does not have the stack.
-        if (!hotbarSlots.isEmpty() && !slotlessInventory.hasItem(stack) && fromLast) {
-            for (var slot : hotbarSlots) {
-                if (!slot.getStack().isEmpty()) continue;
-
-                slot.insertStack(stack);
                 cir.setReturnValue(true);
                 return;
             }
