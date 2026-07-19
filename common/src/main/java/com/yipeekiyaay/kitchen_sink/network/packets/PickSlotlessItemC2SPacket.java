@@ -65,7 +65,13 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
                     var itemToMove = item.pickStack(false);
 
                     slot.setStack(itemToMove);
+
+                    // Disabling mutation of the slotless inventory to take control out of the mixin and give it solely
+                    // to this package, as the mixing assumes that vanilla code calls it, meaning it never changes
+                    // the slotless inventory, which is not the case here.
+                    slotlessInventory.lock();
                     screen.onSlotClick(i, 0, SlotActionType.QUICK_MOVE, player);
+                    slotlessInventory.unlock();
 
                     if (!slot.getStack().isEmpty()) {
                         item.add(slot.getStack().copyAndEmpty());

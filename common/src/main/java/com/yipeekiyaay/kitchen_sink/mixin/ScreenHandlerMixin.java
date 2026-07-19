@@ -55,7 +55,6 @@ public abstract class ScreenHandlerMixin {
         var allowedSlots = new ArrayList<Slot>(slots.size());
         var hotbarSlots = new ArrayList<Slot>(9);
         SlotlessInventory slotlessInventory = null;
-        ArrayList<SlotlessItem> pendingSync = null;
         PlayerEntity player = null;
 
         for (var i = fromLast ? endIndex - 1 : startIndex; fromLast ? i >= startIndex : i < endIndex; i += (fromLast ? -1 : 1)) {
@@ -64,8 +63,6 @@ public abstract class ScreenHandlerMixin {
             if ((slot.inventory instanceof PlayerInventory inventory)) {
                 if (slotlessInventory == null)
                     slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
-                if (pendingSync == null)
-                    pendingSync = ((ISlotlessInventory) inventory).kitchen_sink$pendingSyncItems();
                 if (player == null)
                     player = inventory.player;
                 if (slot.getIndex() < 9)
@@ -100,9 +97,8 @@ public abstract class ScreenHandlerMixin {
         }
 
         if (!stack.isEmpty()) {
-            if (!player.getWorld().isClient()) {
-                if (pendingSync != null)
-                    pendingSync.add(new SlotlessItem(stack.copy()));
+            if (!player.getWorld().isClient() && slotlessInventory.isUnlocked()) {
+                slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copy()));
                 slotlessInventory.addItem(stack.copyAndEmpty());
             }
             cir.setReturnValue(true);

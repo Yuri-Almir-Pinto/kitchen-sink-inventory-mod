@@ -32,9 +32,6 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
     @Unique
     private final SlotlessInventory kitchen_sink$slotlessInventory = new SlotlessInventory();
 
-    @Unique
-    private final ArrayList<SlotlessItem> kitchen_sink$pendingSyncItems = new ArrayList<>();
-
     @Shadow
     @Final
     public PlayerEntity player;
@@ -46,11 +43,6 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
     @Override
     public SlotlessInventory kitchen_sink$getSlotlessInventory() {
         return this.kitchen_sink$slotlessInventory;
-    }
-
-    @Override
-    public ArrayList<SlotlessItem> kitchen_sink$pendingSyncItems() {
-        return this.kitchen_sink$pendingSyncItems;
     }
 
     @Inject(method = "writeNbt", at = @At("RETURN"))
@@ -153,7 +145,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             for (var i = 9; i < main.size(); i++) {
                 if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
 
-                kitchen_sink$pendingSyncItems.add(new SlotlessItem(main.get(i).copy()));
+                kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(main.get(i).copy()));
                 kitchen_sink$slotlessInventory.addItem(main.get(i).copyAndEmpty());
             }
         }
@@ -162,13 +154,13 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             item.getStack().inventoryTick(player.getWorld(), player, 9, false); // 9 is the first slot of the main inventory.
         }
 
-        if (this.player instanceof ServerPlayerEntity serverPlayer && !this.kitchen_sink$pendingSyncItems.isEmpty()) {
+        if (this.player instanceof ServerPlayerEntity serverPlayer && !kitchen_sink$slotlessInventory.slotlessSync.isEmpty()) {
             NetworkManager.sendToPlayer(
                     serverPlayer,
-                    new InsertSlotlessItemS2CPacket(new ArrayList<>(this.kitchen_sink$pendingSyncItems))
+                    new InsertSlotlessItemS2CPacket(new ArrayList<>(kitchen_sink$slotlessInventory.slotlessSync.copyPending()))
             );
 
-            this.kitchen_sink$pendingSyncItems.clear();
+            kitchen_sink$slotlessInventory.slotlessSync.clearPending();
         }
     }
 
@@ -252,7 +244,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         kitchen_sink$slotlessInventory.addItem(stack.copyAndEmpty());
 
         if (this.player instanceof ServerPlayerEntity) {
-            this.kitchen_sink$pendingSyncItems.add(new SlotlessItem(stackToSend));
+            kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(stackToSend));
         }
 
         cir.setReturnValue(true);

@@ -10,19 +10,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlotlessInventory {
+    public final SlotlessSync slotlessSync = new SlotlessSync();
     private final List<SlotlessItem> items = new ArrayList<>();
+    private boolean isLocked = false;
 
     public List<SlotlessItem> getItems() {
         return this.items;
     }
 
     public void addAll(List<SlotlessItem> items) {
+        if (isLocked) return;
+
         for (var item : items) {
+            if (item.isEmpty()) continue;
+
             this.addItem(item);
         }
     }
 
     public void addItem(SlotlessItem newItem) {
+        if (isLocked) return;
         if (newItem.isEmpty()) return;
 
         for (var item : this.items) {
@@ -38,12 +45,14 @@ public class SlotlessInventory {
     }
 
     public void addItem(ItemStack stack, int x, int y) {
+        if (isLocked) return;
         if (stack.isEmpty()) return;
 
         this.addItem(new SlotlessItem(stack, x, y));
     }
 
     public void addItem(ItemStack stack) {
+        if (isLocked) return;
         if (stack.isEmpty()) return;
 
         this.addItem(new SlotlessItem(stack));
@@ -77,13 +86,16 @@ public class SlotlessInventory {
     }
 
     public void clearEmpty() {
+        if (isLocked) return;
+
         this.items.removeIf(item -> item == null || item.isEmpty());
     }
 
     public void pushToTop(SlotlessItem item) {
-        if (this.items.isEmpty() || this.items.getLast() == item) {
+        if (isLocked) return;
+
+        if (this.items.isEmpty() || this.items.getLast() == item)
             return;
-        }
 
         if (this.items.remove(item)) {
             this.items.add(item);
@@ -91,6 +103,7 @@ public class SlotlessInventory {
     }
 
     public void repositionItem(SlotlessItem item) {
+        if (isLocked) return;
         if (this.items.isEmpty()) return;
 
         SlotlessItem found = null;
@@ -106,6 +119,20 @@ public class SlotlessInventory {
 
         found.setPos(item.getX(), item.getY());
         this.pushToTop(found);
+    }
+
+    public boolean isUnlocked() {
+        return !isLocked;
+    }
+
+    public void lock() {
+        isLocked = true;
+        slotlessSync.lock();
+    }
+
+    public void unlock() {
+        isLocked = false;
+        slotlessSync.unlock();
     }
 
     public void writeNbt(DynamicRegistryManager registries, NbtCompound nbtInventoryCompound) {

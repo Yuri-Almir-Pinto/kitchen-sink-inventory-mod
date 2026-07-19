@@ -133,6 +133,10 @@ public class SlotlessItem {
         return taken;
     }
 
+    public SlotlessItem copy() {
+        return new SlotlessItem(getStack().copy(), getX(), getY(), getCount());
+    }
+
     public void writeNbt(DynamicRegistryManager registries, NbtCompound nbt) {
         if (this.isEmpty()) return;
 
