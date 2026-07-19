@@ -88,7 +88,7 @@ public abstract class ScreenHandlerMixin {
             }
         }
 
-        if (slotlessInventory.hasItem(stack))
+        if (slotlessInventory.hasItem(stack) && slotlessInventory.isUnlocked())
             emptyHotbarSlots.clear();
 
         if (!emptyHotbarSlots.isEmpty()) {
