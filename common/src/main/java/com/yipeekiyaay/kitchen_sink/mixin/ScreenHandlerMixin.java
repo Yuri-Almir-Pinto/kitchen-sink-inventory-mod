@@ -55,7 +55,7 @@ public abstract class ScreenHandlerMixin {
         var initialCount = stack.getCount();
 
         var allowedSlots = new ArrayList<Slot>(slots.size());
-        var hotbarSlots = new ArrayList<Slot>(9);
+        var emptyHotbarSlots = new ArrayList<Slot>(9);
         SlotlessInventory slotlessInventory = null;
         PlayerEntity player = null;
 
@@ -67,8 +67,8 @@ public abstract class ScreenHandlerMixin {
                     slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
                 if (player == null)
                     player = inventory.player;
-                if (slot.getIndex() < 9)
-                    hotbarSlots.add(slot);
+                if (slot.getIndex() < 9 && slot.getStack().isEmpty())
+                    emptyHotbarSlots.add(slot);
             }
 
             allowedSlots.add(slot);
@@ -88,21 +88,24 @@ public abstract class ScreenHandlerMixin {
             }
         }
 
-        if (!hotbarSlots.isEmpty() && !slotlessInventory.hasItem(stack)) {
-            for (var slot : hotbarSlots) {
+        if (slotlessInventory.hasItem(stack))
+            emptyHotbarSlots.clear();
+
+        if (!emptyHotbarSlots.isEmpty()) {
+            for (var slot : emptyHotbarSlots) {
                 if (slot.getStack().isEmpty()) {
                     slot.insertStack(stack);
                     cir.setReturnValue(true);
                     return;
                 }
             }
-        } else if (!stack.isEmpty()) {
-            if (!player.getWorld().isClient() && slotlessInventory.isUnlocked()) {
-                slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copy()));
-                slotlessInventory.addItem(stack.copyAndEmpty());
-            }
-
-            cir.setReturnValue(initialCount != stack.getCount());
         }
+
+        if (!player.getWorld().isClient() && slotlessInventory.isUnlocked()) {
+            slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copy()));
+            slotlessInventory.addItem(stack.copyAndEmpty());
+        }
+
+        cir.setReturnValue(initialCount != stack.getCount());
     }
 }
