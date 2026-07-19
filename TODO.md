@@ -20,4 +20,3 @@
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
 - Consertar itens novos não indo para a off-hand
 - Consertar quick move de container não indo para slotless quando tem item.
-- Consertar o método que pega o item em baixo do mouse retornando itens vazios
