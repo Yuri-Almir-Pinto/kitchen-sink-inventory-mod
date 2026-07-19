@@ -12,14 +12,15 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Identifier;
 
-public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boolean isHoldingSfhit) implements CustomPayload {
+public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boolean shouldQuickMove, boolean shouldMassMove) implements CustomPayload {
     public static final CustomPayload.Id<PickSlotlessItemC2SPacket> TYPE =
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "pick_slotless_item"));
 
     public static final PacketCodec<RegistryByteBuf, PickSlotlessItemC2SPacket> CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT, PickSlotlessItemC2SPacket::slotlessItemIndex,
             PacketCodecs.VAR_INT, PickSlotlessItemC2SPacket::button,
-            PacketCodecs.BOOL, PickSlotlessItemC2SPacket::isHoldingSfhit,
+            PacketCodecs.BOOL, PickSlotlessItemC2SPacket::shouldQuickMove,
+            PacketCodecs.BOOL, PickSlotlessItemC2SPacket::shouldMassMove,
             PickSlotlessItemC2SPacket::new
     );
 
@@ -32,13 +33,14 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
         context.queue(() -> {
             var index = payload.slotlessItemIndex();
             var button = payload.button();
+            var doubleClick = payload.shouldMassMove();
             var player = context.getPlayer();
 
-            handleCommon(index, button, payload.isHoldingSfhit(), player);
+            handleCommon(index, button, payload.shouldQuickMove(), doubleClick, player);
         });
     }
 
-    public static void handleCommon(int index, int button, boolean isHoldingSfhit, PlayerEntity player) {
+    public static void handleCommon(int index, int button, boolean isHoldingSfhit, boolean shouldMassMove, PlayerEntity player) {
         var inventory = player.getInventory();
         var slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
         var screen = player.currentScreenHandler;
@@ -48,11 +50,9 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
         var item = slotlessInventory.getItems().get(index);
         if (item == null || item.isEmpty()) return;
 
-        if (!isHoldingSfhit || button != 0) {
+        if (!isHoldingSfhit || button != 0 && screen.getCursorStack().isEmpty()) {
             screen.setCursorStack(item.pickStack(button == 1));
         } else {
-            var itemToMove = item.pickStack(false);
-
             for (var i = 0; i < screen.slots.size(); i++) {
                 var slot = screen.slots.get(i);
 
@@ -61,11 +61,19 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
                 if ((slot.getIndex() % 9) >= 7) continue;
                 if (!slot.getStack().isEmpty()) continue;
 
-                slot.setStack(itemToMove);
-                screen.onSlotClick(i, 0, SlotActionType.QUICK_MOVE, player);
+                do {
+                    var itemToMove = item.pickStack(false);
 
-                if (!slot.getStack().isEmpty())
-                    item.add(slot.getStack().copyAndEmpty());
+                    slot.setStack(itemToMove);
+                    screen.onSlotClick(i, 0, SlotActionType.QUICK_MOVE, player);
+
+                    if (!slot.getStack().isEmpty()) {
+                        item.add(slot.getStack().copyAndEmpty());
+                        break;
+                    }
+
+                } while (shouldMassMove && !item.isEmpty());
+
                 break;
             }
 

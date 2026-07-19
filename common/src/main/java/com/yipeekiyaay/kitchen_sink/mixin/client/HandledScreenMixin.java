@@ -11,6 +11,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -188,7 +189,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         cir.cancel();
 
         var cursorStack = this.handler.getCursorStack();
-        if (cursorStack != null && !cursorStack.isEmpty()) {
+        if (cursorStack != null && !cursorStack.isEmpty() && !Screen.hasShiftDown()) {
             var itemX = ((int) mouseX - (area.getX() + x)) - 8;
             var itemY = ((int) mouseY - (area.getY() + y)) - 8;
 
@@ -247,13 +248,15 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
         NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving));
 
-        if (Math.abs(d.clickX - guiMouseX) <= 3 && Math.abs(d.clickY - guiMouseY) <= 3 && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
+        if (d.isClose(guiMouseX, guiMouseY, 3) && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
             var index = d.currentArea.getInventory().getItems().size() - 1;
             var hasShiftDown = Screen.hasShiftDown();
+            var shouldMassQuickMove = d.isDoubleClick() && d.lastClick != null && d.lastClick.moving != null
+                    && ItemStack.areItemsAndComponentsEqual(d.lastClick.moving.getStack(), handler.getCursorStack());
 
             if (client != null && client.player != null) {
-                NetworkManager.sendToServer(new PickSlotlessItemC2SPacket(index, button, Screen.hasShiftDown()));
-                PickSlotlessItemC2SPacket.handleCommon(index, button, hasShiftDown, client.player);
+                NetworkManager.sendToServer(new PickSlotlessItemC2SPacket(index, button, Screen.hasShiftDown(), shouldMassQuickMove));
+                PickSlotlessItemC2SPacket.handleCommon(index, button, hasShiftDown, shouldMassQuickMove, client.player);
             }
         }
 
