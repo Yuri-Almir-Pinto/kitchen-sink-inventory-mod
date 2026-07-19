@@ -2,6 +2,7 @@ package com.yipeekiyaay.kitchen_sink.mixin;
 
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
+import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -51,33 +52,42 @@ public abstract class ScreenHandlerMixin {
     public void kitchen_sink$insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast, CallbackInfoReturnable<Boolean> cir) {
         if (stack.isEmpty()) return;
 
-        var allowedSlots = new ArrayList<Slot>(36);
+        var allowedSlots = new ArrayList<Slot>(slots.size());
         SlotlessInventory slotlessInventory = null;
         PlayerEntity player = null;
 
-        for (var i = startIndex; i < endIndex; i++) {
+        for (var i = fromLast ? endIndex - 1 : startIndex; fromLast ? i >= startIndex : i < endIndex; i += (fromLast ? -1 : 1)) {
             var slot = slots.get(i);
-            var index = slot.getIndex();
 
-            if (slot.inventory instanceof PlayerInventory playerInventory && index > 8) {
+            if ((slot.inventory instanceof PlayerInventory inventory)) {
                 if (slotlessInventory == null)
-                    slotlessInventory = ((ISlotlessInventory) playerInventory).kitchen_sink$getSlotlessInventory();
-                allowedSlots.add(slot);
-                player = playerInventory.player;
+                    slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
+                if (player == null)
+                    player = inventory.player;
             }
+
+            allowedSlots.add(slot);
         }
 
         if (player == null || player.isCreative()) return;
-
         if (allowedSlots.isEmpty() || slotlessInventory == null || !slotlessInventory.hasItem(stack)) return;
 
-        for (var slot : allowedSlots) {
-            if (!slot.isEnabled() || !slot.canInsert(stack) || slot.hasStack()) continue;
+        if (stack.isStackable()) {
+            for (var slot : allowedSlots) {
+                if (!slot.isEnabled() || !slot.canInsert(stack)) continue;
 
-            slot.setStack(stack.copyAndEmpty());
-            slot.markDirty();
+                InventoryUtils.transferFromTo(stack, slot.getStack());
+
+                if (stack.isEmpty()) {
+                    cir.setReturnValue(true);
+                    return;
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            slotlessInventory.addItem(stack.copyAndEmpty());
             cir.setReturnValue(true);
-            return;
         }
     }
 }
