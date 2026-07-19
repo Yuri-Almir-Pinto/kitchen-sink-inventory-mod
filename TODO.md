@@ -17,5 +17,4 @@
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
 - Consertar crafting jogando a quantidade errada de itens no slotless storage (no cliente)
-- Consertar item invisível que fica quando puxando um item do slotless storage para a hotbar usando os números (1-9). Isso impede de pegar um item até colocar e tirar o item tirado novamente (provavelmente porque o item vazio então some).
 - Consertar encher potes de água resultar em dois itens sendo adicionados no inventário
