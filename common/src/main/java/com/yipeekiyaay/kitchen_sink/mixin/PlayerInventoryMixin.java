@@ -40,6 +40,10 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
     @Final
     public DefaultedList<ItemStack> main;
 
+    @Shadow
+    @Final
+    public DefaultedList<ItemStack> offHand;
+
     @Override
     public SlotlessInventory kitchen_sink$getSlotlessInventory() {
         return this.kitchen_sink$slotlessInventory;
@@ -202,6 +206,9 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         if (player.isCreative()) return;
         if (slot != -1 || stack.isEmpty()) return;
         if (player.getWorld().isClient()) return;
+
+        if (!offHand.getFirst().isEmpty())
+            InventoryUtils.transferFromTo(stack, offHand.getFirst());
 
         var firstEmpty = -1;
         var i = 0;
