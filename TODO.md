@@ -14,4 +14,3 @@
 ## Bugs
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
-- Consertar o mass move de itens de um container para o inventário estar dando overflow para os slots *quando não tem item do mesmo tipo inicialmente no inventário slotless*
