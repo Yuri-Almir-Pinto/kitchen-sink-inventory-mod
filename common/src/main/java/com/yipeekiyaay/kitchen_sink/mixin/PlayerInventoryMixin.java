@@ -48,6 +48,11 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         return this.kitchen_sink$slotlessInventory;
     }
 
+    @Override
+    public ArrayList<SlotlessItem> kitchen_sink$pendingSyncItems() {
+        return this.kitchen_sink$pendingSyncItems;
+    }
+
     @Inject(method = "writeNbt", at = @At("RETURN"))
     public void kitchen_sink$writeNbt(NbtList nbtList, CallbackInfoReturnable<NbtList> cir) {
         var registries = this.player.getRegistryManager();

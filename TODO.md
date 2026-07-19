@@ -16,4 +16,3 @@
 ## Bugs
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
-- Consertar crafting jogando a quantidade errada de itens no slotless storage (no cliente)
