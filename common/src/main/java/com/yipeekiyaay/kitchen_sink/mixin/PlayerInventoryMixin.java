@@ -144,10 +144,13 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
     public void kitchen_sink$updateItems(CallbackInfo ci) {
         if (player.isCreative()) return;
 
-        for (var i = 9; i < main.size(); i++) {
-            if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
+        if (!player.getWorld().isClient()) {
+            for (var i = 9; i < main.size(); i++) {
+                if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
 
-            kitchen_sink$slotlessInventory.addItem(main.get(i).copyAndEmpty());
+                kitchen_sink$pendingSyncItems.add(new SlotlessItem(main.get(i).copy()));
+                kitchen_sink$slotlessInventory.addItem(main.get(i).copyAndEmpty());
+            }
         }
 
         for (var item : kitchen_sink$slotlessInventory.getItems()) {
