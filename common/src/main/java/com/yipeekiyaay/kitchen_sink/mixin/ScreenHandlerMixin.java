@@ -52,6 +52,8 @@ public abstract class ScreenHandlerMixin {
     public void kitchen_sink$insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast, CallbackInfoReturnable<Boolean> cir) {
         if (stack.isEmpty()) return;
 
+        var initialCount = stack.getCount();
+
         var allowedSlots = new ArrayList<Slot>(slots.size());
         var hotbarSlots = new ArrayList<Slot>(9);
         SlotlessInventory slotlessInventory = null;
@@ -86,7 +88,7 @@ public abstract class ScreenHandlerMixin {
             }
         }
 
-        if (!hotbarSlots.isEmpty()) {
+        if (!hotbarSlots.isEmpty() && !slotlessInventory.hasItem(stack)) {
             for (var slot : hotbarSlots) {
                 if (slot.getStack().isEmpty()) {
                     slot.insertStack(stack);
@@ -94,14 +96,13 @@ public abstract class ScreenHandlerMixin {
                     return;
                 }
             }
-        }
-
-        if (!stack.isEmpty()) {
+        } else if (!stack.isEmpty()) {
             if (!player.getWorld().isClient() && slotlessInventory.isUnlocked()) {
                 slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copy()));
                 slotlessInventory.addItem(stack.copyAndEmpty());
             }
-            cir.setReturnValue(true);
+
+            cir.setReturnValue(initialCount != stack.getCount());
         }
     }
 }
