@@ -12,13 +12,13 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
-public record SwapSlotlessItemC2SPacket(int itemIndex, int hotbarIndex, int mouseX, int mouseY) implements CustomPayload {
+public record SwapSlotlessItemC2SPacket(int itemIndex, int inventoryIndex, int mouseX, int mouseY) implements CustomPayload {
     public static final CustomPayload.Id<SwapSlotlessItemC2SPacket> TYPE =
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "swap_slotless_item"));
 
     public static final PacketCodec<RegistryByteBuf, SwapSlotlessItemC2SPacket> CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT, SwapSlotlessItemC2SPacket::itemIndex,
-            PacketCodecs.VAR_INT, SwapSlotlessItemC2SPacket::hotbarIndex,
+            PacketCodecs.VAR_INT, SwapSlotlessItemC2SPacket::inventoryIndex,
             PacketCodecs.VAR_INT, SwapSlotlessItemC2SPacket::mouseX,
             PacketCodecs.VAR_INT, SwapSlotlessItemC2SPacket::mouseY,
             SwapSlotlessItemC2SPacket::new
@@ -32,7 +32,7 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int hotbarIndex, int mous
     public static void handle(SwapSlotlessItemC2SPacket payload, NetworkManager.PacketContext context) {
         context.queue(() -> {
             var itemIndex = payload.itemIndex();
-            var hotbarIndex = payload.hotbarIndex();
+            var hotbarIndex = payload.inventoryIndex();
             var mouseX = payload.mouseX();
             var mouseY = payload.mouseY();
             var player = context.getPlayer();
@@ -41,17 +41,17 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int hotbarIndex, int mous
         });
     }
 
-    public static void handleCommon(int itemIndex, int hotbarIndex, int mouseX, int mouseY, PlayerEntity player) {
+    public static void handleCommon(int itemIndex, int inventoryIndex, int mouseX, int mouseY, PlayerEntity player) {
         var screen = player.currentScreenHandler;
         var slotlessInventory = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory();
         var size = slotlessInventory.getItems().size();
 
-        if (hotbarIndex > 8 || hotbarIndex < 0 || itemIndex >= size) return;
+        if ((inventoryIndex > 8 && inventoryIndex != 40) || inventoryIndex < 0 || itemIndex >= size) return;
         if (!screen.getCursorStack().isEmpty()) return;
 
         var inventory = player.getInventory();
 
-        var hotbarStack = inventory.getStack(hotbarIndex);
+        var hotbarStack = inventory.getStack(inventoryIndex);
         var slotlessItem = itemIndex > -1 ? slotlessInventory.getItems().get(itemIndex) : new SlotlessItem(ItemStack.EMPTY);
 
         if (!hotbarStack.isEmpty()) {
@@ -60,7 +60,7 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int hotbarIndex, int mous
 
         if (!slotlessItem.isEmpty()) {
             var stack = slotlessItem.pickStack(false);
-            inventory.insertStack(hotbarIndex, stack);
+            inventory.insertStack(inventoryIndex, stack);
 
             if (slotlessItem.isEmpty())
                 slotlessInventory.clearEmpty();

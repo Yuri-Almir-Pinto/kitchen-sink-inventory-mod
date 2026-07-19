@@ -130,6 +130,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (client == null || client.player == null || client.player.isCreative()) return;
         var client = ClientUtils.getClient();
         var pressedDrop = client.options.dropKey.matchesKey(keyCode, scanCode);
+        var pressedOffhand = client.options.swapHandsKey.matchesKey(keyCode, scanCode);
         var pressedHotbarKey = -1;
 
         for (var i = 0; i < 9; i++) {
@@ -140,7 +141,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             }
         }
 
-        if (!pressedDrop && pressedHotbarKey == -1) return;
+        if (!pressedDrop && pressedHotbarKey == -1 && !pressedOffhand) return;
 
         int mouseX = ClientUtils.getScaledMouseX() - x;
         int mouseY = ClientUtils.getScaledMouseY() - y;
@@ -166,8 +167,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             var itemY = mouseY - area.getY() - 8;
 
             if (client.player != null) {
-                NetworkManager.sendToServer(new SwapSlotlessItemC2SPacket(itemIndex, pressedHotbarKey, itemX, itemY));
-                SwapSlotlessItemC2SPacket.handleCommon(itemIndex, pressedHotbarKey, itemX, itemY, client.player);
+                NetworkManager.sendToServer(new SwapSlotlessItemC2SPacket(itemIndex, pressedOffhand ? 40 : pressedHotbarKey, itemX, itemY));
+                SwapSlotlessItemC2SPacket.handleCommon(itemIndex, pressedOffhand ? 40 : pressedHotbarKey, itemX, itemY, client.player);
             }
         }
 
