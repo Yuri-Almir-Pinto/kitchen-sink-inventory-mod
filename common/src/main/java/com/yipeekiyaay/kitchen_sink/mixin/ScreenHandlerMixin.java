@@ -52,6 +52,7 @@ public abstract class ScreenHandlerMixin {
         if (stack.isEmpty()) return;
 
         var allowedSlots = new ArrayList<Slot>(slots.size());
+        var hotbarSlots = new ArrayList<Slot>(9);
         SlotlessInventory slotlessInventory = null;
         PlayerEntity player = null;
 
@@ -63,6 +64,8 @@ public abstract class ScreenHandlerMixin {
                     slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
                 if (player == null)
                     player = inventory.player;
+                if (slot.getIndex() < 9)
+                    hotbarSlots.add(slot);
             }
 
             allowedSlots.add(slot);
@@ -79,6 +82,16 @@ public abstract class ScreenHandlerMixin {
             if (stack.isEmpty()) {
                 cir.setReturnValue(true);
                 return;
+            }
+        }
+
+        if (!hotbarSlots.isEmpty()) {
+            for (var slot : hotbarSlots) {
+                if (slot.getStack().isEmpty()) {
+                    slot.insertStack(stack);
+                    cir.setReturnValue(true);
+                    return;
+                }
             }
         }
 

@@ -96,7 +96,7 @@ public class SlotlessInventory {
         SlotlessItem found = null;
 
         for (var storedItem : this.items) {
-            if (storedItem.isSameStackAs(item)) {
+            if (storedItem.isSameStackAs(item) && !item.isEmpty()) {
                 found = storedItem;
                 break;
             }

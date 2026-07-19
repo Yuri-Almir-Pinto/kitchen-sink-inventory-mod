@@ -88,7 +88,7 @@ public class SlotlessItem {
     }
 
     public boolean isSameStackAs(SlotlessItem item) {
-        return !this.isEmpty() && !item.isEmpty() && ItemStack.areItemsAndComponentsEqual(this.stack, item.stack);
+        return ItemStack.areItemsAndComponentsEqual(this.stack, item.stack);
     }
 
     public ItemStack pickStack(boolean half) {
