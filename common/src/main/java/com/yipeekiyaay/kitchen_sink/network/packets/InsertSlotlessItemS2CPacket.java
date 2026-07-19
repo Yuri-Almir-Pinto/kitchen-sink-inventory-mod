@@ -15,7 +15,7 @@ import java.util.List;
 
 public record InsertSlotlessItemS2CPacket(List<SlotlessItem> itemsToInsert) implements CustomPayload {
     public static final CustomPayload.Id<InsertSlotlessItemS2CPacket> TYPE =
-            new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "pick_slotless_item"));
+            new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "insert_slotless_item"));
 
     public static final PacketCodec<RegistryByteBuf, InsertSlotlessItemS2CPacket> CODEC = PacketCodec.tuple(
             PacketCodecs.collection(ArrayList::new, SlotlessItem.CODEC), InsertSlotlessItemS2CPacket::itemsToInsert,
