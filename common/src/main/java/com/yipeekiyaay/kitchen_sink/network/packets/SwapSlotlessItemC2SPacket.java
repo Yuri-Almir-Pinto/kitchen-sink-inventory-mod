@@ -61,6 +61,9 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int hotbarIndex, int mous
         if (!slotlessItem.isEmpty()) {
             var stack = slotlessItem.pickStack(false);
             inventory.insertStack(hotbarIndex, stack);
+
+            if (slotlessItem.isEmpty())
+                slotlessInventory.clearEmpty();
         }
     }
 }
