@@ -14,4 +14,3 @@
 ## Bugs
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
-- Consertar comando de clear e gamerule de keep inventory não funcionando

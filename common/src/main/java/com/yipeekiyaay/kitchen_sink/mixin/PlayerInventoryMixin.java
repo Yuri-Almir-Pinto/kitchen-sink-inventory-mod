@@ -1,6 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.mixin;
 
 import com.yipeekiyaay.kitchen_sink.network.packets.InsertSlotlessItemS2CPacket;
+import com.yipeekiyaay.kitchen_sink.network.packets.SyncSlotlessInventoryS2CPacket;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
@@ -8,6 +9,7 @@ import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -23,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 @Mixin(PlayerInventory.class)
 public class PlayerInventoryMixin implements ISlotlessInventory {
@@ -75,7 +78,44 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             nbtList.remove(nbtIndex);
     }
 
-    @Inject(method = "dropAll", at = @At("TAIL"))
+    @Inject(method = "remove", at = @At("RETURN"), cancellable = true)
+    public void kitchen_sink$remove(Predicate<ItemStack> shouldRemove, int maxCount, Inventory craftingInventory, CallbackInfoReturnable<Integer> cir) {
+        int removed = cir.getReturnValue();
+
+        long remaining = maxCount < 0 ? Long.MAX_VALUE : (maxCount - removed);
+
+        if (remaining <= 0) return;
+
+        long slotlessRemovedTotal = 0;
+
+        for (var item : kitchen_sink$slotlessInventory.getItems()) {
+            if (item.isEmpty()) continue;
+
+            if (!shouldRemove.test(item.getStack())) continue;
+
+            long drained = item.deplete(remaining);
+
+            if (maxCount != -1)
+                remaining -= drained;
+
+            slotlessRemovedTotal += drained;
+
+            if (remaining <= 0) break;
+        }
+
+        if (slotlessRemovedTotal > 0) {
+            kitchen_sink$slotlessInventory.clearEmpty();
+
+            int finalTotal = (int) Math.min(Integer.MAX_VALUE, removed + slotlessRemovedTotal);
+            cir.setReturnValue(finalTotal);
+        }
+
+        if (slotlessRemovedTotal > 0 && !player.getWorld().isClient()) {
+            NetworkManager.sendToPlayer((ServerPlayerEntity) player, new SyncSlotlessInventoryS2CPacket(kitchen_sink$slotlessInventory.getItems()));
+        }
+    }
+
+    @Inject(method = "dropAll", at = @At("RETURN"))
     public void kitchen_sink$dropAllSlotless(CallbackInfo ci) {
         for (var item : kitchen_sink$slotlessInventory.getItems()) {
             while (!item.isEmpty()) {
@@ -88,16 +128,14 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         kitchen_sink$slotlessInventory.clearEmpty();
     }
 
-    @Inject(method = "clone", at = @At("TAIL"))
+    @Inject(method = "clone", at = @At("RETURN"))
     public void kitchen_sink$cloneSlotless(PlayerInventory other, CallbackInfo ci) {
         var otherSlotlessInventory = ((ISlotlessInventory) other).kitchen_sink$getSlotlessInventory();
 
-        otherSlotlessInventory.clear();
-
-        otherSlotlessInventory.addAll(kitchen_sink$slotlessInventory.getItems());
+        kitchen_sink$slotlessInventory.addAll(otherSlotlessInventory.getItems());
     }
 
-    @Inject(method = "clear", at = @At("TAIL"))
+    @Inject(method = "clear", at = @At("RETURN"))
     public void kitchen_sink$clearSlotless(CallbackInfo ci) {
         kitchen_sink$slotlessInventory.clear();
     }

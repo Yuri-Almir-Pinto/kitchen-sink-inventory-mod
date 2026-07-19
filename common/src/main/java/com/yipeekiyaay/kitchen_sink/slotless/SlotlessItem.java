@@ -125,6 +125,14 @@ public class SlotlessItem {
         stack.setCount(stack.getCount() + toTransfer);
     }
 
+    public long deplete(long amountToTake) {
+        if (this.isEmpty() || amountToTake <= 0) return 0;
+
+        long taken = Math.min(this.count, amountToTake);
+        this.setCount(this.count - taken);
+        return taken;
+    }
+
     public void writeNbt(DynamicRegistryManager registries, NbtCompound nbt) {
         if (this.isEmpty()) return;
 
