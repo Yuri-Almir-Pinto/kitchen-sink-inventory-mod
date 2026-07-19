@@ -121,6 +121,8 @@ public class SlotlessArea {
         for (int i = items.size() - 1; i >= 0; i--) {
             var item = items.get(i);
 
+            if (item.isEmpty()) continue;
+
             if (item.getX() <= x && item.getX() + 16 >= x
                     && item.getY() <= y && item.getY() + 16 >= y) {
                 return i;
