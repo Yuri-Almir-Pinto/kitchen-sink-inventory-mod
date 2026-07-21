@@ -27,6 +27,5 @@
 ## Bugs
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
-- Itens indo pra offhand não fazem barulho. Provavelmente porque não foi retornado true lá no método.
 - Shift click de um container não ta jogando itens pra off-hand quando tem. Verificar se esse é o comportamento vanilla, e se for, consertar (Notar que no container, o slot da off-hand não aparece, então provavelmente não é o comportamento vanilla). Se não, foda-se kk
 - O access violation não era causado pelo hotswap. Fazer uma cópia do inventário slotless uma vez a cada mutação e renderizar apenas essa snapshop para evitar erros de concorrência.

@@ -207,8 +207,14 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         if (slot != -1 || stack.isEmpty()) return;
         if (player.getWorld().isClient()) return;
 
-        if (!offHand.getFirst().isEmpty())
+        if (!offHand.getFirst().isEmpty()) {
             InventoryUtils.transferFromTo(stack, offHand.getFirst());
+
+            if (stack.isEmpty()) {
+                cir.setReturnValue(true);
+                return;
+            }
+        }
 
         var firstEmpty = -1;
         var i = 0;
