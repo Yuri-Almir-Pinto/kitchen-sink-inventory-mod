@@ -5,6 +5,7 @@ import com.yipeekiyaay.kitchen_sink.render.SlotlessGuiRenderer;
 import com.yipeekiyaay.kitchen_sink.slotless.*;
 import com.yipeekiyaay.kitchen_sink.utils.ClientUtils;
 import com.yipeekiyaay.kitchen_sink.utils.DummySlot;
+import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
 import com.yipeekiyaay.kitchen_sink.utils.ScreenHandlingData;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.DrawContext;
@@ -43,6 +44,9 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Shadow protected int y;
 
+    @Unique
+    protected HandledScreenQuery kitchen_sink$handlerQuery;
+
     @Shadow protected @Nullable Slot focusedSlot;
 
     protected HandledScreenMixin(Text title) {
@@ -51,7 +55,9 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "init", at = @At("RETURN"))
     protected void kitchen_sink$initSlotlessAreas(CallbackInfo ci) {
-        kitchen_sink$manager.from(this.handler);
+        kitchen_sink$handlerQuery = new HandledScreenQuery(x, y, handler.slots, client != null ? client.player : null);
+        kitchen_sink$manager.from(this.handler, kitchen_sink$handlerQuery);
+
         kitchen_sink$data.handler = this.handler;
         kitchen_sink$data.lastClick = new ScreenHandlingData<>();
 
@@ -62,12 +68,20 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
             inventoryArea.ifPresent(slotlessArea -> slotlessArea.setSlotlessInventory(slotlessInventory));
         }
+
+        for (var area : kitchen_sink$manager.getAreas()) {
+            for (var widget : area.getWidgets()) {
+                this.addDrawableChild(widget);
+            }
+        }
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
+    @Inject(method = "renderBackground", at = @At("TAIL"))
     public void kitchen_sink$renderKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (client == null || client.player == null || client.player.isCreative()) return;
         if (!kitchen_sink$manager.hasArea()) return;
+
+        kitchen_sink$handlerQuery.update(x, y, handler.slots, client.player);
 
         for (SlotlessArea area : kitchen_sink$manager.getAreas()) {
             area.updateRender();
@@ -115,6 +129,12 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
         if (kitchen_sink$manager.isContained(slot))
             ci.cancel();
+    }
+
+    @Inject(method = "isPointOverSlot", at = @At("HEAD"), cancellable = true)
+    public void kitchen_sink$isPointOverSlot(Slot slot, double pointX, double pointY, CallbackInfoReturnable<Boolean> cir) {
+        if (kitchen_sink$manager.isContained((int) pointX - x, (int) pointY - y))
+            cir.setReturnValue(false);
     }
 
     @Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("HEAD"), cancellable = true)
@@ -178,6 +198,10 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     public void kitchen_sink$mouseClickedMixing(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (client == null || client.player == null || client.player.isCreative()) return;
         if (button > 1) return;
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            cir.setReturnValue(true);
+            return;
+        }
 
         var d = kitchen_sink$data;
         int guiMouseX = (int) mouseX - this.x;

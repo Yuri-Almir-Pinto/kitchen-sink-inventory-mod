@@ -19,13 +19,10 @@
 
 - Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
 - Implementar GUI no inventário para configuração e ações especiais:
-  * Botão superior esquerdo que abre outros botões na lateral esquerda e em cima (Nenhum outro botão aparece sem esse ter sido pressionado)
-  * Botão para resetar itens fora da grid para o centro da grid (caso clique com o shift apertado, restaura *todos* os itens para o centro da grid)
   * Botão a esquerda da slotless area que permite dar resize na slotless area, escondendo ou mostrando slots a direita
 - Implementar slotless storage para containers (Implementar como blocos próprios, para evitar problemas...)
 
 ## Bugs
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
-- Shift click de um container não ta jogando itens pra off-hand quando tem. Verificar se esse é o comportamento vanilla, e se for, consertar (Notar que no container, o slot da off-hand não aparece, então provavelmente não é o comportamento vanilla). Se não, foda-se kk
 - O access violation não era causado pelo hotswap. Fazer uma cópia do inventário slotless uma vez a cada mutação e renderizar apenas essa snapshop para evitar erros de concorrência.

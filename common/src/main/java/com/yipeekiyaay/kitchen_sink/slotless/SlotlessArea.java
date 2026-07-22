@@ -1,26 +1,57 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
+import com.yipeekiyaay.kitchen_sink.network.packets.ResetPositionsC2SPacket;
+import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
+import dev.architectury.networking.NetworkManager;
+import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class SlotlessArea {
     private static final Identifier KITCHEN_SINK_27_TEXTURE =
             Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/kitchen_sink_27_gui.png");
+    private static final Identifier MAGNET_QUICK_BUTTON_ACTIVE =
+            Identifier.of(KitchenSinkMod.MOD_ID, "widget/magnet_quick_button_active");
+    private static final Identifier MAGNET_QUICK_BUTTON_INACTIVE =
+            Identifier.of(KitchenSinkMod.MOD_ID, "widget/magnet_quick_button_inactive");
+
+    private static final ButtonTextures MAGNET_QUICK_BUTTON = new ButtonTextures(MAGNET_QUICK_BUTTON_INACTIVE, MAGNET_QUICK_BUTTON_ACTIVE);
 
     private int width;
     private int height;
     private int x;
     private int y;
-    private List<Slot> slots;
     private Identifier renderTexture;
     private String areaType;
+    private HandledScreenQuery handlerQuery;
     private SlotlessInventory inventory = new SlotlessInventory();
+    private final ArrayList<TexturedButtonWidget> buttonWidgets = new ArrayList<>();
+    private final TexturedButtonWidget optionsWidget;
+
+    public SlotlessArea() {
+        optionsWidget = new TexturedButtonWidget(
+                0, 0, 10, 9, MAGNET_QUICK_BUTTON, (button) -> {
+                    if (handlerQuery.getPlayer() != null) {
+                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), 0, 0, height, width));
+                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), 0, 0, height, width, handlerQuery.getPlayer());
+                    }
+        });
+
+        buttonWidgets.add(optionsWidget);
+    }
+
+    public List<TexturedButtonWidget> getWidgets() {
+        return buttonWidgets;
+    }
 
     public SlotlessInventory getInventory() {
         return this.inventory;
@@ -83,8 +114,8 @@ public class SlotlessArea {
         return this.setPos(slot.x - 1, slot.y - 1);
     }
 
-    public SlotlessArea setSlots(List<Slot> slots) {
-        this.slots = slots;
+    public SlotlessArea setHandlerQuery(HandledScreenQuery handlerQuery) {
+        this.handlerQuery = handlerQuery;
 
         return this;
     }
@@ -96,20 +127,37 @@ public class SlotlessArea {
 
 
     public void updateRender() {
-        if (slots == null) {
+        if (handlerQuery == null) {
             shouldRender = true;
+            updateWidgets();
             return;
         }
 
-        for (Slot slot : slots) {
+        for (Slot slot : handlerQuery.getSlots()) {
             if (slot.getIndex() == 9 && slot.inventory instanceof PlayerInventory) {
                 this.setPos(slot);
                 shouldRender = true;
+                updateWidgets();
                 return;
             }
         }
 
         shouldRender = false;
+        updateWidgets();
+    }
+
+    private void updateWidgets() {
+        var x = this.x;
+        var y = this.y;
+
+        if (handlerQuery != null) {
+            x += handlerQuery.getScreenX();
+            y += handlerQuery.getScreenY();
+        }
+
+        optionsWidget.visible = shouldRender;
+        optionsWidget.setX(x - 9);
+        optionsWidget.setY(y + 2);
     }
 
     public int getHoveredItemIndex(double mouseX, double mouseY) {

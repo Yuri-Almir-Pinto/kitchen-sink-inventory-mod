@@ -1,6 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -19,18 +19,18 @@ public class SlotlessAreaManager {
         this.slotlessAreaInfos.addAll(slotlessAreaInfos);
     }
 
-    public void from(ScreenHandler handler) {
+    public void from(ScreenHandler handler, HandledScreenQuery handlerQuery) {
         var renderList = new ArrayList<SlotlessArea>();
 
         for (int i = 0; i < handler.slots.size(); i++) {
             var slot = handler.getSlot(i);
-            if ((slot.inventory instanceof PlayerInventory || handler instanceof CreativeInventoryScreen.CreativeScreenHandler) && slot.getIndex() == 9) {
+            if (slot.inventory instanceof PlayerInventory && slot.getIndex() == 9) {
                 renderList.add(
                         new SlotlessArea()
                                 .setPos(slot)
                                 .setSize27()
                                 .setInventoryType()
-                                .setSlots(handler.slots)
+                                .setHandlerQuery(handlerQuery)
                 );
             }
         }
