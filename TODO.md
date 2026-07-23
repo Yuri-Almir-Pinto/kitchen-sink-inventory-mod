@@ -26,3 +26,4 @@
 
 - Consertar barrinha de durabilidade clippando para dentro da slotless area =w=' (Baixa prioridade)
 - O access violation não era causado pelo hotswap. Fazer uma cópia do inventário slotless uma vez a cada mutação e renderizar apenas essa snapshop para evitar erros de concorrência.
+- Botões do slotless GUI estão aparecendo no modo criativo, o que não deve acontecer.

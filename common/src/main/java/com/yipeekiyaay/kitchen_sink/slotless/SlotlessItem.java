@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.random.Random;
 
 public class SlotlessItem {
@@ -137,7 +137,7 @@ public class SlotlessItem {
         return new SlotlessItem(getStack().copy(), getX(), getY(), getCount());
     }
 
-    public void writeNbt(DynamicRegistryManager registries, NbtCompound nbt) {
+    public void writeNbt(RegistryWrapper.WrapperLookup registries, NbtCompound nbt) {
         if (this.isEmpty()) return;
 
         nbt.putDouble("X", this.x);
@@ -148,7 +148,7 @@ public class SlotlessItem {
         nbt.put("Item", this.stack.encode(registries, itemStackNbt));
     }
 
-    public static SlotlessItem fromNbt(DynamicRegistryManager registries, NbtCompound nbt) {
+    public static SlotlessItem fromNbt(RegistryWrapper.WrapperLookup registries, NbtCompound nbt) {
         double x = nbt.getDouble("X");
         double y = nbt.getDouble("Y");
         long count = nbt.getLong("Count");

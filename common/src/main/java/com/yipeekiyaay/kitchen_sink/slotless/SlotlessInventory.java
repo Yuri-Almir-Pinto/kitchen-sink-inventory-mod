@@ -3,7 +3,7 @@ package com.yipeekiyaay.kitchen_sink.slotless;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -135,7 +135,7 @@ public class SlotlessInventory {
         slotlessSync.unlock();
     }
 
-    public void writeNbt(DynamicRegistryManager registries, NbtCompound nbtInventoryCompound) {
+    public void writeNbt(RegistryWrapper.WrapperLookup registries, NbtCompound nbtInventoryCompound) {
         var nbtItemList = new NbtList();
 
         for (SlotlessItem item : this.items) {
@@ -149,7 +149,7 @@ public class SlotlessInventory {
         nbtInventoryCompound.put("slotlessInventoryItems", nbtItemList);
     }
 
-    public void readNbt(DynamicRegistryManager registries, NbtCompound nbtInventoryCompound) {
+    public void readNbt(RegistryWrapper.WrapperLookup registries, NbtCompound nbtInventoryCompound) {
         this.clear();
 
         var nbtItemList = nbtInventoryCompound.getList("slotlessInventoryItems", 10);
