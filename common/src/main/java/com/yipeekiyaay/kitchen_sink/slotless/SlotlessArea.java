@@ -3,6 +3,7 @@ package com.yipeekiyaay.kitchen_sink.slotless;
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.network.packets.ResetPositionsC2SPacket;
 import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
+import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SlotlessArea {
     private static final Identifier KITCHEN_SINK_27_TEXTURE =
@@ -31,7 +31,7 @@ public class SlotlessArea {
     private int x;
     private int y;
     private Identifier renderTexture;
-    private String areaType;
+    private InventoryUtils.InventoryType areaType;
     private HandledScreenQuery handlerQuery;
     private SlotlessInventory inventory = new SlotlessInventory();
     private final ArrayList<TexturedButtonWidget> buttonWidgets = new ArrayList<>();
@@ -97,7 +97,13 @@ public class SlotlessArea {
     }
 
     public SlotlessArea setInventoryType() {
-        this.areaType = "inventory";
+        this.areaType = InventoryUtils.InventoryType.inventory;
+
+        return this;
+    }
+
+    public SlotlessArea setContainerType() {
+        this.areaType = InventoryUtils.InventoryType.container;
 
         return this;
     }
@@ -127,7 +133,7 @@ public class SlotlessArea {
 
 
     public void updateRender() {
-        if (handlerQuery == null) {
+        if (handlerQuery == null || areaType == InventoryUtils.InventoryType.container) {
             shouldRender = true;
             updateWidgets();
             return;
@@ -188,7 +194,7 @@ public class SlotlessArea {
         return getItems().get(index);
     }
 
-    public boolean isInventoryArea() {
-        return Objects.equals(this.areaType, "inventory");
+    public InventoryUtils.InventoryType getInventoryType() {
+        return areaType;
     }
 }

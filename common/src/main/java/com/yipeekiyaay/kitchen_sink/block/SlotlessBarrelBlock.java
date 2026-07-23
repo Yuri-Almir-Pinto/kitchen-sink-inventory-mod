@@ -1,7 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.block;
 
 import com.mojang.serialization.MapCodec;
-import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBarrelBlockEntity;
+import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBlockEntity;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.BlockState;
@@ -33,7 +33,7 @@ public class SlotlessBarrelBlock extends BlockWithEntity {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof SlotlessBarrelBlockEntity barrelBE && player instanceof ServerPlayerEntity serverPlayer) {
+            if (blockEntity instanceof SlotlessBlockEntity barrelBE && player instanceof ServerPlayerEntity serverPlayer) {
                 MenuRegistry.openExtendedMenu(serverPlayer, barrelBE);
             }
         }
@@ -43,7 +43,7 @@ public class SlotlessBarrelBlock extends BlockWithEntity {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new SlotlessBarrelBlockEntity(pos, state);
+        return new SlotlessBlockEntity(pos, state);
     }
 
     @Override

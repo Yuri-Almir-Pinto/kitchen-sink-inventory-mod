@@ -1,8 +1,8 @@
 package com.yipeekiyaay.kitchen_sink.registry;
 
 import com.yipeekiyaay.kitchen_sink.block.SlotlessBarrelBlock;
-import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBarrelBlockEntity;
-import com.yipeekiyaay.kitchen_sink.screen.SlotlessBarrelScreenHandler;
+import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBlockEntity;
+import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -35,16 +35,16 @@ public class ModRegistries {
                     new SlotlessBarrelBlock(AbstractBlock.Settings.copy(Blocks.BARREL))
             );
 
-    public static final RegistrySupplier<BlockEntityType<SlotlessBarrelBlockEntity>> SLOTLESS_BARREL_BE =
+    public static final RegistrySupplier<BlockEntityType<SlotlessBlockEntity>> SLOTLESS_BARREL_BE =
             BLOCK_ENTITY_TYPES.register("slotless_barrel", () ->
-                    BlockEntityType.Builder.create(SlotlessBarrelBlockEntity::new, SLOTLESS_BARREL.get()).build(null)
+                    BlockEntityType.Builder.create(SlotlessBlockEntity::new, SLOTLESS_BARREL.get()).build(null)
             );
 
-    public static final RegistrySupplier<ScreenHandlerType<SlotlessBarrelScreenHandler>> SLOTLESS_BARREL_SCREEN_HANDLER =
+    public static final RegistrySupplier<ScreenHandlerType<SlotlessScreenHandler>> SLOTLESS_BARREL_SCREEN_HANDLER =
             SCREEN_HANDLER_TYPES.register("slotless_barrel", () ->
                     MenuRegistry.ofExtended((syncId, inventory, buf) -> {
                         var pos = buf.readBlockPos();
-                        return new SlotlessBarrelScreenHandler(syncId, inventory, pos);
+                        return new SlotlessScreenHandler(syncId, inventory, pos);
                     })
             );
 

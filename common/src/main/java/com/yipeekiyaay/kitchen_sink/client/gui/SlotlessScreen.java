@@ -1,16 +1,16 @@
 package com.yipeekiyaay.kitchen_sink.client.gui;
 
-import com.yipeekiyaay.kitchen_sink.screen.SlotlessBarrelScreenHandler;
+import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class SlotlessBarrelScreen extends HandledScreen<SlotlessBarrelScreenHandler> {
+public class SlotlessScreen extends HandledScreen<SlotlessScreenHandler> {
     private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
 
-    public SlotlessBarrelScreen(SlotlessBarrelScreenHandler handler, PlayerInventory inventory, Text title) {
+    public SlotlessScreen(SlotlessScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.backgroundWidth = 176;
         this.backgroundHeight = 166;
@@ -21,5 +21,12 @@ public class SlotlessBarrelScreen extends HandledScreen<SlotlessBarrelScreenHand
         int x = (this.width - this.backgroundWidth) / 2;
         int y = (this.height - this.backgroundHeight) / 2;
         context.drawTexture(TEXTURE, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+
+        this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 }

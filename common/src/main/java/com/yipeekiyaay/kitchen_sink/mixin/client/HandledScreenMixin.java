@@ -3,10 +3,7 @@ package com.yipeekiyaay.kitchen_sink.mixin.client;
 import com.yipeekiyaay.kitchen_sink.network.packets.*;
 import com.yipeekiyaay.kitchen_sink.render.SlotlessGuiRenderer;
 import com.yipeekiyaay.kitchen_sink.slotless.*;
-import com.yipeekiyaay.kitchen_sink.utils.ClientUtils;
-import com.yipeekiyaay.kitchen_sink.utils.DummySlot;
-import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
-import com.yipeekiyaay.kitchen_sink.utils.ScreenHandlingData;
+import com.yipeekiyaay.kitchen_sink.utils.*;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,17 +58,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         kitchen_sink$data.handler = this.handler;
         kitchen_sink$data.lastClick = new ScreenHandlingData<>();
 
-        if (this.client != null && this.client.player != null) {
-            var slotlessInventory = ((ISlotlessInventory) this.client.player.getInventory()).kitchen_sink$getSlotlessInventory();
-
-            var inventoryArea = this.kitchen_sink$manager.getInventoryArea();
-
-            inventoryArea.ifPresent(slotlessArea -> slotlessArea.setSlotlessInventory(slotlessInventory));
-        }
-
         for (var area : kitchen_sink$manager.getAreas()) {
             for (var widget : area.getWidgets()) {
                 this.addDrawableChild(widget);
+            }
+
+            if (this.client != null && this.client.player != null) {
+                var slotlessInventory = InventoryUtils.getIfSlotless(client.player, area.getInventoryType());
+                area.setSlotlessInventory(slotlessInventory);
             }
         }
     }
@@ -219,8 +213,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             var itemY = ((int) mouseY - (area.getY() + y)) - 8;
 
             if (client != null && client.player != null) {
-                NetworkManager.sendToServer(new PutSlotlessItemC2SPacket(itemX, itemY, button));
-                PutSlotlessItemC2SPacket.handleCommon(itemX, itemY, button, client.player);
+                NetworkManager.sendToServer(new PutSlotlessItemC2SPacket(itemX, itemY, button, area.getInventoryType()));
+                PutSlotlessItemC2SPacket.handleCommon(itemX, itemY, button, area.getInventoryType(), client.player);
             }
 
             return;

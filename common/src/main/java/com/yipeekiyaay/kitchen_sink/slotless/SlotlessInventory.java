@@ -13,6 +13,19 @@ public class SlotlessInventory {
     public final SlotlessSync slotlessSync = new SlotlessSync();
     private final List<SlotlessItem> items = new ArrayList<>();
     private boolean isLocked = false;
+    private Runnable markDirtyRun = null;
+
+    public SlotlessInventory setDirtyRunnable(Runnable function) {
+        markDirtyRun = function;
+
+        return this;
+    }
+
+    public void markDirty() {
+        if (markDirtyRun == null) return;
+
+        markDirtyRun.run();
+    }
 
     public List<SlotlessItem> getItems() {
         return this.items;
@@ -20,12 +33,15 @@ public class SlotlessInventory {
 
     public void addAll(List<SlotlessItem> items) {
         if (isLocked) return;
+        if (items.isEmpty()) return;
 
         for (var item : items) {
             if (item.isEmpty()) continue;
 
             this.addItem(item);
         }
+
+        markDirty();
     }
 
     public void addItem(SlotlessItem newItem) {
@@ -42,6 +58,8 @@ public class SlotlessInventory {
         if (!newItem.isEmpty()) {
             this.items.add(newItem);
         }
+
+        markDirty();
     }
 
     public void addItem(ItemStack stack, int x, int y) {
@@ -83,12 +101,18 @@ public class SlotlessInventory {
 
     public void clear() {
         this.items.clear();
+        markDirty();
     }
 
     public void clearEmpty() {
         if (isLocked) return;
 
+        var before = items.size();
+
         this.items.removeIf(item -> item == null || item.isEmpty());
+
+        if (before != items.size())
+            markDirty();
     }
 
     public void pushToTop(SlotlessItem item) {
@@ -99,6 +123,7 @@ public class SlotlessInventory {
 
         if (this.items.remove(item)) {
             this.items.add(item);
+            markDirty();
         }
     }
 

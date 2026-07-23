@@ -1,5 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
+import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
@@ -8,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class SlotlessAreaManager {
     public final ArrayList<SlotlessArea> slotlessAreaInfos = new ArrayList<>();
@@ -32,7 +32,18 @@ public class SlotlessAreaManager {
                                 .setInventoryType()
                                 .setHandlerQuery(handlerQuery)
                 );
+                break;
             }
+        }
+
+        if (handler instanceof SlotlessScreenHandler) {
+            renderList.add(
+                    new SlotlessArea()
+                            .setPos(7, 17)
+                            .setSize27()
+                            .setContainerType()
+                            .setHandlerQuery(handlerQuery)
+            );
         }
 
         this.from(renderList);
@@ -53,15 +64,6 @@ public class SlotlessAreaManager {
         }
 
         return null;
-    }
-
-    public Optional<SlotlessArea> getInventoryArea() {
-        for (var area : slotlessAreaInfos) {
-            if (area.isInventoryArea())
-                return Optional.of(area);
-        }
-
-        return Optional.empty();
     }
 
     public boolean isContained(int x, int y, int height, int width) {

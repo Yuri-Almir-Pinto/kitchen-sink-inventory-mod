@@ -1,8 +1,10 @@
 package com.yipeekiyaay.kitchen_sink.block.entity;
 
+import com.yipeekiyaay.kitchen_sink.network.packets.SyncSlotlessContainerS2CPacket;
 import com.yipeekiyaay.kitchen_sink.registry.ModRegistries;
-import com.yipeekiyaay.kitchen_sink.screen.SlotlessBarrelScreenHandler;
+import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
+import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -12,17 +14,19 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-public class SlotlessBarrelBlockEntity extends BlockEntity implements ExtendedMenuProvider {
-    private final SlotlessInventory slotlessInventory = new SlotlessInventory();
+public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProvider {
+    private final SlotlessInventory slotlessInventory = new SlotlessInventory()
+            .setDirtyRunnable(this::markDirty);
 
-    public SlotlessBarrelBlockEntity(BlockPos pos, BlockState state) {
+    public SlotlessBlockEntity(BlockPos pos, BlockState state) {
         super(ModRegistries.SLOTLESS_BARREL_BE.get(), pos, state);
     }
 
-    public SlotlessInventory kitchen_sink$getSlotlessInventory() {
+    public SlotlessInventory getSlotlessInventory() {
         return this.slotlessInventory;
     }
 
@@ -34,7 +38,11 @@ public class SlotlessBarrelBlockEntity extends BlockEntity implements ExtendedMe
 
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new SlotlessBarrelScreenHandler(syncId, playerInventory, this.pos);
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            NetworkManager.sendToPlayer(serverPlayer, new SyncSlotlessContainerS2CPacket(slotlessInventory.getItems(), this.pos));
+        }
+
+        return new SlotlessScreenHandler(syncId, playerInventory, this.pos);
     }
 
     @Override
