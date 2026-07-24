@@ -6,12 +6,14 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.Nullable;
 
 public class SlotlessItem {
     private ItemStack stack;
     private double x;
     private double y;
     private long count;
+    private @Nullable SlotlessInventory owner;
 
     public SlotlessItem(ItemStack stack, double x, double y, long count) {
         this.setItemStack(stack);
@@ -57,6 +59,14 @@ public class SlotlessItem {
         var centerY = 27 - 8;
         var centerX = 63 - 8;
 
+        if (owner != null) {
+            var areaSize = owner.getAreaSize();
+            if (areaSize != null) {
+                centerX = (areaSize.width() / 2) - 8;
+                centerY = (areaSize.height() / 2) - 8;
+            }
+        }
+
         var randomX = random.nextBetween(centerX - 10, centerX + 10);
         var randomY = random.nextBetween(centerY - 10, centerY + 10);
 
@@ -81,6 +91,10 @@ public class SlotlessItem {
 
     public void setCount(long count) {
         this.count = Math.max(count, 0);
+    }
+
+    public void setOwner(@Nullable SlotlessInventory inventory) {
+        this.owner = inventory;
     }
 
     public void add(ItemStack stack) {
@@ -173,14 +187,23 @@ public class SlotlessItem {
 
     public static final PacketCodec<RegistryByteBuf, SlotlessItem> CODEC = PacketCodec.of(
             (value, buf) -> {
-                if (value.isEmpty()) return;
+                if (value.isEmpty()) {
+                    buf.writeBoolean(true);
+                    return;
+                }
 
+                buf.writeBoolean(false);
                 buf.writeDouble(value.getX());
                 buf.writeDouble(value.getY());
                 buf.writeLong(value.getCount());
                 ItemStack.PACKET_CODEC.encode(buf, value.getStack());
             },
             buf -> {
+                var isEmpty = buf.readBoolean();
+
+                if (isEmpty)
+                    return new SlotlessItem(ItemStack.EMPTY);
+
                 double x = buf.readDouble();
                 double y = buf.readDouble();
                 long count = buf.readLong();

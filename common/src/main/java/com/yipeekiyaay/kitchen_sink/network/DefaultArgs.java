@@ -18,6 +18,10 @@ public record DefaultArgs(InventoryUtils.InventoryType inventoryType, long seed)
         return new DefaultArgs(inventoryType, newSeed());
     }
 
+    public static DefaultArgs with(InventoryUtils.InventoryType inventoryType, long seed) {
+        return new DefaultArgs(inventoryType, seed);
+    }
+
     public static final PacketCodec<RegistryByteBuf, DefaultArgs> CODEC = PacketCodec.of(
             (value, buf) -> {
                 buf.writeLong(value.seed());

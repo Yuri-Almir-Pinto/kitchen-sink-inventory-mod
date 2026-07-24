@@ -5,6 +5,7 @@ import com.yipeekiyaay.kitchen_sink.network.packets.SyncSlotlessInventoryS2CPack
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessSize;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,8 +14,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,12 +28,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Mixin(PlayerInventory.class)
 public class PlayerInventoryMixin implements ISlotlessInventory {
     @Unique
-    private final SlotlessInventory kitchen_sink$slotlessInventory = new SlotlessInventory();
+    private final SlotlessInventory kitchen_sink$slotlessInventory = new SlotlessInventory()
+            .setArea(SlotlessSize.SIZE_2746);
 
     @Shadow
     @Final
@@ -150,7 +155,17 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
                 if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
 
                 kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(main.get(i).copy()));
-                kitchen_sink$slotlessInventory.addItem(main.get(i).copyAndEmpty());
+
+                var item = new SlotlessItem(main.get(i).copyAndEmpty());
+
+                kitchen_sink$slotlessInventory.addItem(item);
+
+                long seed = Objects.hash(
+                        player.getUuid(), i, Registries.ITEM.getRawId(main.get(i).getItem()),
+                        main.get(i).getCount(), player.getWorld().getTime() / 10
+                );
+
+                item.randomizePos(Random.create(seed));
             }
         }
 

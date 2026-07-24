@@ -11,9 +11,16 @@ import java.util.List;
 
 public class SlotlessInventory {
     public final SlotlessSync slotlessSync = new SlotlessSync();
+    private @Nullable SlotlessSize areaSize;
     private final List<SlotlessItem> items = new ArrayList<>();
     private boolean isLocked = false;
     private Runnable markDirtyRun = null;
+
+    public SlotlessInventory setArea(SlotlessSize size) {
+        this.areaSize = size;
+
+        return this;
+    }
 
     public SlotlessInventory setDirtyRunnable(Runnable function) {
         markDirtyRun = function;
@@ -25,6 +32,10 @@ public class SlotlessInventory {
         if (markDirtyRun == null) return;
 
         markDirtyRun.run();
+    }
+
+    public @Nullable SlotlessSize getAreaSize() {
+        return areaSize;
     }
 
     public List<SlotlessItem> getItems() {
@@ -56,17 +67,11 @@ public class SlotlessInventory {
         }
 
         if (!newItem.isEmpty()) {
+            newItem.setOwner(this);
             this.items.add(newItem);
         }
 
         markDirty();
-    }
-
-    public void addItem(ItemStack stack, int x, int y) {
-        if (isLocked) return;
-        if (stack.isEmpty()) return;
-
-        this.addItem(new SlotlessItem(stack, x, y));
     }
 
     public void addItem(ItemStack stack) {
@@ -213,6 +218,7 @@ public class SlotlessInventory {
         for (int i = 0; i < nbtItemList.size(); i++) {
             NbtCompound itemCompound = nbtItemList.getCompound(i);
             SlotlessItem item = SlotlessItem.fromNbt(registries, itemCompound);
+            item.setOwner(this);
 
             if (!item.isEmpty()) {
                 this.items.add(item);

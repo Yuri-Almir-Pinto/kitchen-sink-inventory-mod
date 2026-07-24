@@ -101,9 +101,11 @@ public class SlotlessScreenHandler extends ScreenHandler {
                 slotStack.getCount(), player.getWorld().getTime() / 10
         );
 
-        item.randomizePos(Random.create(seed));
-
         slotlessInventory.addItem(item.copy());
+
+        var last = slotlessInventory.getItems().getLast();
+        if (last.getCount() == item.getCount())
+            last.randomizePos(Random.create(seed));
 
         SlotlessOperation.addIfServer(player, item.copy(), InventoryUtils.InventoryType.container, seed);
 

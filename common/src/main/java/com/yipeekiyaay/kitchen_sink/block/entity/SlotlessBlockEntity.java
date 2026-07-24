@@ -6,6 +6,7 @@ import com.yipeekiyaay.kitchen_sink.registry.ModRegistries;
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessSize;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import net.minecraft.block.BlockState;
@@ -24,7 +25,8 @@ import java.util.ArrayList;
 
 public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProvider {
     private final SlotlessInventory slotlessInventory = new SlotlessInventory()
-            .setDirtyRunnable(this::markDirty);
+            .setDirtyRunnable(this::markDirty)
+            .setArea(SlotlessSize.SIZE_2766);
     private final ArrayList<ServerPlayerEntity> observers = new ArrayList<>();
 
     public SlotlessBlockEntity(BlockPos pos, BlockState state) {

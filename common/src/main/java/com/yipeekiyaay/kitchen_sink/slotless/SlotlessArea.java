@@ -39,8 +39,8 @@ public class SlotlessArea {
                 0, 0, 10, 9, MAGNET_QUICK_BUTTON, (button) -> {
                     if (handlerQuery.getPlayer() != null) {
                         var args = DefaultArgs.with(getInventoryType());
-                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), 0, 0, size.height(), size.width(), args));
-                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), 0, 0, size.height(), size.width(), args, handlerQuery.getPlayer());
+                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), args));
+                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), args, handlerQuery.getPlayer());
                     }
         });
 
@@ -73,6 +73,9 @@ public class SlotlessArea {
 
     public SlotlessArea setSize(SlotlessSize size) {
         this.size = size;
+
+        if (inventory != null)
+            inventory.setArea(size);
 
         return this;
     }

@@ -81,9 +81,12 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
             }
 
             if (!item.isEmpty()) {
-                item.randomizePos(args.getRandom());
+                var random = args.getRandom();
                 otherSlotlessInventory.addItem(item.copy());
-                SlotlessOperation.addIfServer(player, item.copyAndEmpty(), otherType);
+                var last = otherSlotlessInventory.getItems().getLast();
+                if (last.getCount() == item.getCount())
+                    last.randomizePos(random);
+                SlotlessOperation.addIfServer(player, item.copyAndEmpty(), otherType, args.seed());
             }
 
             SlotlessOperation.removeIfServer(player, toRemove, args.inventoryType());

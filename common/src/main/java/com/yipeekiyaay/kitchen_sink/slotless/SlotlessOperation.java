@@ -4,6 +4,7 @@ import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -11,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public record SlotlessOperation(Type type, SlotlessItem item, long seed) {
     public enum Type {
-        add, remove, move
+        add, remove, move, reset, resetAll
     }
 
     public static PacketCodec<ByteBuf, Type> OPERATION_TYPE_CODEC = PacketCodecs.indexed(
@@ -33,6 +34,12 @@ public record SlotlessOperation(Type type, SlotlessItem item, long seed) {
                 return new SlotlessOperation(type, item, seed);
             }
     );
+
+    public static void resetIfServer(PlayerEntity player, InventoryUtils.InventoryType inventoryType, boolean all, long seed) {
+        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+
+        sendIfServer(player, new SlotlessItem(ItemStack.EMPTY), all ? Type.resetAll : Type.reset, seed);
+    }
 
     public static void moveIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType) {
         if (inventoryType == InventoryUtils.InventoryType.inventory) return;

@@ -1,6 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
+import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
@@ -37,12 +38,17 @@ public record SyncSlotlessOperationS2CPacket(SlotlessOperation op) implements Cu
                         slotlessContainer.addItem(op.item());
                     else {
                         var item = op.item();
-                        item.randomizePos(Random.create(op.seed()));
                         slotlessContainer.addItem(item);
+                        item.randomizePos(Random.create(op.seed()));
                     }
                 }
                 case remove -> slotlessContainer.removeItem(op.item());
                 case move -> slotlessContainer.moveItem(op.item());
+                case reset, resetAll -> ResetPositionsC2SPacket.handleCommon(
+                        op.type() == SlotlessOperation.Type.resetAll,
+                        DefaultArgs.with(InventoryUtils.InventoryType.container, op.seed()),
+                        player
+                );
             }
         });
     }
