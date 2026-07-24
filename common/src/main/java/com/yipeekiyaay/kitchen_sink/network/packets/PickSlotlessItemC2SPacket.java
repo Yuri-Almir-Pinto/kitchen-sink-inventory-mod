@@ -3,6 +3,8 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -55,13 +57,17 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
         if (item == null || item.isEmpty()) return;
 
         if (!isHoldingSfhit || button != 0 && screen.getCursorStack().isEmpty()) {
-            screen.setCursorStack(item.pickStack(button == 1));
+            var picked = item.pickStack(button == 1);
+            screen.setCursorStack(picked.copy());
+            SlotlessOperation.removeIfServer(player, new SlotlessItem(picked.copyAndEmpty()), args.inventoryType());
         } else if (screen instanceof SlotlessScreenHandler) {
             var otherType = InventoryUtils.getOther(args.inventoryType());
 
             var otherSlotlessInventory = InventoryUtils.getIfSlotless(player, otherType);
 
             if (otherSlotlessInventory == null) return;
+
+            var toRemove = item.copy();
 
             if (otherType == InventoryUtils.InventoryType.inventory) {
                 for (var slot : screen.slots) {
@@ -78,6 +84,8 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
                 item.randomizePos(args.getRandom());
                 otherSlotlessInventory.addItem(item.copyAndEmpty());
             }
+
+            SlotlessOperation.removeIfServer(player, toRemove, args.inventoryType());
         } else {
             for (var i = 0; i < screen.slots.size(); i++) {
                 var slot = screen.slots.get(i);
