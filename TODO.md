@@ -21,7 +21,6 @@
 - Implementar GUI no inventário para configuração e ações especiais:
   * Botão a esquerda da slotless area que permite dar resize na slotless area, escondendo ou mostrando slots a direita
 - Adaptar ações slotless para o slotless container:
-  * DropSlotlessItem
   * ResetPositions
   * Shift click do inventário para o slotless (quickMove da SlotlessScreenHandler)
 - Implementar sincronização das modificações de um container slotless (para que multiplos jogadores em multiplayer consigam usar o container ao mesmo tempo).

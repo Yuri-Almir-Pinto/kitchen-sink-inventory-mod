@@ -174,8 +174,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             if (slotlessItem == null || slotlessItem.isEmpty()) return;
 
             if (client.player != null) {
-                NetworkManager.sendToServer(new DropSlotlessItemC2SPacket(itemIndex, Screen.hasControlDown()));
-                DropSlotlessItemC2SPacket.handleCommon(itemIndex, Screen.hasControlDown(), client.player);
+                NetworkManager.sendToServer(new DropSlotlessItemC2SPacket(itemIndex, Screen.hasControlDown(), args));
+                DropSlotlessItemC2SPacket.handleCommon(itemIndex, Screen.hasControlDown(), args, client.player);
             }
         } else {
             var itemX = mouseX - area.getX() - 8;
