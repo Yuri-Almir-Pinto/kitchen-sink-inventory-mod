@@ -34,6 +34,12 @@ public record SlotlessOperation(Type type, SlotlessItem item, long seed) {
             }
     );
 
+    public static void moveIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType) {
+        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+
+        sendIfServer(player, item, Type.move, -1);
+    }
+
     public static void removeIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType) {
         if (inventoryType == InventoryUtils.InventoryType.inventory) return;
 

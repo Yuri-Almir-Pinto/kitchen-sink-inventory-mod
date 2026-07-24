@@ -3,6 +3,7 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryByteBuf;
@@ -36,7 +37,8 @@ public record MoveSlotlessItemC2SPacket(SlotlessItem item, DefaultArgs args) imp
 
             if (slotlessInventory == null) return;
 
-            slotlessInventory.repositionItem(item);
+            slotlessInventory.repositionItem(item.copy());
+            SlotlessOperation.moveIfServer(player, item, args.inventoryType());
         });
     }
 }
