@@ -51,6 +51,23 @@ public class SlotlessScreenHandler extends ScreenHandler {
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int slotIndex) {
-        return ItemStack.EMPTY; // Handled by your custom Slotless Packets
+        if (slotIndex < 0 || slotIndex >= slots.size()) return ItemStack.EMPTY;
+
+        var slot = slots.get(slotIndex);
+
+        if (!(slot.inventory instanceof PlayerInventory)) return ItemStack.EMPTY;
+        if (slot.getStack().isEmpty()) return ItemStack.EMPTY;
+
+        var slotStack = slot.getStack();
+
+        var slotlessInventory = getSlotlessInventory();
+
+        if (slotlessInventory == null) return ItemStack.EMPTY;
+
+        slotlessInventory.addItem(slotStack.copy());
+
+        slot.markDirty();
+
+        return slotStack.copyAndEmpty();
     }
 }
