@@ -8,6 +8,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 
 public record SyncSlotlessOperationS2CPacket(SlotlessOperation op) implements CustomPayload {
     public static final CustomPayload.Id<SyncSlotlessOperationS2CPacket> TYPE =
@@ -31,7 +32,15 @@ public record SyncSlotlessOperationS2CPacket(SlotlessOperation op) implements Cu
             if (slotlessContainer == null) return;
 
             switch (op.type()) {
-                case add -> slotlessContainer.addItem(op.item());
+                case add -> {
+                    if (op.seed() == -1)
+                        slotlessContainer.addItem(op.item());
+                    else {
+                        var item = op.item();
+                        item.randomizePos(Random.create(op.seed()));
+                        slotlessContainer.addItem(item);
+                    }
+                }
                 case remove -> slotlessContainer.removeItem(op.item());
                 case move -> slotlessContainer.moveItem(op.item());
             }

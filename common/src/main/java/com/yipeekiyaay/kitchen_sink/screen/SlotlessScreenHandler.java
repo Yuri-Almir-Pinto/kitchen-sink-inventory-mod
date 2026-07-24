@@ -3,15 +3,22 @@ package com.yipeekiyaay.kitchen_sink.screen;
 import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBlockEntity;
 import com.yipeekiyaay.kitchen_sink.registry.ModRegistries;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
+import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class SlotlessScreenHandler extends ScreenHandler {
     private final ScreenHandlerContext context;
@@ -87,7 +94,18 @@ public class SlotlessScreenHandler extends ScreenHandler {
 
         if (slotlessInventory == null) return ItemStack.EMPTY;
 
-        slotlessInventory.addItem(slotStack.copy());
+        var item = new SlotlessItem(slotStack.copy());
+
+        long seed = Objects.hash(
+                player.getUuid(), slotIndex, Registries.ITEM.getRawId(slotStack.getItem()),
+                slotStack.getCount(), player.getWorld().getTime() / 10
+        );
+
+        item.randomizePos(Random.create(seed));
+
+        slotlessInventory.addItem(item.copy());
+
+        SlotlessOperation.addIfServer(player, item.copy(), InventoryUtils.InventoryType.container, seed);
 
         slot.markDirty();
 

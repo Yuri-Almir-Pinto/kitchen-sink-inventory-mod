@@ -26,7 +26,6 @@
   * ResetPositionsSlotless
   * SwapSlotless
   * DropSlotless
-  * quick Move
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
 - Remover o markDirty to inventário, e jogar essas responsabilidade para os packets, para evitar com que markDirty seja chamado multiplas vezes, já que ele pode dar trigger em block updates.
 - Ver o que fazer quanto a transferência direta de slotless item de uma área para outra (Estava pensando em fazer uma scissor the permite mostrar o item de uma área em outra área, mas pelo visto isso não da certo).

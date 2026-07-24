@@ -46,6 +46,12 @@ public record SlotlessOperation(Type type, SlotlessItem item, long seed) {
         sendIfServer(player, item, Type.add, -1);
     }
 
+    public static void addIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType, long seed) {
+        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+
+        sendIfServer(player, item, Type.add, seed);
+    }
+
     public static void sendIfServer(PlayerEntity player, SlotlessItem item, Type type, long seed) {
         if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
         if (!(serverPlayer.currentScreenHandler instanceof SlotlessScreenHandler slotlessHandler)) return;
