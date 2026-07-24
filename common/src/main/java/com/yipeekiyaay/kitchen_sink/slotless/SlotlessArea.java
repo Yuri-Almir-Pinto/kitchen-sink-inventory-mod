@@ -2,7 +2,7 @@ package com.yipeekiyaay.kitchen_sink.slotless;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.network.packets.ResetPositionsC2SPacket;
-import com.yipeekiyaay.kitchen_sink.utils.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
@@ -18,12 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlotlessArea {
-    // First two numbers is the generic container size it represents (27 being single chest or player inventory, 54 being double chest)
-    // Last two numbers is the actual fraction covered (66 would be 6/6, while 46 would be 4/6, so two columns of 27 are being hidden)
-    private static final Identifier SLOTLESS_AREA_2746_TEXTURE =
-            Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/slotless_area_27_4-6.png");
-    private static final Identifier SLOTLESS_AREA_2766_TEXTURE =
-            Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/slotless_area_27_6-6.png");
     private static final Identifier MAGNET_QUICK_BUTTON_ACTIVE =
             Identifier.of(KitchenSinkMod.MOD_ID, "widget/magnet_quick_button_active");
     private static final Identifier MAGNET_QUICK_BUTTON_INACTIVE =
@@ -31,11 +25,9 @@ public class SlotlessArea {
 
     private static final ButtonTextures MAGNET_QUICK_BUTTON = new ButtonTextures(MAGNET_QUICK_BUTTON_INACTIVE, MAGNET_QUICK_BUTTON_ACTIVE);
 
-    private int width;
-    private int height;
+    private SlotlessSize size;
     private int x;
     private int y;
-    private Identifier renderTexture;
     private InventoryUtils.InventoryType areaType;
     private HandledScreenQuery handlerQuery;
     private SlotlessInventory inventory = new SlotlessInventory();
@@ -47,8 +39,8 @@ public class SlotlessArea {
                 0, 0, 10, 9, MAGNET_QUICK_BUTTON, (button) -> {
                     if (handlerQuery.getPlayer() != null) {
                         var args = DefaultArgs.with(getInventoryType());
-                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), 0, 0, height, width, args));
-                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), 0, 0, height, width, args, handlerQuery.getPlayer());
+                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), 0, 0, size.height(), size.width(), args));
+                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), 0, 0, size.height(), size.width(), args, handlerQuery.getPlayer());
                     }
         });
 
@@ -71,34 +63,16 @@ public class SlotlessArea {
         return y;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public Identifier getRenderTexture() {
-        return renderTexture;
+    public SlotlessSize getSize() {
+        return size;
     }
 
     public List<SlotlessItem> getItems() {
         return this.inventory.getItems();
     }
 
-    public SlotlessArea setSize2746() {
-        this.height = 54;
-        this.width = 126;
-        this.renderTexture = SlotlessArea.SLOTLESS_AREA_2746_TEXTURE;
-
-        return this;
-    }
-
-    public SlotlessArea setSize2766() {
-        this.height = 54;
-        this.width = 162;
-        this.renderTexture = SlotlessArea.SLOTLESS_AREA_2766_TEXTURE;
+    public SlotlessArea setSize(SlotlessSize size) {
+        this.size = size;
 
         return this;
     }

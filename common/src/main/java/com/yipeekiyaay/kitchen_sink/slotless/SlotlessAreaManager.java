@@ -28,7 +28,7 @@ public class SlotlessAreaManager {
                 renderList.add(
                         new SlotlessArea()
                                 .setPos(slot)
-                                .setSize2746()
+                                .setSize(SlotlessSize.SIZE_2746)
                                 .setInventoryType()
                                 .setHandlerQuery(handlerQuery)
                 );
@@ -40,7 +40,7 @@ public class SlotlessAreaManager {
             renderList.add(
                     new SlotlessArea()
                             .setPos(7, 17)
-                            .setSize2766()
+                            .setSize(SlotlessSize.SIZE_2766)
                             .setContainerType()
                             .setHandlerQuery(handlerQuery)
             );
@@ -57,8 +57,8 @@ public class SlotlessAreaManager {
         for (SlotlessArea area : this.slotlessAreaInfos) {
             if (!area.shouldRender()) continue;
 
-            if (area.getX() <= x && area.getX() + area.getWidth() >= x
-            && area.getY() <= y && area.getY() + area.getHeight() >= y) {
+            if (area.getX() <= x && area.getX() + area.getSize().width() >= x
+            && area.getY() <= y && area.getY() + area.getSize().height() >= y) {
                 return area;
             }
         }
@@ -69,8 +69,8 @@ public class SlotlessAreaManager {
     public boolean isContained(int x, int y, int height, int width) {
         for (SlotlessArea area : this.slotlessAreaInfos) {
             if (!area.shouldRender()) continue;
-            if (x >= area.getX() && x + width <= area.getX() + area.getWidth() &&
-                    y >= area.getY() && y + height <= area.getY() + area.getHeight()) {
+            if (x >= area.getX() && x + width <= area.getX() + area.getSize().width() &&
+                    y >= area.getY() && y + height <= area.getY() + area.getSize().height()) {
                 return true;
             }
         }

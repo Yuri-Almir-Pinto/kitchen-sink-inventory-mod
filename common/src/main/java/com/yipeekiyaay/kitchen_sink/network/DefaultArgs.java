@@ -1,5 +1,6 @@
-package com.yipeekiyaay.kitchen_sink.utils;
+package com.yipeekiyaay.kitchen_sink.network;
 
+import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.math.random.Random;

@@ -18,11 +18,13 @@ public class SlotlessGuiRenderer {
         context.getMatrices().push();
         context.getMatrices().translate(guiX, guiY, 0.0F);
 
+        var size = area.getSize();
+
         context.drawTexture(
-                area.getRenderTexture(),
+                size.texture(),
                 area.getX(), area.getY(),
                 0, 0,
-                area.getWidth(), area.getHeight(), area.getWidth(), area.getHeight());
+                size.width(), size.height(), size.width(), size.height());
 
         int scissorX = (int) (guiX + area.getX());
         int scissorY = (int) (guiY + area.getY());
@@ -30,8 +32,8 @@ public class SlotlessGuiRenderer {
         context.enableScissor(
                 scissorX + 1,
                 scissorY + 1,
-                scissorX + area.getWidth() - 1,
-                scissorY + area.getHeight() - 1
+                scissorX + size.width() - 1,
+                scissorY + size.height() - 1
         );
 
         var items = area.getItems();

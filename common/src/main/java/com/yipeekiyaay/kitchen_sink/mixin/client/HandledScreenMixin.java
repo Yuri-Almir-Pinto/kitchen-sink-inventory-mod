@@ -1,5 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.mixin.client;
 
+import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.network.packets.*;
 import com.yipeekiyaay.kitchen_sink.render.SlotlessGuiRenderer;
 import com.yipeekiyaay.kitchen_sink.slotless.*;

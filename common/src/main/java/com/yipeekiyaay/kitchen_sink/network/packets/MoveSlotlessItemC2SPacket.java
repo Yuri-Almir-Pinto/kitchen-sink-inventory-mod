@@ -2,7 +2,7 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
-import com.yipeekiyaay.kitchen_sink.utils.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryByteBuf;
