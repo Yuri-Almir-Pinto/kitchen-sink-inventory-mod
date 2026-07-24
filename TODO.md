@@ -22,7 +22,6 @@
   * Botão a esquerda da slotless area que permite dar resize na slotless area, escondendo ou mostrando slots a direita
 - Adaptar ações slotless para o slotless container:
   * ResetPositions
-  * Shift click do inventário para o slotless (quickMove da SlotlessScreenHandler)
 - Implementar sincronização das modificações de um container slotless (para que multiplos jogadores em multiplayer consigam usar o container ao mesmo tempo).
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
 
