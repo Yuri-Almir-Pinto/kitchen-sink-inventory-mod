@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,14 +35,36 @@ public class SlotlessScreenHandler extends ScreenHandler {
         }
     }
 
-    public @Nullable SlotlessInventory getSlotlessInventory() {
+    public @Nullable SlotlessBlockEntity getSlotlessBlockEntity() {
         return this.context.get((level, blockPos) -> {
             if (level.getBlockEntity(blockPos) instanceof SlotlessBlockEntity slotlessBE) {
-                return slotlessBE.getSlotlessInventory();
+                return slotlessBE;
             }
 
             return null;
         }).orElse(null);
+    }
+
+    public @Nullable SlotlessInventory getSlotlessInventory() {
+        var slotlessBlockEntity = getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity != null)
+            return slotlessBlockEntity.getSlotlessInventory();
+
+        return null;
+    }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+
+        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+
+        var slotlessBlockEntity = getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity == null) return;
+
+        slotlessBlockEntity.removeObserver(serverPlayer);
     }
 
     @Override

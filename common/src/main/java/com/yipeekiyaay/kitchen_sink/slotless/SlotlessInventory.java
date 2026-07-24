@@ -76,6 +76,37 @@ public class SlotlessInventory {
         this.addItem(new SlotlessItem(stack));
     }
 
+    public void removeItem(SlotlessItem item) {
+        if (item.isEmpty()) return;
+
+        for (var toRemove : getItems()) {
+            if (!item.isSameStackAs(toRemove)) continue;
+
+            toRemove.deplete(item.getCount());
+            break;
+        }
+
+        clearEmpty();
+    }
+
+    public void moveItem(SlotlessItem item) {
+        if (item.isEmpty()) return;
+
+        SlotlessItem found = null;
+
+        for (var toMove : getItems()) {
+            if (!item.isSameStackAs(toMove)) continue;
+
+            found = toMove;
+            break;
+        }
+
+        if (found == null) return;
+
+        found.setPos(item.getX(), item.getY());
+        pushToTop(found);
+    }
+
     public @Nullable SlotlessItem getItem(ItemStack stack) {
         if (stack.isEmpty()) return null;
 

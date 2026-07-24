@@ -2,6 +2,8 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,13 +55,18 @@ public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryUtils.
 
         if (cursorStack == null || cursorStack.isEmpty()) return;
 
-        if (button == 0)
-            slotlessInventory.addItem(cursorStack.copyAndEmpty(), x, y);
+        if (button == 0) {
+            var item = new SlotlessItem(cursorStack.copyAndEmpty(), x, y);
+            slotlessInventory.addItem(item.copy());
+            SlotlessOperation.addIfServer(player, item.copyAndEmpty(), inventoryType);
+        }
         else if (button == 1) {
             var toAdd = cursorStack.copy();
             toAdd.setCount(1);
-            cursorStack.setCount(cursorStack.getCount() - 1);
-            slotlessInventory.addItem(toAdd, x, y);
+            cursorStack.decrement(1);
+            var itemToAdd = new SlotlessItem(toAdd, x, y);
+            slotlessInventory.addItem(itemToAdd.copy());
+            SlotlessOperation.addIfServer(player, itemToAdd.copyAndEmpty(), inventoryType);
         }
     }
 }
