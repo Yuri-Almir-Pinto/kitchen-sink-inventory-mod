@@ -2,6 +2,8 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,7 +55,10 @@ public record DropSlotlessItemC2SPacket(int slotlessItemIndex, boolean isHolding
 
         var stackPicked = isHoldingCtrl ? slotlessItem.pickStack(false) : slotlessItem.pickStack(1);
 
-        player.dropItem(stackPicked, true);
+        player.dropItem(stackPicked.copy(), true);
+
+        var item = new SlotlessItem(stackPicked.copyAndEmpty());
+        SlotlessOperation.removeIfServer(player, item, args.inventoryType());
 
         if (slotlessItem.isEmpty())
             slotlessInventory.clearEmpty();
