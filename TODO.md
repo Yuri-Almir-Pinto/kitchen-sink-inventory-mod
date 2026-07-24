@@ -6,6 +6,7 @@
 - Implementar permitir mover multiplos itens ao mesmo tempo, se estiverem sobrepostos, através de alguma keybind.
 - Adicionar usar o rolamento do mouse para dar quick move de itens individuais de e para o slotless storage
 - Adicionar usar o rolamento do mouse para baixo enquanto move um item para colocar esse item abaixo do item em que o mouse está em cima.
+- Substituir o uso da textura da GUI da shulker box na GUI slotless por uma textura própria
 
 ## Refatoração
 
@@ -23,8 +24,10 @@
 - Implementar sincronização das modificações de um container slotless (para que multiplos jogadores em multiplayer consigam usar o container ao mesmo tempo).
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
 - Remover o markDirty to inventário, e jogar essas responsabilidade para os packets, para evitar com que markDirty seja chamado multiplas vezes, já que ele pode dar trigger em block updates.
+- Ver o que fazer quanto a transferência direta de slotless item de uma área para outra (Estava pensando em fazer uma scissor the permite mostrar o item de uma área em outra área, mas pelo visto isso não da certo).
 
 ## Bugs
 
 - O access violation não era causado pelo hotswap. Fazer uma cópia do inventário slotless uma vez a cada mutação e renderizar apenas essa snapshop para evitar erros de concorrência.
 - Botões do slotless GUI estão aparecendo no modo criativo, o que não deve acontecer.
+- Consertar a randomização da posição dos slotless items não sendo centralizada em slotless areas diferentes de '2746'.

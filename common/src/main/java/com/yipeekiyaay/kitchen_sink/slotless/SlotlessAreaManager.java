@@ -28,7 +28,7 @@ public class SlotlessAreaManager {
                 renderList.add(
                         new SlotlessArea()
                                 .setPos(slot)
-                                .setSize27()
+                                .setSize2746()
                                 .setInventoryType()
                                 .setHandlerQuery(handlerQuery)
                 );
@@ -40,7 +40,7 @@ public class SlotlessAreaManager {
             renderList.add(
                     new SlotlessArea()
                             .setPos(7, 17)
-                            .setSize27()
+                            .setSize2766()
                             .setContainerType()
                             .setHandlerQuery(handlerQuery)
             );

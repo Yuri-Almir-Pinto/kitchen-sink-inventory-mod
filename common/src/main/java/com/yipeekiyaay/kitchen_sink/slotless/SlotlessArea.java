@@ -18,8 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlotlessArea {
-    private static final Identifier KITCHEN_SINK_27_TEXTURE =
-            Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/kitchen_sink_27_gui.png");
+    // First two numbers is the generic container size it represents (27 being single chest or player inventory, 54 being double chest)
+    // Last two numbers is the actual fraction covered (66 would be 6/6, while 46 would be 4/6, so two columns of 27 are being hidden)
+    private static final Identifier SLOTLESS_AREA_2746_TEXTURE =
+            Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/slotless_area_27_4-6.png");
+    private static final Identifier SLOTLESS_AREA_2766_TEXTURE =
+            Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/slotless_area_27_6-6.png");
     private static final Identifier MAGNET_QUICK_BUTTON_ACTIVE =
             Identifier.of(KitchenSinkMod.MOD_ID, "widget/magnet_quick_button_active");
     private static final Identifier MAGNET_QUICK_BUTTON_INACTIVE =
@@ -83,10 +87,18 @@ public class SlotlessArea {
         return this.inventory.getItems();
     }
 
-    public SlotlessArea setSize27() {
+    public SlotlessArea setSize2746() {
         this.height = 54;
         this.width = 126;
-        this.renderTexture = SlotlessArea.KITCHEN_SINK_27_TEXTURE;
+        this.renderTexture = SlotlessArea.SLOTLESS_AREA_2746_TEXTURE;
+
+        return this;
+    }
+
+    public SlotlessArea setSize2766() {
+        this.height = 54;
+        this.width = 162;
+        this.renderTexture = SlotlessArea.SLOTLESS_AREA_2766_TEXTURE;
 
         return this;
     }
