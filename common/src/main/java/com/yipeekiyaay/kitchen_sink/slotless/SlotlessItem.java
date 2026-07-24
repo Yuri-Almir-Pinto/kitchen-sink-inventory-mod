@@ -50,16 +50,12 @@ public class SlotlessItem {
     }
 
     public void randomizePos() {
-        var seed = Random.create().nextLong();
-
-        randomizePos(seed);
+        randomizePos(Random.create());
     }
 
-    public void randomizePos(long seed) {
+    public void randomizePos(Random random) {
         var centerY = 27 - 8;
         var centerX = 63 - 8;
-
-        var random = Random.create(seed);
 
         var randomX = random.nextBetween(centerX - 10, centerX + 10);
         var randomY = random.nextBetween(centerY - 10, centerY + 10);

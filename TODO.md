@@ -20,10 +20,9 @@
 - Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
 - Implementar GUI no inventário para configuração e ações especiais:
   * Botão a esquerda da slotless area que permite dar resize na slotless area, escondendo ou mostrando slots a direita
-- Adaptar ações slotless para o slotless container:
-  * ResetPositions
 - Implementar sincronização das modificações de um container slotless (para que multiplos jogadores em multiplayer consigam usar o container ao mesmo tempo).
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
+- Remover o markDirty to inventário, e jogar essas responsabilidade para os packets, para evitar com que markDirty seja chamado multiplas vezes, já que ele pode dar trigger em block updates.
 
 ## Bugs
 

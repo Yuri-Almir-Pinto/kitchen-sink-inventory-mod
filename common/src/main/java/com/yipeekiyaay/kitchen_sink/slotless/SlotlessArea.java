@@ -2,6 +2,7 @@ package com.yipeekiyaay.kitchen_sink.slotless;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.network.packets.ResetPositionsC2SPacket;
+import com.yipeekiyaay.kitchen_sink.utils.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
@@ -41,8 +42,9 @@ public class SlotlessArea {
         optionsWidget = new TexturedButtonWidget(
                 0, 0, 10, 9, MAGNET_QUICK_BUTTON, (button) -> {
                     if (handlerQuery.getPlayer() != null) {
-                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), 0, 0, height, width));
-                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), 0, 0, height, width, handlerQuery.getPlayer());
+                        var args = DefaultArgs.with(getInventoryType());
+                        NetworkManager.sendToServer(new ResetPositionsC2SPacket(Screen.hasShiftDown(), 0, 0, height, width, args));
+                        ResetPositionsC2SPacket.handleCommon(Screen.hasShiftDown(), 0, 0, height, width, args, handlerQuery.getPlayer());
                     }
         });
 

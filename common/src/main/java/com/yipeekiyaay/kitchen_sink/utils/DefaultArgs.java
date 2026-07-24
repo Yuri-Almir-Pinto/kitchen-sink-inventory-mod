@@ -5,12 +5,16 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.math.random.Random;
 
 public record DefaultArgs(InventoryUtils.InventoryType inventoryType, long seed) {
-    public static long getSeed() {
+    public static long newSeed() {
         return Random.create().nextLong();
     }
 
+    public Random getRandom() {
+        return Random.create(seed());
+    }
+
     public static DefaultArgs with(InventoryUtils.InventoryType inventoryType) {
-        return new DefaultArgs(inventoryType, getSeed());
+        return new DefaultArgs(inventoryType, newSeed());
     }
 
     public static final PacketCodec<RegistryByteBuf, DefaultArgs> CODEC = PacketCodec.of(

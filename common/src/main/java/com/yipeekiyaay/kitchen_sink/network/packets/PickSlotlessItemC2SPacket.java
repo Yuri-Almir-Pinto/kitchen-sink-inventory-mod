@@ -75,7 +75,7 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
             }
 
             if (!item.isEmpty()) {
-                item.randomizePos(args.seed());
+                item.randomizePos(args.getRandom());
                 otherSlotlessInventory.addItem(item.copyAndEmpty());
             }
         } else {
