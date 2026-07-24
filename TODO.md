@@ -25,6 +25,7 @@
   * MoveSlotless
   * ResetPositionsSlotless
   * SwapSlotless
+  * PickSlotless (Shift click do slotless inventário para o slotless container não sincroniza ainda)
   * DropSlotless
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
 - Remover o markDirty to inventário, e jogar essas responsabilidade para os packets, para evitar com que markDirty seja chamado multiplas vezes, já que ele pode dar trigger em block updates.
@@ -35,3 +36,4 @@
 - O access violation não era causado pelo hotswap. Fazer uma cópia do inventário slotless uma vez a cada mutação e renderizar apenas essa snapshop para evitar erros de concorrência.
 - Botões do slotless GUI estão aparecendo no modo criativo, o que não deve acontecer.
 - Consertar a randomização da posição dos slotless items não sendo centralizada em slotless areas diferentes de '2746'.
+- Ao segurar algum dos botões da hotbar para dar swap constante em um slotless storage, o item pode se desincronizar com o servidor, fazendo ele sumir ou duplicar para o cliente (Não parece fazer nada ao servidor). Nada parece acontecer se segurar F.

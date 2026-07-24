@@ -3,6 +3,7 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -59,12 +60,16 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int inventoryIndex, int m
         var slotlessItem = itemIndex > -1 ? slotlessInventory.getItems().get(itemIndex) : new SlotlessItem(ItemStack.EMPTY);
 
         if (!hotbarStack.isEmpty()) {
-            slotlessInventory.addItem(hotbarStack.copyAndEmpty(), mouseX, mouseY);
+            var item = new SlotlessItem(hotbarStack.copyAndEmpty(), mouseX, mouseY);
+            slotlessInventory.addItem(item.copy());
+            SlotlessOperation.addIfServer(player, item, args.inventoryType());
         }
 
         if (!slotlessItem.isEmpty()) {
             var stack = slotlessItem.pickStack(false);
-            inventory.insertStack(inventoryIndex, stack);
+            inventory.insertStack(inventoryIndex, stack.copy());
+
+            SlotlessOperation.removeIfServer(player, new SlotlessItem(stack.copyAndEmpty()), args.inventoryType());
 
             if (slotlessItem.isEmpty())
                 slotlessInventory.clearEmpty();
