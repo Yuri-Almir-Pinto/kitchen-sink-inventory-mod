@@ -25,7 +25,6 @@
   * MoveSlotless
   * ResetPositionsSlotless
   * SwapSlotless
-  * PickSlotless (Shift click do slotless inventário para o slotless container não sincroniza ainda)
   * DropSlotless
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
 - Remover o markDirty to inventário, e jogar essas responsabilidade para os packets, para evitar com que markDirty seja chamado multiplas vezes, já que ele pode dar trigger em block updates.
