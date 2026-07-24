@@ -50,10 +50,16 @@ public class SlotlessItem {
     }
 
     public void randomizePos() {
+        var seed = Random.create().nextLong();
+
+        randomizePos(seed);
+    }
+
+    public void randomizePos(long seed) {
         var centerY = 27 - 8;
         var centerX = 63 - 8;
 
-        var random = Random.create();
+        var random = Random.create(seed);
 
         var randomX = random.nextBetween(centerX - 10, centerX + 10);
         var randomY = random.nextBetween(centerY - 10, centerY + 10);
@@ -125,6 +131,10 @@ public class SlotlessItem {
         stack.setCount(stack.getCount() + toTransfer);
     }
 
+    public void deplete() {
+        deplete(getCount());
+    }
+
     public long deplete(long amountToTake) {
         if (this.isEmpty() || amountToTake <= 0) return 0;
 
@@ -135,6 +145,12 @@ public class SlotlessItem {
 
     public SlotlessItem copy() {
         return new SlotlessItem(getStack().copy(), getX(), getY(), getCount());
+    }
+
+    public SlotlessItem copyAndEmpty() {
+        var newItem = copy();
+        deplete();
+        return newItem;
     }
 
     public void writeNbt(RegistryWrapper.WrapperLookup registries, NbtCompound nbt) {

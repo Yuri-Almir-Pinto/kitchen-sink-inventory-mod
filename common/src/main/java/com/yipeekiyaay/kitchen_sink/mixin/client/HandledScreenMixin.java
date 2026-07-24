@@ -272,10 +272,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             var hasShiftDown = Screen.hasShiftDown();
             var shouldMassQuickMove = d.isDoubleClick() && d.lastClick != null && d.lastClick.moving != null
                     && ItemStack.areItemsAndComponentsEqual(d.lastClick.moving.getStack(), handler.getCursorStack());
+            var args = DefaultArgs.with(d.currentArea.getInventoryType());
 
             if (client != null && client.player != null) {
-                NetworkManager.sendToServer(new PickSlotlessItemC2SPacket(index, button, Screen.hasShiftDown(), shouldMassQuickMove));
-                PickSlotlessItemC2SPacket.handleCommon(index, button, hasShiftDown, shouldMassQuickMove, client.player);
+                NetworkManager.sendToServer(new PickSlotlessItemC2SPacket(index, button, Screen.hasShiftDown(), shouldMassQuickMove, args));
+                PickSlotlessItemC2SPacket.handleCommon(index, button, hasShiftDown, shouldMassQuickMove, args, client.player);
             }
         }
 

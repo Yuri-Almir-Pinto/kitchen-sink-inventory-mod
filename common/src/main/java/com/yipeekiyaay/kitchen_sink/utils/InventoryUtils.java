@@ -4,6 +4,7 @@ import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBlockEntity;
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,15 @@ public class InventoryUtils {
 
         from.setCount(from.getCount() - toTransfer);
         to.setCount(to.getCount() + toTransfer);
+    }
+
+    public static void transferFromTo(SlotlessItem from, ItemStack to) {
+        var fromStack = from.pickStack(false);
+
+        transferFromTo(fromStack, to);
+
+        if (!fromStack.isEmpty())
+            from.add(fromStack.copyAndEmpty());
     }
 
     public static @Nullable SlotlessInventory getIfSlotless(PlayerEntity player, BlockPos pos) {
@@ -53,6 +63,13 @@ public class InventoryUtils {
     }
 
     public enum InventoryType { inventory, container }
+
+    public static InventoryType getOther(InventoryType type) {
+        if (type == InventoryType.inventory)
+            return InventoryType.container;
+        else
+            return InventoryType.inventory;
+    }
 
     public static PacketCodec<ByteBuf, InventoryType> INVENTORY_TYPE_CODEC = PacketCodecs.indexed(
             id -> InventoryType.values()[id],

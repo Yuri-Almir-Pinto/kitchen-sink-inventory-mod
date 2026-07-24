@@ -23,7 +23,6 @@
 - Adaptar ações slotless para o slotless container:
   * DropSlotlessItem
   * MoveSlotlessItem
-  * PickSlotlessItem
   * ResetPositions
   * SwapSlotlessItem
   * Shift click do inventário para o slotless (quickMove da SlotlessScreenHandler)
