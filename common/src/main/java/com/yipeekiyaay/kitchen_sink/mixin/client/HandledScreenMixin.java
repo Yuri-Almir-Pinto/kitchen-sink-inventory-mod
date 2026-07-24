@@ -161,6 +161,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         int mouseY = ClientUtils.getScaledMouseY() - y;
         var area = kitchen_sink$manager.getArea(mouseX, mouseY);
         if (area == null) return;
+        var args = DefaultArgs.with(area.getInventoryType());
         var itemIndex = area.getHoveredItemIndex(mouseX, mouseY);
 
         cir.setReturnValue(true);
@@ -181,8 +182,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             var itemY = mouseY - area.getY() - 8;
 
             if (client.player != null) {
-                NetworkManager.sendToServer(new SwapSlotlessItemC2SPacket(itemIndex, pressedOffhand ? 40 : pressedHotbarKey, itemX, itemY));
-                SwapSlotlessItemC2SPacket.handleCommon(itemIndex, pressedOffhand ? 40 : pressedHotbarKey, itemX, itemY, client.player);
+                NetworkManager.sendToServer(new SwapSlotlessItemC2SPacket(itemIndex, pressedOffhand ? 40 : pressedHotbarKey, itemX, itemY, args));
+                SwapSlotlessItemC2SPacket.handleCommon(itemIndex, pressedOffhand ? 40 : pressedHotbarKey, itemX, itemY, args, client.player);
             }
         }
 

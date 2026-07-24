@@ -23,7 +23,6 @@
 - Adaptar ações slotless para o slotless container:
   * DropSlotlessItem
   * ResetPositions
-  * SwapSlotlessItem
   * Shift click do inventário para o slotless (quickMove da SlotlessScreenHandler)
 - Implementar sincronização das modificações de um container slotless (para que multiplos jogadores em multiplayer consigam usar o container ao mesmo tempo).
 - Decidir se eu vou criar containers próprios do mod para a block entity slotless, ou se eu vou permitir tornar blocos vanilla slotless...
