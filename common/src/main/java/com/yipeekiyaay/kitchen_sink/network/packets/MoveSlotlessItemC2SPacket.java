@@ -1,21 +1,23 @@
 package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
-import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.utils.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
-public record MoveSlotlessItemC2SPacket(SlotlessItem item) implements CustomPayload {
+public record MoveSlotlessItemC2SPacket(SlotlessItem item, DefaultArgs args) implements CustomPayload {
 
     public static final CustomPayload.Id<MoveSlotlessItemC2SPacket> TYPE =
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "move_slotless_item"));
 
     public static final PacketCodec<RegistryByteBuf, MoveSlotlessItemC2SPacket> CODEC = PacketCodec.tuple(
             SlotlessItem.CODEC, MoveSlotlessItemC2SPacket::item,
+            DefaultArgs.CODEC, MoveSlotlessItemC2SPacket::args,
             MoveSlotlessItemC2SPacket::new
     );
 
@@ -26,9 +28,13 @@ public record MoveSlotlessItemC2SPacket(SlotlessItem item) implements CustomPayl
 
     public static void handle(MoveSlotlessItemC2SPacket payload, NetworkManager.PacketContext context) {
         context.queue(() -> {
+            var player = context.getPlayer();
             var item = payload.item();
+            var args = payload.args();
 
-            var slotlessInventory = ((ISlotlessInventory) context.getPlayer().getInventory()).kitchen_sink$getSlotlessInventory();
+            var slotlessInventory = InventoryUtils.getIfSlotless(player, args.inventoryType());
+
+            if (slotlessInventory == null) return;
 
             slotlessInventory.repositionItem(item);
         });

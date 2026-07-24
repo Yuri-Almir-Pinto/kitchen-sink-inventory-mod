@@ -22,7 +22,6 @@
   * Botão a esquerda da slotless area que permite dar resize na slotless area, escondendo ou mostrando slots a direita
 - Adaptar ações slotless para o slotless container:
   * DropSlotlessItem
-  * MoveSlotlessItem
   * ResetPositions
   * SwapSlotlessItem
   * Shift click do inventário para o slotless (quickMove da SlotlessScreenHandler)

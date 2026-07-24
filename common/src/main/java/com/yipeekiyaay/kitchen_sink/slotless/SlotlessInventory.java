@@ -144,6 +144,7 @@ public class SlotlessInventory {
 
         found.setPos(item.getX(), item.getY());
         this.pushToTop(found);
+        markDirty();
     }
 
     public boolean isUnlocked() {
