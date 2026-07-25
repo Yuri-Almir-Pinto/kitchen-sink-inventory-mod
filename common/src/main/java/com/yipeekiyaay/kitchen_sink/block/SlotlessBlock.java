@@ -50,4 +50,20 @@ public class SlotlessBlock extends BlockWithEntity {
     protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
+
+    @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.isOf(newState.getBlock())) return;
+
+        var blockEntity = world.getBlockEntity(pos);
+
+        if (blockEntity instanceof SlotlessBlockEntity crate) {
+            if (!world.isClient)
+                crate.getSlotlessInventory().dropAll(world, pos);
+
+            world.updateComparators(pos, this);
+        }
+
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
 }

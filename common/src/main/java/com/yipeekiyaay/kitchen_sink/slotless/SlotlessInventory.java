@@ -4,6 +4,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -53,6 +56,21 @@ public class SlotlessInventory {
         }
 
         markDirty();
+    }
+
+    public void dropAll(World world, BlockPos pos) {
+        if (world.isClient()) return;
+        if (getItems().isEmpty()) return;
+
+        for (var item : getItems()) {
+            if (item.isEmpty()) continue;
+
+            while (!item.isEmpty()) {
+                ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), item.pickStack(false));
+            }
+        }
+
+        clearEmpty();
     }
 
     public void addItem(SlotlessItem newItem) {

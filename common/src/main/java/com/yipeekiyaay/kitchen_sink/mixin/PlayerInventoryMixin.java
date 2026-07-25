@@ -123,15 +123,10 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
     @Inject(method = "dropAll", at = @At("RETURN"))
     public void kitchen_sink$dropAllSlotless(CallbackInfo ci) {
-        for (var item : kitchen_sink$slotlessInventory.getItems()) {
-            while (!item.isEmpty()) {
-                var stack = item.pickStack(false);
+        var world = player.getWorld();
+        var pos = player.getBlockPos();
 
-                this.player.dropItem(stack, true, false);
-            }
-        }
-
-        kitchen_sink$slotlessInventory.clearEmpty();
+        kitchen_sink$slotlessInventory.dropAll(world, pos);
     }
 
     @Inject(method = "clone", at = @At("RETURN"))

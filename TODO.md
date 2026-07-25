@@ -24,7 +24,6 @@
 - Remover o markDirty to inventário, e jogar essas responsabilidade para os packets, para evitar com que markDirty seja chamado multiplas vezes, já que ele pode dar trigger em block updates.
 - Ver o que fazer quanto a transferência direta de slotless item de uma área para outra (Estava pensando em fazer uma scissor the permite mostrar o item de uma área em outra área, mas pelo visto isso não da certo).
 - Permitir automação tirar e colocar itens de dentro do slotless block entity
-- Fazer com que o slotless block entity drope todos os itens quando quebrado
 
 ## Bugs
 
