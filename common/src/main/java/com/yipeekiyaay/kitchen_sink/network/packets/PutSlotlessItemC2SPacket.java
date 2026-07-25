@@ -59,6 +59,7 @@ public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryUtils.
             var item = new SlotlessItem(cursorStack.copyAndEmpty(), x, y);
             slotlessInventory.addItem(item.copy());
             SlotlessOperation.addIfServer(player, item.copyAndEmpty(), inventoryType);
+            InventoryUtils.markDirtyIfServer(player);
         }
         else if (button == 1) {
             var toAdd = cursorStack.copy();
@@ -67,6 +68,7 @@ public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryUtils.
             var itemToAdd = new SlotlessItem(toAdd, x, y);
             slotlessInventory.addItem(itemToAdd.copy());
             SlotlessOperation.addIfServer(player, itemToAdd.copyAndEmpty(), inventoryType);
+            InventoryUtils.markDirtyIfServer(player);
         }
     }
 }

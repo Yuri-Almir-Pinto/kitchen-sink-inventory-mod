@@ -58,7 +58,9 @@ public record DropSlotlessItemC2SPacket(int slotlessItemIndex, boolean isHolding
         player.dropItem(stackPicked.copy(), true);
 
         var item = new SlotlessItem(stackPicked.copyAndEmpty());
+
         SlotlessOperation.removeIfServer(player, item, args.inventoryType());
+        InventoryUtils.markDirtyIfServer(player);
 
         if (slotlessItem.isEmpty())
             slotlessInventory.clearEmpty();

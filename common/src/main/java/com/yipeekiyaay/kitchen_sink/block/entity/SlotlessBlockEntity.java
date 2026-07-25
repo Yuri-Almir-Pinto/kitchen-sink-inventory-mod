@@ -34,7 +34,6 @@ import java.util.ArrayList;
 
 public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProvider, SidedInventory {
     private final SlotlessInventory slotlessInventory = new SlotlessInventory()
-            .setDirtyRunnable(this::markDirty)
             .setArea(SlotlessSize.SIZE_2766);
     private final ArrayList<ServerPlayerEntity> observers = new ArrayList<>();
 
@@ -183,6 +182,8 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
 
         sendUpdate(new SlotlessOperation(SlotlessOperation.Type.remove, new SlotlessItem(stack.copy()), -1));
 
+        markDirty();
+
         return stack;
     }
 
@@ -205,6 +206,8 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
         item.setPos(addedItem.getX(), addedItem.getY());
 
         sendUpdate(new SlotlessOperation(SlotlessOperation.Type.add, item, -1));
+
+        markDirty();
     }
 
     @Override
@@ -215,6 +218,7 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
     @Override
     public void clear() {
         slotlessInventory.clear();
+        markDirty();
     }
 
     @Override

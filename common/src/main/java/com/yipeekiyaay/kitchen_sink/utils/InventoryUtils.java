@@ -34,6 +34,18 @@ public class InventoryUtils {
             from.add(fromStack.copyAndEmpty());
     }
 
+    public static void markDirtyIfServer(PlayerEntity player) {
+        if (player.getWorld().isClient()) return;
+
+        if (!(player.currentScreenHandler instanceof SlotlessScreenHandler slotlessHandler)) return;
+
+        var slotlessBlockEntity = slotlessHandler.getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity == null) return;
+
+        slotlessBlockEntity.markDirty();
+    }
+
     public static @Nullable SlotlessInventory getIfSlotless(PlayerEntity player, BlockPos pos) {
         var blockEntity = player.getWorld().getBlockEntity(pos);
 

@@ -112,6 +112,11 @@ public class SlotlessScreenHandler extends ScreenHandler {
 
         slot.markDirty();
 
+        var slotlessBlockEntity = getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity != null)
+            slotlessBlockEntity.markDirty();
+
         return slotStack.copyAndEmpty();
     }
 }

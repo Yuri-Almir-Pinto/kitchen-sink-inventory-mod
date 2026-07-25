@@ -64,6 +64,6 @@ public record ResetPositionsC2SPacket(boolean isHoldingShift, DefaultArgs args) 
         SlotlessOperation.resetIfServer(player, args.inventoryType(), isHoldingShift, args.seed());
 
         if (mutated)
-            slotlessInventory.markDirty();
+            InventoryUtils.markDirtyIfServer(player);
     }
 }

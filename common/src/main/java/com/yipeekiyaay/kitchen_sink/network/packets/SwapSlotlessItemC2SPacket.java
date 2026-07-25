@@ -63,6 +63,7 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int inventoryIndex, int m
             var item = new SlotlessItem(hotbarStack.copyAndEmpty(), mouseX, mouseY);
             slotlessInventory.addItem(item.copy());
             SlotlessOperation.addIfServer(player, item, args.inventoryType());
+            InventoryUtils.markDirtyIfServer(player);
         }
 
         if (!slotlessItem.isEmpty()) {
@@ -73,6 +74,8 @@ public record SwapSlotlessItemC2SPacket(int itemIndex, int inventoryIndex, int m
 
             if (slotlessItem.isEmpty())
                 slotlessInventory.clearEmpty();
+
+            InventoryUtils.markDirtyIfServer(player);
         }
     }
 }

@@ -18,24 +18,11 @@ public class SlotlessInventory {
     private @Nullable SlotlessSize areaSize;
     private final List<SlotlessItem> items = new ArrayList<>();
     private boolean isLocked = false;
-    private Runnable markDirtyRun = null;
 
     public SlotlessInventory setArea(SlotlessSize size) {
         this.areaSize = size;
 
         return this;
-    }
-
-    public SlotlessInventory setDirtyRunnable(Runnable function) {
-        markDirtyRun = function;
-
-        return this;
-    }
-
-    public void markDirty() {
-        if (markDirtyRun == null) return;
-
-        markDirtyRun.run();
     }
 
     public @Nullable SlotlessSize getAreaSize() {
@@ -55,8 +42,6 @@ public class SlotlessInventory {
 
             this.addItem(item);
         }
-
-        markDirty();
     }
 
     public void dropAll(World world, BlockPos pos) {
@@ -89,8 +74,6 @@ public class SlotlessInventory {
             newItem.setOwner(this);
             this.items.add(newItem);
         }
-
-        markDirty();
     }
 
     public void addItem(ItemStack stack) {
@@ -188,18 +171,12 @@ public class SlotlessInventory {
 
     public void clear() {
         this.items.clear();
-        markDirty();
     }
 
     public void clearEmpty() {
         if (isLocked) return;
 
-        var before = items.size();
-
         this.items.removeIf(item -> item == null || item.isEmpty());
-
-        if (before != items.size())
-            markDirty();
     }
 
     public void pushToTop(SlotlessItem item) {
@@ -210,7 +187,6 @@ public class SlotlessInventory {
 
         if (this.items.remove(item)) {
             this.items.add(item);
-            markDirty();
         }
     }
 
@@ -231,7 +207,6 @@ public class SlotlessInventory {
 
         found.setPos(item.getX(), item.getY());
         this.pushToTop(found);
-        markDirty();
     }
 
     public boolean isUnlocked() {

@@ -39,6 +39,7 @@ public record MoveSlotlessItemC2SPacket(SlotlessItem item, DefaultArgs args) imp
 
             slotlessInventory.repositionItem(item.copy());
             SlotlessOperation.moveIfServer(player, item, args.inventoryType());
+            InventoryUtils.markDirtyIfServer(player);
         });
     }
 }

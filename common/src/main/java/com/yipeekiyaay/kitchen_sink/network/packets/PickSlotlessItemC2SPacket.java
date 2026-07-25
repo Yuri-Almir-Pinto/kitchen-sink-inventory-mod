@@ -90,6 +90,7 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
             }
 
             SlotlessOperation.removeIfServer(player, toRemove, args.inventoryType());
+            InventoryUtils.markDirtyIfServer(player);
         } else {
             for (var i = 0; i < screen.slots.size(); i++) {
                 var slot = screen.slots.get(i);

@@ -69,6 +69,9 @@ public abstract class ScreenHandlerMixin {
         removedDelta.setCount(extractedCount);
 
         SlotlessOperation.removeIfServer(player, removedDelta, type);
+
+        if (type == InventoryUtils.InventoryType.container)
+            InventoryUtils.markDirtyIfServer(player);
     }
 
     @Inject(method = "insertItem", at = @At("HEAD"), cancellable = true)
