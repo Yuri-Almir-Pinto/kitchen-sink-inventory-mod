@@ -31,7 +31,7 @@ public abstract class ScreenHandlerMixin {
 
     @Inject(method = "internalOnSlotClick", at = @At("RETURN"))
     public void kitchen_sink$internalOnSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (player.isCreative() || actionType != SlotActionType.PICKUP_ALL) return;
+        if (actionType != SlotActionType.PICKUP_ALL) return;
 
         var cursorStack = getCursorStack();
         if (cursorStack.isEmpty() || !cursorStack.isStackable() || cursorStack.getCount() >= cursorStack.getMaxCount()) return;
@@ -42,7 +42,7 @@ public abstract class ScreenHandlerMixin {
                 kitchen_sink$fillCursorFromInventory(containerInv, cursorStack, player, InventoryType.container);
         }
 
-        if (cursorStack.getCount() < cursorStack.getMaxCount()) {
+        if (cursorStack.getCount() < cursorStack.getMaxCount() && !player.isCreative()) {
             var playerInv = InventoryUtils.getIfSlotless(player);
             if (playerInv != null)
                 kitchen_sink$fillCursorFromInventory(playerInv, cursorStack, player, InventoryType.inventory);

@@ -122,7 +122,13 @@ public class SlotlessArea {
     }
 
 
-    public void updateRender() {
+    public void updateRender(boolean isCreative) {
+        if (isCreative && areaType == InventoryType.inventory) {
+            shouldRender = false;
+            updateWidgets();
+            return;
+        }
+
         if (handlerQuery == null || areaType == InventoryType.container) {
             shouldRender = true;
             updateWidgets();
