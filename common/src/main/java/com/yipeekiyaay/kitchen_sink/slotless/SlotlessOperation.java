@@ -1,7 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
-import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -35,32 +34,32 @@ public record SlotlessOperation(Type type, SlotlessItem item, long seed) {
             }
     );
 
-    public static void resetIfServer(PlayerEntity player, InventoryUtils.InventoryType inventoryType, boolean all, long seed) {
-        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+    public static void resetIfServer(PlayerEntity player, InventoryType inventoryType, boolean all, long seed) {
+        if (inventoryType == InventoryType.inventory) return;
 
         sendIfServer(player, new SlotlessItem(ItemStack.EMPTY), all ? Type.resetAll : Type.reset, seed);
     }
 
-    public static void moveIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType) {
-        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+    public static void moveIfServer(PlayerEntity player, SlotlessItem item, InventoryType inventoryType) {
+        if (inventoryType == InventoryType.inventory) return;
 
         sendIfServer(player, item, Type.move, -1);
     }
 
-    public static void removeIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType) {
-        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+    public static void removeIfServer(PlayerEntity player, SlotlessItem item, InventoryType inventoryType) {
+        if (inventoryType == InventoryType.inventory) return;
 
         sendIfServer(player, item, Type.remove, -1);
     }
 
-    public static void addIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType) {
-        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+    public static void addIfServer(PlayerEntity player, SlotlessItem item, InventoryType inventoryType) {
+        if (inventoryType == InventoryType.inventory) return;
 
         sendIfServer(player, item, Type.add, -1);
     }
 
-    public static void addIfServer(PlayerEntity player, SlotlessItem item, InventoryUtils.InventoryType inventoryType, long seed) {
-        if (inventoryType == InventoryUtils.InventoryType.inventory) return;
+    public static void addIfServer(PlayerEntity player, SlotlessItem item, InventoryType inventoryType, long seed) {
+        if (inventoryType == InventoryType.inventory) return;
 
         sendIfServer(player, item, Type.add, seed);
     }

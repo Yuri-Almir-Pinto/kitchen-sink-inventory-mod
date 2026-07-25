@@ -49,6 +49,13 @@ public class KitchenSinkNetworking {
                 ResetPositionsC2SPacket::handle
         );
 
+        NetworkManager.registerReceiver(
+                NetworkManager.Side.C2S,
+                TransferSlotlessItemC2SPacket.TYPE,
+                TransferSlotlessItemC2SPacket.CODEC,
+                TransferSlotlessItemC2SPacket::handle
+        );
+
         if (Platform.getEnv() == EnvType.SERVER) {
             NetworkManager.registerS2CPayloadType(
                     SyncSlotlessInventoryS2CPacket.TYPE,

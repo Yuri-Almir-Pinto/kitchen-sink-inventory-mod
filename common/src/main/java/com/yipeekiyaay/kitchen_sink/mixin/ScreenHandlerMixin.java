@@ -1,10 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.mixin;
 
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
-import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
-import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
+import com.yipeekiyaay.kitchen_sink.slotless.*;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -42,18 +39,18 @@ public abstract class ScreenHandlerMixin {
         if (player.currentScreenHandler instanceof SlotlessScreenHandler handler) {
             var containerInv = InventoryUtils.getIfSlotless(handler);
             if (containerInv != null)
-                kitchen_sink$fillCursorFromInventory(containerInv, cursorStack, player, InventoryUtils.InventoryType.container);
+                kitchen_sink$fillCursorFromInventory(containerInv, cursorStack, player, InventoryType.container);
         }
 
         if (cursorStack.getCount() < cursorStack.getMaxCount()) {
             var playerInv = InventoryUtils.getIfSlotless(player);
             if (playerInv != null)
-                kitchen_sink$fillCursorFromInventory(playerInv, cursorStack, player, InventoryUtils.InventoryType.inventory);
+                kitchen_sink$fillCursorFromInventory(playerInv, cursorStack, player, InventoryType.inventory);
         }
     }
 
     @Unique
-    private void kitchen_sink$fillCursorFromInventory(SlotlessInventory inventory, ItemStack cursorStack, PlayerEntity player, InventoryUtils.InventoryType type) {
+    private void kitchen_sink$fillCursorFromInventory(SlotlessInventory inventory, ItemStack cursorStack, PlayerEntity player, InventoryType type) {
         var item = inventory.getItem(cursorStack);
         if (item == null || item.isEmpty()) return;
 
@@ -70,7 +67,7 @@ public abstract class ScreenHandlerMixin {
 
         SlotlessOperation.removeIfServer(player, removedDelta, type);
 
-        if (type == InventoryUtils.InventoryType.container)
+        if (type == InventoryType.container)
             InventoryUtils.markDirtyIfServer(player);
     }
 

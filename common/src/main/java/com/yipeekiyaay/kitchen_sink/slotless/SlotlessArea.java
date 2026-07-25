@@ -4,7 +4,6 @@ import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.network.packets.ResetPositionsC2SPacket;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.utils.HandledScreenQuery;
-import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,7 +27,7 @@ public class SlotlessArea {
     private SlotlessSize size;
     private int x;
     private int y;
-    private InventoryUtils.InventoryType areaType;
+    private InventoryType areaType;
     private HandledScreenQuery handlerQuery;
     private SlotlessInventory inventory = new SlotlessInventory();
     private final ArrayList<TexturedButtonWidget> buttonWidgets = new ArrayList<>();
@@ -88,13 +87,13 @@ public class SlotlessArea {
     }
 
     public SlotlessArea setInventoryType() {
-        this.areaType = InventoryUtils.InventoryType.inventory;
+        this.areaType = InventoryType.inventory;
 
         return this;
     }
 
     public SlotlessArea setContainerType() {
-        this.areaType = InventoryUtils.InventoryType.container;
+        this.areaType = InventoryType.container;
 
         return this;
     }
@@ -124,7 +123,7 @@ public class SlotlessArea {
 
 
     public void updateRender() {
-        if (handlerQuery == null || areaType == InventoryUtils.InventoryType.container) {
+        if (handlerQuery == null || areaType == InventoryType.container) {
             shouldRender = true;
             updateWidgets();
             return;
@@ -185,7 +184,7 @@ public class SlotlessArea {
         return getItems().get(index);
     }
 
-    public InventoryUtils.InventoryType getInventoryType() {
+    public InventoryType getInventoryType() {
         return areaType;
     }
 }

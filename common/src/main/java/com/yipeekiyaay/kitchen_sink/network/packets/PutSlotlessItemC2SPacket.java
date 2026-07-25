@@ -1,6 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
+import com.yipeekiyaay.kitchen_sink.slotless.InventoryType;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
@@ -13,7 +14,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
-public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryUtils.InventoryType inventoryType) implements CustomPayload {
+public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryType inventoryType) implements CustomPayload {
     public static final CustomPayload.Id<PutSlotlessItemC2SPacket> TYPE =
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "put_slotless_item"));
 
@@ -21,7 +22,7 @@ public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryUtils.
             PacketCodecs.VAR_INT, PutSlotlessItemC2SPacket::x,
             PacketCodecs.VAR_INT, PutSlotlessItemC2SPacket::y,
             PacketCodecs.VAR_INT, PutSlotlessItemC2SPacket::button,
-            InventoryUtils.INVENTORY_TYPE_CODEC, PutSlotlessItemC2SPacket::inventoryType,
+            InventoryType.INVENTORY_TYPE_CODEC, PutSlotlessItemC2SPacket::inventoryType,
             PutSlotlessItemC2SPacket::new
     );
 
@@ -42,7 +43,7 @@ public record PutSlotlessItemC2SPacket(int x, int y, int button, InventoryUtils.
         });
     }
 
-    public static void handleCommon(int x, int y, int button, InventoryUtils.InventoryType inventoryType,  PlayerEntity player) {
+    public static void handleCommon(int x, int y, int button, InventoryType inventoryType, PlayerEntity player) {
         var screen = player.currentScreenHandler;
 
         if (screen == null) return;

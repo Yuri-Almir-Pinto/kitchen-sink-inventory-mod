@@ -3,13 +3,11 @@ package com.yipeekiyaay.kitchen_sink.utils;
 import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBlockEntity;
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
+import com.yipeekiyaay.kitchen_sink.slotless.InventoryType;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
@@ -74,17 +72,4 @@ public class InventoryUtils {
         return type == InventoryType.inventory ? getIfSlotless(player) : getIfSlotless(player.currentScreenHandler);
     }
 
-    public enum InventoryType { inventory, container }
-
-    public static InventoryType getOther(InventoryType type) {
-        if (type == InventoryType.inventory)
-            return InventoryType.container;
-        else
-            return InventoryType.inventory;
-    }
-
-    public static PacketCodec<ByteBuf, InventoryType> INVENTORY_TYPE_CODEC = PacketCodecs.indexed(
-            id -> InventoryType.values()[id],
-            Enum::ordinal
-        );
 }

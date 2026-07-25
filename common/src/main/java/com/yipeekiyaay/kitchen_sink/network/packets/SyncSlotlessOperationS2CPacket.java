@@ -2,6 +2,7 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.slotless.InventoryType;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
@@ -46,7 +47,7 @@ public record SyncSlotlessOperationS2CPacket(SlotlessOperation op) implements Cu
                 case move -> slotlessContainer.moveItem(op.item());
                 case reset, resetAll -> ResetPositionsC2SPacket.handleCommon(
                         op.type() == SlotlessOperation.Type.resetAll,
-                        DefaultArgs.with(InventoryUtils.InventoryType.container, op.seed()),
+                        DefaultArgs.with(InventoryType.container, op.seed()),
                         player
                 );
             }

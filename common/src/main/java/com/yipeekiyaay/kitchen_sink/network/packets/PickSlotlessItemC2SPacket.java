@@ -3,6 +3,7 @@ package com.yipeekiyaay.kitchen_sink.network.packets;
 import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
+import com.yipeekiyaay.kitchen_sink.slotless.InventoryType;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
@@ -61,7 +62,7 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
             screen.setCursorStack(picked.copy());
             SlotlessOperation.removeIfServer(player, new SlotlessItem(picked.copyAndEmpty()), args.inventoryType());
         } else if (screen instanceof SlotlessScreenHandler) {
-            var otherType = InventoryUtils.getOther(args.inventoryType());
+            var otherType = args.inventoryType().getOther();
 
             var otherSlotlessInventory = InventoryUtils.getIfSlotless(player, otherType);
 
@@ -69,7 +70,7 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
 
             var toRemove = item.copy();
 
-            if (otherType == InventoryUtils.InventoryType.inventory) {
+            if (otherType == InventoryType.inventory) {
                 for (var slot : screen.slots) {
                     if (slot.getIndex() < 0 || slot.getIndex() >= 9) continue;
 

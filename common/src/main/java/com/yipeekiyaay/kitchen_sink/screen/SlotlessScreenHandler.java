@@ -2,10 +2,10 @@ package com.yipeekiyaay.kitchen_sink.screen;
 
 import com.yipeekiyaay.kitchen_sink.block.entity.SlotlessBlockEntity;
 import com.yipeekiyaay.kitchen_sink.registry.ModRegistries;
+import com.yipeekiyaay.kitchen_sink.slotless.InventoryType;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
-import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -108,7 +108,7 @@ public class SlotlessScreenHandler extends ScreenHandler {
         if (last.getCount() == item.getCount())
             last.randomizePos(Random.create(seed));
 
-        SlotlessOperation.addIfServer(player, item.copy(), InventoryUtils.InventoryType.container, seed);
+        SlotlessOperation.addIfServer(player, item.copy(), InventoryType.container, seed);
 
         slot.markDirty();
 

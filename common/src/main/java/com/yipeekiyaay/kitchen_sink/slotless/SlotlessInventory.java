@@ -134,6 +134,16 @@ public class SlotlessInventory {
         return items.get(index);
     }
 
+    public int getIndex(SlotlessItem toFind) {
+        for (var i = 0; i < size(); i++) {
+            if (!toFind.isSameStackAs(getItem(i))) continue;
+
+            return i;
+        }
+
+        return -1;
+    }
+
     public int size() {
         return items.size();
     }

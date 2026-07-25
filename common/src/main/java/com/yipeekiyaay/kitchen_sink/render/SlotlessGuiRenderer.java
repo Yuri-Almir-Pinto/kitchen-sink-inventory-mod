@@ -6,6 +6,7 @@ import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Locale;
@@ -14,7 +15,7 @@ public class SlotlessGuiRenderer {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final TextRenderer textRenderer = client.textRenderer;
 
-    public static void renderSlotlessArea(DrawContext context, SlotlessArea area, float guiX, float guiY) {
+    public static void renderSlotlessArea(DrawContext context, SlotlessArea area, float guiX, float guiY, @Nullable SlotlessItem moving) {
         context.getMatrices().push();
         context.getMatrices().translate(guiX, guiY, 0.0F);
 
@@ -38,6 +39,8 @@ public class SlotlessGuiRenderer {
 
         var items = area.getItems();
         for (var item : items) {
+            if (item == moving) continue;
+
             double absoluteX = area.getX() + item.getX();
             double absoluteY = area.getY() + item.getY();
 
@@ -50,6 +53,15 @@ public class SlotlessGuiRenderer {
         }
 
         context.disableScissor();
+
+        if (moving != null) {
+            double absoluteX = area.getX() + moving.getX();
+            double absoluteY = area.getY() + moving.getY();
+
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+            SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY);
+        }
+
         context.getMatrices().pop();
     }
 

@@ -77,10 +77,12 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (!kitchen_sink$manager.hasArea()) return;
 
         kitchen_sink$handlerQuery.update(x, y, handler.slots, client.player);
+        var d = kitchen_sink$data;
 
         for (SlotlessArea area : kitchen_sink$manager.getAreas()) {
             area.updateRender();
-            SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y);
+            var moving = d.moving != null && d.currentArea == area ? d.moving : null;
+            SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y, moving);
         }
     }
 
@@ -128,7 +130,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "isPointOverSlot", at = @At("HEAD"), cancellable = true)
     public void kitchen_sink$isPointOverSlot(Slot slot, double pointX, double pointY, CallbackInfoReturnable<Boolean> cir) {
-        if (kitchen_sink$manager.isContained((int) pointX - x, (int) pointY - y))
+        if (kitchen_sink$manager.isContained((int) pointX - x, (int) pointY - y) || kitchen_sink$data.moving != null)
             cir.setReturnValue(false);
     }
 
@@ -266,19 +268,36 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         int guiMouseY = (int) mouseY - this.y;
 
         if (d.moving == null || d.clickX == null || d.clickY == null || d.clickTime == null || d.currentArea == null) return;
+
         var args = DefaultArgs.with(d.currentArea.getInventoryType());
+        var overArea = kitchen_sink$manager.getArea(guiMouseX, guiMouseY);
+        if (overArea != null && d.currentArea != overArea) {
+            var index = d.currentArea.getInventory().getIndex(d.moving);
+            var from = d.currentArea.getInventoryType();
 
-        NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving, args));
+            d.moving.setPos(d.moving.getX(), d.moving.getY() + (d.currentArea.getY() - overArea.getY()));
 
-        if (d.isClose(guiMouseX, guiMouseY, 3) && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
-            var index = d.currentArea.getInventory().getItems().size() - 1;
-            var hasShiftDown = Screen.hasShiftDown();
-            var shouldMassQuickMove = d.isDoubleClick() && d.lastClick != null && d.lastClick.moving != null
-                    && ItemStack.areItemsAndComponentsEqual(d.lastClick.moving.getStack(), handler.getCursorStack());
+            NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving, args));
 
             if (client != null && client.player != null) {
-                NetworkManager.sendToServer(new PickSlotlessItemC2SPacket(index, button, Screen.hasShiftDown(), shouldMassQuickMove, args));
-                PickSlotlessItemC2SPacket.handleCommon(index, button, hasShiftDown, shouldMassQuickMove, args, client.player);
+                NetworkManager.sendToServer(new TransferSlotlessItemC2SPacket(index, from));
+                TransferSlotlessItemC2SPacket.handleCommon(index, from,  client.player);
+            }
+        } else {
+
+
+            NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving, args));
+
+            if (d.isClose(guiMouseX, guiMouseY, 3) && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
+                var index = d.currentArea.getInventory().getItems().size() - 1;
+                var hasShiftDown = Screen.hasShiftDown();
+                var shouldMassQuickMove = d.isDoubleClick() && d.lastClick != null && d.lastClick.moving != null
+                        && ItemStack.areItemsAndComponentsEqual(d.lastClick.moving.getStack(), handler.getCursorStack());
+
+                if (client != null && client.player != null) {
+                    NetworkManager.sendToServer(new PickSlotlessItemC2SPacket(index, button, Screen.hasShiftDown(), shouldMassQuickMove, args));
+                    PickSlotlessItemC2SPacket.handleCommon(index, button, hasShiftDown, shouldMassQuickMove, args, client.player);
+                }
             }
         }
 
