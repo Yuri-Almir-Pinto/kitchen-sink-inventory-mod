@@ -10,7 +10,7 @@ public class KitchenSinkModClient {
         KitchenSinkNetworking.initClient();
 
         MenuRegistry.registerScreenFactory(
-                ModRegistries.SLOTLESS_BARREL_SCREEN_HANDLER.get(),
+                ModRegistries.SLOTLESS_SCREEN_HANDLER.get(),
                 SlotlessScreen::new
         );
     }

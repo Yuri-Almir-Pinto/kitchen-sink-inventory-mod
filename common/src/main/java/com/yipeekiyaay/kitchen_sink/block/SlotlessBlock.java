@@ -17,10 +17,10 @@ import org.jetbrains.annotations.Nullable;
 
 // Will probably get deleted when I decide to allow substituting the block entity of other containers to the
 // slotless version.
-public class SlotlessBarrelBlock extends BlockWithEntity {
-    public static final MapCodec<SlotlessBarrelBlock> CODEC = createCodec(SlotlessBarrelBlock::new);
+public class SlotlessBlock extends BlockWithEntity {
+    public static final MapCodec<SlotlessBlock> CODEC = createCodec(SlotlessBlock::new);
 
-    public SlotlessBarrelBlock(Settings settings) {
+    public SlotlessBlock(Settings settings) {
         super(settings);
     }
 

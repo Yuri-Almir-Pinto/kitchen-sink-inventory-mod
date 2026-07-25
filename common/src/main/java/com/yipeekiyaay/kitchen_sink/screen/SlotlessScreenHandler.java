@@ -28,7 +28,7 @@ public class SlotlessScreenHandler extends ScreenHandler {
     }
 
     public SlotlessScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(ModRegistries.SLOTLESS_BARREL_SCREEN_HANDLER.get(), syncId);
+        super(ModRegistries.SLOTLESS_SCREEN_HANDLER.get(), syncId);
         this.context = context;
 
         for (int row = 0; row < 3; ++row) {
@@ -72,11 +72,12 @@ public class SlotlessScreenHandler extends ScreenHandler {
         if (slotlessBlockEntity == null) return;
 
         slotlessBlockEntity.removeObserver(serverPlayer);
+        slotlessBlockEntity.playCloseSound();
     }
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return canUse(this.context, player, ModRegistries.SLOTLESS_BARREL.get());
+        return canUse(this.context, player, ModRegistries.SLOTLESS_CRATE_BLOCK.get());
     }
 
     @Override
