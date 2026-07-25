@@ -66,4 +66,21 @@ public class SlotlessBlock extends BlockWithEntity {
 
         super.onStateReplaced(state, world, pos, newState, moved);
     }
+
+    @Override
+    protected boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        if (!(world.getBlockEntity(pos) instanceof SlotlessBlockEntity slotlessBlock))
+            return 0;
+
+        if (slotlessBlock.isEmpty())
+            return 0;
+
+        // Reduces 1 as the slotless block always report size + 1 to always allow insertion.
+        return 1 + (int) (Math.log(slotlessBlock.size() - 1) / Math.log(2));
+    }
 }

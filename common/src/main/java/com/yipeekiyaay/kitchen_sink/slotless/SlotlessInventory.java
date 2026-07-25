@@ -1,5 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -142,6 +143,18 @@ public class SlotlessInventory {
         return null;
     }
 
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
+    public SlotlessItem getItem(int index) {
+        return items.get(index);
+    }
+
+    public int size() {
+        return items.size();
+    }
+
     public boolean hasItem(ItemStack stack) {
         if (stack.isEmpty()) return false;
 
@@ -151,6 +164,26 @@ public class SlotlessInventory {
         }
 
         return false;
+    }
+
+    public int count(Item itemCheck) {
+        long total = 0;
+
+        for (var item : getItems()) {
+            if (item.getStack().getItem() != itemCheck) continue;
+
+            try {
+                total = Math.addExact(total, item.getCount());
+            } catch (ArithmeticException e) {
+                return Integer.MAX_VALUE;
+            }
+
+            if (total >= Integer.MAX_VALUE) {
+                return Integer.MAX_VALUE;
+            }
+        }
+
+        return (int) total;
     }
 
     public void clear() {
