@@ -131,14 +131,16 @@ public class SlotlessItem {
         return stackReturned;
     }
 
-    public void transferTo(ItemStack stack) {
-        if (!ItemStack.areItemsAndComponentsEqual(getStack(), stack)) return;
+    public int transferTo(ItemStack stack) {
+        if (!ItemStack.areItemsAndComponentsEqual(getStack(), stack)) return 0;
 
         var toTransfer = (int) Math.min(getCount(), stack.getMaxCount() - stack.getCount());
-        if (toTransfer <= 0) return;
+        if (toTransfer <= 0) return 0;
 
         setCount(getCount() - toTransfer);
         stack.setCount(stack.getCount() + toTransfer);
+
+        return toTransfer;
     }
 
     public void deplete() {

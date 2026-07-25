@@ -1,8 +1,10 @@
 package com.yipeekiyaay.kitchen_sink.mixin;
 
+import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessOperation;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,6 +16,7 @@ import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,21 +34,41 @@ public abstract class ScreenHandlerMixin {
 
     @Inject(method = "internalOnSlotClick", at = @At("RETURN"))
     public void kitchen_sink$internalOnSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (player.isCreative()) return;
-        if (actionType != SlotActionType.PICKUP_ALL) return;
-        if (getCursorStack().isEmpty() || !getCursorStack().isStackable()) return;
-        if (getCursorStack().getCount() == getCursorStack().getMaxCount()) return;
+        if (player.isCreative() || actionType != SlotActionType.PICKUP_ALL) return;
 
-        var stack = getCursorStack();
-        var slotlessInventory = ((ISlotlessInventory) player.getInventory()).kitchen_sink$getSlotlessInventory();
-        var item = slotlessInventory.getItem(stack);
+        var cursorStack = getCursorStack();
+        if (cursorStack.isEmpty() || !cursorStack.isStackable() || cursorStack.getCount() >= cursorStack.getMaxCount()) return;
 
+        if (player.currentScreenHandler instanceof SlotlessScreenHandler handler) {
+            var containerInv = InventoryUtils.getIfSlotless(handler);
+            if (containerInv != null)
+                kitchen_sink$fillCursorFromInventory(containerInv, cursorStack, player, InventoryUtils.InventoryType.container);
+        }
+
+        if (cursorStack.getCount() < cursorStack.getMaxCount()) {
+            var playerInv = InventoryUtils.getIfSlotless(player);
+            if (playerInv != null)
+                kitchen_sink$fillCursorFromInventory(playerInv, cursorStack, player, InventoryUtils.InventoryType.inventory);
+        }
+    }
+
+    @Unique
+    private void kitchen_sink$fillCursorFromInventory(SlotlessInventory inventory, ItemStack cursorStack, PlayerEntity player, InventoryUtils.InventoryType type) {
+        var item = inventory.getItem(cursorStack);
         if (item == null || item.isEmpty()) return;
 
-        item.transferTo(stack);
+        var extractedCount = item.transferTo(cursorStack);
+
+        if (extractedCount <= 0) return;
 
         if (item.isEmpty())
-            slotlessInventory.clearEmpty();
+            inventory.clearEmpty();
+
+        var removedDelta = new SlotlessItem(cursorStack.copy());
+
+        removedDelta.setCount(extractedCount);
+
+        SlotlessOperation.removeIfServer(player, removedDelta, type);
     }
 
     @Inject(method = "insertItem", at = @At("HEAD"), cancellable = true)
