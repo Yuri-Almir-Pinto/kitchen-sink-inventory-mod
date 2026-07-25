@@ -15,6 +15,12 @@ public class SlotlessItem {
     private long count;
     private @Nullable SlotlessInventory owner;
 
+    public void markDirty() {
+        if (owner == null) return;
+
+        owner.markDirty();
+    }
+
     public SlotlessItem(ItemStack stack, double x, double y, long count) {
         this.setItemStack(stack);
         this.setPos(x, y);
@@ -71,36 +77,48 @@ public class SlotlessItem {
         var randomY = random.nextBetween(centerY - 10, centerY + 10);
 
         this.setPos(randomX, randomY);
+        markDirty();
     }
 
     public void clear() {
         this.getStack().setCount(0);
         this.setCount(0);
+        markDirty();
     }
 
     public void setItemStack(ItemStack stack) {
         this.stack = stack.copy();
         this.count = this.stack.getCount();
         this.stack.setCount(1);
+        markDirty();
     }
 
     public void setPos(double x, double y) {
+        this.x = x;
+        this.y = y;
+        markDirty();
+    }
+
+    public void setPosRaw(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
     public void setCount(long count) {
         this.count = Math.max(count, 0);
+        markDirty();
     }
 
     public void setOwner(@Nullable SlotlessInventory inventory) {
         this.owner = inventory;
+        markDirty();
     }
 
     public void add(ItemStack stack) {
         if (!ItemStack.areItemsAndComponentsEqual(stack, this.stack)) return;
 
         setCount(count + stack.getCount());
+        markDirty();
     }
 
     public boolean isSameStackAs(SlotlessItem item) {
@@ -128,6 +146,8 @@ public class SlotlessItem {
 
         stackReturned.setCount(amountToPick);
 
+        markDirty();
+
         return stackReturned;
     }
 
@@ -139,6 +159,8 @@ public class SlotlessItem {
 
         setCount(getCount() - toTransfer);
         stack.setCount(stack.getCount() + toTransfer);
+
+        markDirty();
 
         return toTransfer;
     }
@@ -152,6 +174,9 @@ public class SlotlessItem {
 
         long taken = Math.min(this.count, amountToTake);
         this.setCount(this.count - taken);
+
+        markDirty();
+
         return taken;
     }
 
@@ -162,6 +187,7 @@ public class SlotlessItem {
     public SlotlessItem copyAndEmpty() {
         var newItem = copy();
         deplete();
+        markDirty();
         return newItem;
     }
 

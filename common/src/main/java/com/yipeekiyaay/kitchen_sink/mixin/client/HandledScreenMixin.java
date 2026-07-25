@@ -252,7 +252,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
         if (d.moving == null) return;
 
-        d.moving.setPos(
+        d.moving.setPosRaw(
                 d.moving.getX() + deltaX,
                 d.moving.getY() + deltaY
         );
@@ -269,6 +269,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
         if (d.moving == null || d.clickX == null || d.clickY == null || d.clickTime == null || d.currentArea == null) return;
 
+        d.moving.markDirty();
+
         var args = DefaultArgs.with(d.currentArea.getInventoryType());
         var overArea = kitchen_sink$manager.getArea(guiMouseX, guiMouseY);
         if (overArea != null && d.currentArea != overArea) {
@@ -284,8 +286,6 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                 TransferSlotlessItemC2SPacket.handleCommon(index, from,  client.player);
             }
         } else {
-
-
             NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving, args));
 
             if (d.isClose(guiMouseX, guiMouseY, 3) && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {

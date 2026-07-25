@@ -1,7 +1,9 @@
 package com.yipeekiyaay.kitchen_sink.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.yipeekiyaay.kitchen_sink.slotless.InventoryType;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessArea;
+import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -14,35 +16,52 @@ import java.util.Locale;
 public class SlotlessGuiRenderer {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final TextRenderer textRenderer = client.textRenderer;
+    private static SlotlessInventory slotlessPlayerCopy = null;
+    private static SlotlessInventory slotlessContainerCopy = null;
 
     public static void renderSlotlessArea(DrawContext context, SlotlessArea area, float guiX, float guiY, @Nullable SlotlessItem moving) {
+        if (area.getInventoryType() == InventoryType.inventory && (slotlessPlayerCopy == null || area.getInventory().consumeDirty())) {
+            slotlessPlayerCopy = area.getInventory().copy();
+        }
+
+        if (area.getInventoryType() == InventoryType.container && (slotlessContainerCopy == null || area.getInventory().consumeDirty())) {
+            slotlessContainerCopy = area.getInventory().copy();
+        }
+
+        var memo = area.getInventoryType() == InventoryType.inventory ? slotlessPlayerCopy : slotlessContainerCopy;
+
+        var areaX = area.getX();
+        var areaY = area.getY();
+        var areaHeight = area.getSize().height();
+        var areaWidth = area.getSize().width();
+        var areaTexture = area.getSize().texture();
+
         context.getMatrices().push();
         context.getMatrices().translate(guiX, guiY, 0.0F);
 
-        var size = area.getSize();
-
         context.drawTexture(
-                size.texture(),
-                area.getX(), area.getY(),
+                areaTexture,
+                areaX, areaY,
                 0, 0,
-                size.width(), size.height(), size.width(), size.height());
+                areaWidth, areaHeight, areaWidth, areaHeight);
 
-        int scissorX = (int) (guiX + area.getX());
-        int scissorY = (int) (guiY + area.getY());
+        int scissorX = (int) (guiX + areaX);
+        int scissorY = (int) (guiY + areaY);
 
         context.enableScissor(
                 scissorX + 1,
                 scissorY + 1,
-                scissorX + size.width() - 1,
-                scissorY + size.height() - 1
+                scissorX + areaWidth - 1,
+                scissorY + areaHeight - 1
         );
 
-        var items = area.getItems();
-        for (var item : items) {
-            if (item == moving) continue;
+        var items = memo.getItems();
+        for (var i = 0; i < items.size(); i++) {
+            var item = items.get(i);
+            if (moving != null && i == items.size() - 1) continue;
 
-            double absoluteX = area.getX() + item.getX();
-            double absoluteY = area.getY() + item.getY();
+            double absoluteX = areaX + item.getX();
+            double absoluteY = areaY + item.getY();
 
             context.draw();
 
@@ -55,8 +74,8 @@ public class SlotlessGuiRenderer {
         context.disableScissor();
 
         if (moving != null) {
-            double absoluteX = area.getX() + moving.getX();
-            double absoluteY = area.getY() + moving.getY();
+            double absoluteX = areaX + moving.getX();
+            double absoluteY = areaY + moving.getY();
 
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
             SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY);

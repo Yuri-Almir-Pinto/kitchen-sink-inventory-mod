@@ -18,9 +18,34 @@ public class SlotlessInventory {
     private @Nullable SlotlessSize areaSize;
     private final List<SlotlessItem> items = new ArrayList<>();
     private boolean isLocked = false;
+    private boolean isDirty = false;
+
+    public void markDirty() {
+        isDirty = true;
+    }
+
+    public boolean consumeDirty() {
+        if (isDirty) {
+            isDirty = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    public SlotlessInventory copy() {
+        var slotlessInventory = new SlotlessInventory();
+
+        for (var item : getItems()) {
+            slotlessInventory.addItem(item.copy());
+        }
+
+        return slotlessInventory;
+    }
 
     public SlotlessInventory setArea(SlotlessSize size) {
         this.areaSize = size;
+
 
         return this;
     }
@@ -42,6 +67,8 @@ public class SlotlessInventory {
 
             this.addItem(item);
         }
+
+        markDirty();
     }
 
     public void dropAll(World world, BlockPos pos) {
@@ -57,6 +84,7 @@ public class SlotlessInventory {
         }
 
         clearEmpty();
+        markDirty();
     }
 
     public void addItem(SlotlessItem newItem) {
@@ -74,6 +102,8 @@ public class SlotlessInventory {
             newItem.setOwner(this);
             this.items.add(newItem);
         }
+
+        markDirty();
     }
 
     public void addItem(ItemStack stack) {
@@ -94,6 +124,7 @@ public class SlotlessInventory {
         }
 
         clearEmpty();
+        markDirty();
     }
 
     public void moveItem(SlotlessItem item) {
@@ -112,6 +143,7 @@ public class SlotlessInventory {
 
         found.setPos(item.getX(), item.getY());
         pushToTop(found);
+        markDirty();
     }
 
     public @Nullable SlotlessItem getItem(ItemStack stack) {
@@ -181,12 +213,14 @@ public class SlotlessInventory {
 
     public void clear() {
         this.items.clear();
+        markDirty();
     }
 
     public void clearEmpty() {
         if (isLocked) return;
 
         this.items.removeIf(item -> item == null || item.isEmpty());
+        markDirty();
     }
 
     public void pushToTop(SlotlessItem item) {
@@ -197,6 +231,7 @@ public class SlotlessInventory {
 
         if (this.items.remove(item)) {
             this.items.add(item);
+            markDirty();
         }
     }
 
@@ -217,6 +252,7 @@ public class SlotlessInventory {
 
         found.setPos(item.getX(), item.getY());
         this.pushToTop(found);
+        markDirty();
     }
 
     public boolean isUnlocked() {

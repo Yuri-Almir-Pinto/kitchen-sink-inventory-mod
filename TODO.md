@@ -25,7 +25,6 @@
 
 ## Bugs
 
-- O access violation não era causado pelo hotswap. Fazer uma cópia do inventário slotless uma vez a cada mutação e renderizar apenas essa snapshop para evitar erros de concorrência.
 - Botões do slotless GUI estão aparecendo no modo criativo, o que não deve acontecer.
 - Ao segurar algum dos botões da hotbar para dar swap constante em um slotless storage, o item pode se desincronizar com o servidor, fazendo ele sumir ou duplicar para o cliente (Não parece fazer nada ao servidor). Nada parece acontecer se segurar F.
 - Pegar muitas water bottles do chão está dando spill over para slotes que não deveria. InsertStack to inventário é quem está inserindo nesses slots. Verificar porque ele foi implementado daquela forma.
