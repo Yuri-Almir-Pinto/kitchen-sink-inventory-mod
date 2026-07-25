@@ -90,7 +90,11 @@ public record PickSlotlessItemC2SPacket(int slotlessItemIndex, int button, boole
                         if (!slot.getStack().isEmpty()) continue;
 
                         var stack = item.pickStack(false);
+
+                        toRemove.setCount(stack.getCount());
+
                         slot.insertStack(stack);
+                        break;
                     }
                 } else {
                     var random = args.getRandom();
