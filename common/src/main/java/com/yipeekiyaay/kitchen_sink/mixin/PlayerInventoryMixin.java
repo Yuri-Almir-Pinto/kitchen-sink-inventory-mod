@@ -217,6 +217,10 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         if (slot != -1 || stack.isEmpty()) return;
         if (player.getWorld().isClient()) return;
 
+        var size = kitchen_sink$slotlessInventory.getAreaSize();
+
+        if (size == null) return;
+
         if (!offHand.getFirst().isEmpty()) {
             InventoryUtils.transferFromTo(stack, offHand.getFirst());
 
@@ -229,31 +233,22 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         var firstEmpty = -1;
         var i = 0;
         while (!stack.isEmpty() && i < 36) {
-            if (!stack.isStackable()) {
-                if (main.get(i).isEmpty()) {
-                    main.set(i, stack.copyAndEmpty());
-                    main.get(i).setBobbingAnimationTime(5);
-                    cir.setReturnValue(true);
-                    return;
-                }
-            } else {
-                if (main.get(i).isEmpty() && firstEmpty == -1) {
-                    firstEmpty = i;
-                } else if (!main.get(i).isEmpty()) {
-                    InventoryUtils.transferFromTo(stack, main.get(i));
-                }
+            if (main.get(i).isEmpty() && firstEmpty == -1 && !size.isClosedSlot(i)) {
+                firstEmpty = i;
+            } else if (!main.get(i).isEmpty()) {
+                InventoryUtils.transferFromTo(stack, main.get(i));
+            }
 
-                if (stack.isEmpty()) {
-                    cir.setReturnValue(true);
-                    return;
-                }
+            if (stack.isEmpty()) {
+                cir.setReturnValue(true);
+                return;
             }
 
             i++;
         }
 
         var slotlessHasItem = kitchen_sink$slotlessInventory.hasItem(stack);
-        if (!stack.isEmpty() && firstEmpty != -1 && firstEmpty < 9 && !slotlessHasItem) {
+        if (!stack.isEmpty() && stack.isStackable() && firstEmpty != -1 && firstEmpty < 9 && !slotlessHasItem) {
             main.set(firstEmpty, stack.copyAndEmpty());
             main.get(firstEmpty).setBobbingAnimationTime(5);
             cir.setReturnValue(true);
@@ -262,12 +257,10 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
         if (stack.isEmpty()) return;
 
-        ItemStack stackToSend = stack.copy();
-
-        kitchen_sink$slotlessInventory.addItem(stack.copyAndEmpty());
+        kitchen_sink$slotlessInventory.addItem(stack.copy());
 
         if (this.player instanceof ServerPlayerEntity) {
-            kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(stackToSend));
+            kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copyAndEmpty()));
         }
 
         cir.setReturnValue(true);
