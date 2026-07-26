@@ -1,6 +1,5 @@
 
 ## Polimentos finos
-- Implementar compatibilidade com o livro de receitas do vanilla 
 - Tentar implementar compatibilidade com JEI e similares (para poder usar U e R direto no slotless)
 - Implementar pixel picking (Ver como o subpocket fez) (Baixa prioridade. É complicado...)
 - Implementar permitir mover multiplos itens ao mesmo tempo, se estiverem sobrepostos, através de alguma keybind.
