@@ -4,22 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlotlessSync {
-    private final ArrayList<SlotlessItem> pendingSync = new ArrayList<>();
+    private final ArrayList<SlotlessOperation> pendingSync = new ArrayList<>();
     private boolean isLocked = false;
 
-    public void addPending(SlotlessItem item) {
+    public void addPending(SlotlessOperation item) {
         if (isLocked) return;
 
         pendingSync.add(item);
     }
 
-    public List<SlotlessItem> copyPending() {
+    public List<SlotlessOperation> copyPending() {
         if (pendingSync.isEmpty()) return new ArrayList<>(0);
 
-        var copy = new ArrayList<SlotlessItem>(pendingSync.size());
+        var copy = new ArrayList<SlotlessOperation>(pendingSync.size());
 
-        for (var item : pendingSync)
-            copy.add(item.copy());
+        copy.addAll(pendingSync);
 
         return copy;
     }

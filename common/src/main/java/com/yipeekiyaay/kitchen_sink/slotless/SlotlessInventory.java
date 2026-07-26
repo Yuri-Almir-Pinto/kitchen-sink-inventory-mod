@@ -19,15 +19,26 @@ public class SlotlessInventory {
     private @Nullable SlotlessSize areaSize;
     private final List<SlotlessItem> items = new ArrayList<>();
     private boolean isLocked = false;
-    private boolean isDirty = false;
+    private boolean isDirtyUi = false;
+    private boolean isDirtyInventoryTick = false;
 
     public void markDirty() {
-        isDirty = true;
+        isDirtyUi = true;
+        isDirtyInventoryTick = true;
     }
 
     public boolean consumeDirty() {
-        if (isDirty) {
-            isDirty = false;
+        if (isDirtyUi) {
+            isDirtyUi = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean consumeDirtyInventoryTick() {
+        if (isDirtyInventoryTick) {
+            isDirtyInventoryTick = false;
             return true;
         }
 

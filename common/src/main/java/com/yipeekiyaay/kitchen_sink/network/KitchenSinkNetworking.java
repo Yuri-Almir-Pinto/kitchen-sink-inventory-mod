@@ -73,8 +73,8 @@ public class KitchenSinkNetworking {
             );
 
             NetworkManager.registerS2CPayloadType(
-                    InsertSlotlessItemS2CPacket.TYPE,
-                    InsertSlotlessItemS2CPacket.CODEC
+                    OperateSlotlessItemS2CPacket.TYPE,
+                    OperateSlotlessItemS2CPacket.CODEC
             );
         }
     }
@@ -103,9 +103,9 @@ public class KitchenSinkNetworking {
 
         NetworkManager.registerReceiver(
                 NetworkManager.Side.S2C,
-                InsertSlotlessItemS2CPacket.TYPE,
-                InsertSlotlessItemS2CPacket.CODEC,
-                InsertSlotlessItemS2CPacket::handle
+                OperateSlotlessItemS2CPacket.TYPE,
+                OperateSlotlessItemS2CPacket.CODEC,
+                OperateSlotlessItemS2CPacket::handle
         );
     }
 }

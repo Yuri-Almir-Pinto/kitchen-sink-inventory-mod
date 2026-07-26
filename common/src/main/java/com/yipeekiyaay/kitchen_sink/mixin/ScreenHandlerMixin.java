@@ -125,7 +125,7 @@ public abstract class ScreenHandlerMixin {
         }
 
         if (!player.getWorld().isClient() && slotlessInventory.isUnlocked()) {
-            slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copy()));
+            slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copy()).toAddOperation());
             slotlessInventory.addItem(stack.copyAndEmpty());
         }
 

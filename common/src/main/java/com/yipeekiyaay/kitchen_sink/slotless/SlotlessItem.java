@@ -193,6 +193,18 @@ public class SlotlessItem {
         return newItem;
     }
 
+    public SlotlessOperation toRemoveOperation() {
+        return toOperation(SlotlessOperation.Type.remove, Random.create().nextLong());
+    }
+
+    public SlotlessOperation toAddOperation() {
+        return toOperation(SlotlessOperation.Type.add, Random.create().nextLong());
+    }
+
+    public SlotlessOperation toOperation(SlotlessOperation.Type type, long seed) {
+        return new SlotlessOperation(type, this, seed);
+    }
+
     public void writeNbt(RegistryWrapper.WrapperLookup registries, NbtCompound nbt) {
         if (this.isEmpty()) return;
 

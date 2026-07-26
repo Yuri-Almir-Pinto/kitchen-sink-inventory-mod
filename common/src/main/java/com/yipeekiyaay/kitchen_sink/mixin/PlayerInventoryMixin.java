@@ -1,19 +1,22 @@
 package com.yipeekiyaay.kitchen_sink.mixin;
 
-import com.yipeekiyaay.kitchen_sink.network.packets.InsertSlotlessItemS2CPacket;
+import com.yipeekiyaay.kitchen_sink.network.packets.OperateSlotlessItemS2CPacket;
 import com.yipeekiyaay.kitchen_sink.network.packets.SyncSlotlessInventoryS2CPacket;
 import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessSize;
+import com.yipeekiyaay.kitchen_sink.utils.ClientUtils;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
@@ -27,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -82,6 +84,20 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
 
         if (nbtIndex != -1)
             nbtList.remove(nbtIndex);
+    }
+
+    @Inject(method = "populateRecipeFinder", at = @At("RETURN"))
+    public void kitchen_sink$populateRecipeFinder(RecipeMatcher finder, CallbackInfo ci) {
+        for (var item : kitchen_sink$slotlessInventory.getItems()) {
+            var copy = item.copy();
+
+            var i = 0;
+            while (!copy.isEmpty() && i < 9) {
+                var stack = copy.pickStack(false);
+                finder.addUnenchantedInput(stack);
+                i++;
+            }
+        }
     }
 
     @Inject(method = "remove", at = @At("RETURN"), cancellable = true)
@@ -145,11 +161,22 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
     public void kitchen_sink$updateItems(CallbackInfo ci) {
         if (player.isCreative()) return;
 
+        if (player.getWorld().isClient() && kitchen_sink$slotlessInventory.consumeDirtyInventoryTick()) {
+            var client = ClientUtils.getClient();
+            if (client.currentScreen instanceof InventoryScreen inventoryScreen) {
+                var recipeBook = inventoryScreen.getRecipeBookWidget();
+
+                if (recipeBook != null && recipeBook.isOpen()) {
+                    recipeBook.reset();
+                }
+            }
+        }
+
         if (!player.getWorld().isClient()) {
             for (var i = 9; i < main.size(); i++) {
                 if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
 
-                kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(main.get(i).copy()));
+                kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(main.get(i).copy()).toAddOperation());
 
                 var item = new SlotlessItem(main.get(i).copyAndEmpty());
 
@@ -171,7 +198,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         if (this.player instanceof ServerPlayerEntity serverPlayer && !kitchen_sink$slotlessInventory.slotlessSync.isEmpty()) {
             NetworkManager.sendToPlayer(
                     serverPlayer,
-                    new InsertSlotlessItemS2CPacket(new ArrayList<>(kitchen_sink$slotlessInventory.slotlessSync.copyPending()))
+                    new OperateSlotlessItemS2CPacket(kitchen_sink$slotlessInventory.slotlessSync.copyPending())
             );
 
             kitchen_sink$slotlessInventory.slotlessSync.clearPending();
@@ -260,7 +287,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         kitchen_sink$slotlessInventory.addItem(stack.copy());
 
         if (this.player instanceof ServerPlayerEntity) {
-            kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copyAndEmpty()));
+            kitchen_sink$slotlessInventory.slotlessSync.addPending(new SlotlessItem(stack.copyAndEmpty()).toAddOperation());
         }
 
         cir.setReturnValue(true);
