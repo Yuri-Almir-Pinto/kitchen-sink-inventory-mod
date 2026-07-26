@@ -42,6 +42,10 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Shadow protected int y;
 
+    @Shadow protected int backgroundWidth;
+
+    @Shadow protected int backgroundHeight;
+
     @Unique
     protected HandledScreenQuery kitchen_sink$handlerQuery;
 
@@ -85,7 +89,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             var moving = d.moving != null && d.currentArea == area ? d.moving : null;
 
             if (area.shouldRender())
-                SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y, moving);
+                SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y, this.backgroundWidth, this.backgroundHeight, moving);
         }
     }
 

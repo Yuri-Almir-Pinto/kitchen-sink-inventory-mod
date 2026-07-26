@@ -248,7 +248,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         }
 
         var slotlessHasItem = kitchen_sink$slotlessInventory.hasItem(stack);
-        if (!stack.isEmpty() && stack.isStackable() && firstEmpty != -1 && firstEmpty < 9 && !slotlessHasItem) {
+        if (!stack.isEmpty() && firstEmpty != -1 && firstEmpty < 9 && !slotlessHasItem) {
             main.set(firstEmpty, stack.copyAndEmpty());
             main.get(firstEmpty).setBobbingAnimationTime(5);
             cir.setReturnValue(true);

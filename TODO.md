@@ -9,7 +9,7 @@
 - Substituir o uso da textura da GUI da shulker box na GUI slotless por uma textura própria
 - Adicionar uma pia como slotless storage, hahaha, I'm so **funni**
 - Adicionar descrição nos botões da área slotless
-- Adicionar uma área de scissor ao redor do inventário quando estiver movendo um item (para não ser possível visualmente arrastar algo pra fora do inventário, o que pode ser confuso)
+- Considerar alterar o comportamento do shift click em um bloco slotless, para ao invés de mandar todo o item slotless de um container para o outro, mandar apenas um stack (E talvez segurar ctrl para mandar todo o item slotless)
 
 ## Refatoração
 

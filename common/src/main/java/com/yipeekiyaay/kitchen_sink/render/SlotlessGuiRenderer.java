@@ -19,7 +19,8 @@ public class SlotlessGuiRenderer {
     private static SlotlessInventory slotlessPlayerCopy = null;
     private static SlotlessInventory slotlessContainerCopy = null;
 
-    public static void renderSlotlessArea(DrawContext context, SlotlessArea area, float guiX, float guiY, @Nullable SlotlessItem moving) {
+    public static void renderSlotlessArea(DrawContext context, SlotlessArea area, int guiX, int guiY,
+                                          int guiWidth, int guiHeight, @Nullable SlotlessItem moving) {
         if (area.getInventoryType() == InventoryType.inventory && (slotlessPlayerCopy == null || area.getInventory().consumeDirty())) {
             slotlessPlayerCopy = area.getInventory().copy();
         }
@@ -45,8 +46,8 @@ public class SlotlessGuiRenderer {
                 0, 0,
                 areaWidth, areaHeight, areaWidth, areaHeight);
 
-        int scissorX = (int) (guiX + areaX);
-        int scissorY = (int) (guiY + areaY);
+        int scissorX = guiX + areaX;
+        int scissorY = guiY + areaY;
 
         context.enableScissor(
                 scissorX + 1,
@@ -77,8 +78,17 @@ public class SlotlessGuiRenderer {
             double absoluteX = areaX + moving.getX();
             double absoluteY = areaY + moving.getY();
 
+            context.enableScissor(
+                    guiX,
+                    guiY,
+                    guiX + guiWidth,
+                    guiY + guiHeight
+            );
+
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
             SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY);
+
+            context.disableScissor();
         }
 
         context.getMatrices().pop();
