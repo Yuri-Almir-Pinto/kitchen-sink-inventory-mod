@@ -7,7 +7,6 @@
 - Adicionar usar o rolamento do mouse para dar quick move de itens individuais de e para o slotless storage
 - Adicionar usar o rolamento do mouse para baixo enquanto move um item para colocar esse item abaixo do item em que o mouse está em cima.
 - Substituir o uso da textura da GUI da shulker box na GUI slotless por uma textura própria
-- Adicionar um item que guarda slotless items, para que quando o mod drope itens de um inventário slotless, ele drope apenas um item ao invés de um mar de itens que derruba um servidor
 - Adicionar uma pia como slotless storage, hahaha, I'm so **funni**
 
 ## Refatoração

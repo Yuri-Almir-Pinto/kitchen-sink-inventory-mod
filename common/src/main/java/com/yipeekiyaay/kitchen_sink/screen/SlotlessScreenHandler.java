@@ -22,14 +22,14 @@ import java.util.Objects;
 
 public class SlotlessScreenHandler extends ScreenHandler {
     private final ScreenHandlerContext context;
+    private final PlayerInventory playerInventory;
+    private final BlockPos pos;
 
     public SlotlessScreenHandler(int syncId, PlayerInventory playerInventory, BlockPos pos) {
-        this(syncId, playerInventory, ScreenHandlerContext.create(playerInventory.player.getWorld(), pos));
-    }
-
-    public SlotlessScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(ModRegistries.SLOTLESS_SCREEN_HANDLER.get(), syncId);
-        this.context = context;
+        this.playerInventory = playerInventory;
+        this.pos = pos;
+        this.context = ScreenHandlerContext.create(playerInventory.player.getWorld(), pos);
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
@@ -43,13 +43,11 @@ public class SlotlessScreenHandler extends ScreenHandler {
     }
 
     public @Nullable SlotlessBlockEntity getSlotlessBlockEntity() {
-        return this.context.get((level, blockPos) -> {
-            if (level.getBlockEntity(blockPos) instanceof SlotlessBlockEntity slotlessBE) {
-                return slotlessBE;
-            }
+        if (playerInventory.player.getWorld().getBlockEntity(this.pos) instanceof SlotlessBlockEntity slotlessBE) {
+            return slotlessBE;
+        }
 
-            return null;
-        }).orElse(null);
+        return null;
     }
 
     public @Nullable SlotlessInventory getSlotlessInventory() {

@@ -1,5 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
+import com.yipeekiyaay.kitchen_sink.item.ItemClusterItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -75,15 +76,12 @@ public class SlotlessInventory {
         if (world.isClient()) return;
         if (getItems().isEmpty()) return;
 
-        for (var item : getItems()) {
-            if (item.isEmpty()) continue;
+        var cluster = ItemClusterItem.toCluster(this);
 
-            while (!item.isEmpty()) {
-                ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), item.pickStack(false));
-            }
-        }
+        ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), cluster);
 
         clearEmpty();
+
         markDirty();
     }
 

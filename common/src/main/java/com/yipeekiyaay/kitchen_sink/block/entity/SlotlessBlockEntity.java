@@ -31,11 +31,12 @@ import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProvider, SidedInventory {
     private final SlotlessInventory slotlessInventory = new SlotlessInventory()
             .setArea(SlotlessSize.SIZE_2766);
-    private final ArrayList<ServerPlayerEntity> observers = new ArrayList<>();
+    private final ArrayList<UUID> observerUuids = new ArrayList<>();
 
     public SlotlessBlockEntity(BlockPos pos, BlockState state) {
         super(ModRegistries.SLOTLESS_CRATE_ENTITY.get(), pos, state);
@@ -45,24 +46,51 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
         return this.slotlessInventory;
     }
 
-    public void removeObserver(ServerPlayerEntity player) {
-        if (observers.isEmpty()) return;
-
-        observers.removeIf(observer -> observer.getUuid() == player.getUuid());
+    public void addObserver(ServerPlayerEntity player) {
+        this.observerUuids.add(player.getUuid());
     }
 
-    public void sendUpdate(ServerPlayerEntity requester, SlotlessOperation op) {
-        for (var observer : observers) {
-            if (observer.getUuid() == requester.getUuid()) continue;
+    public void removeObserver(ServerPlayerEntity player) {
+        this.observerUuids.remove(player.getUuid());
+    }
 
-            NetworkManager.sendToPlayer(observer, new SyncSlotlessOperationS2CPacket(op));
-        }
+    public void sendUpdate(@Nullable ServerPlayerEntity requester, SlotlessOperation op) {
+        if (world == null || world.isClient() || world.getServer() == null) return;
+
+        var playerManager = world.getServer().getPlayerManager();
+
+        this.observerUuids.removeIf(uuid -> {
+            if (requester != null && uuid.equals(requester.getUuid())) {
+                return false;
+            }
+
+            ServerPlayerEntity observer = playerManager.getPlayer(uuid);
+            if (observer != null && !observer.isDisconnected()) {
+                NetworkManager.sendToPlayer(observer, new SyncSlotlessOperationS2CPacket(op));
+                return false;
+            }
+
+            return true;
+        });
     }
 
     public void sendUpdate(SlotlessOperation op) {
-        for (var observer : observers) {
-            NetworkManager.sendToPlayer(observer, new SyncSlotlessOperationS2CPacket(op));
-        }
+        sendUpdate(null, op);
+    }
+
+    public void resyncAll() {
+        if (world == null || world.isClient() || world.getServer() == null) return;
+
+        var playerManager = world.getServer().getPlayerManager();
+
+        this.observerUuids.removeIf(uuid -> {
+            ServerPlayerEntity observer = playerManager.getPlayer(uuid);
+            if (observer != null && !observer.isDisconnected()) {
+                NetworkManager.sendToPlayer(observer, new SyncSlotlessContainerS2CPacket(slotlessInventory.getItems(), this.pos));
+                return false;
+            }
+            return true;
+        });
     }
 
     public void playOpenSound() {
@@ -100,7 +128,7 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
         if (player instanceof ServerPlayerEntity serverPlayer) {
             NetworkManager.sendToPlayer(serverPlayer, new SyncSlotlessContainerS2CPacket(slotlessInventory.getItems(), this.pos));
-            observers.add(serverPlayer);
+            addObserver(serverPlayer);
         }
 
         playOpenSound();

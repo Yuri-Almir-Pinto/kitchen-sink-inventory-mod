@@ -20,7 +20,7 @@ public record SyncSlotlessContainerS2CPacket(List<SlotlessItem> items, BlockPos 
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "sync_slotless_container"));
 
     public static final PacketCodec<RegistryByteBuf, SyncSlotlessContainerS2CPacket> CODEC = PacketCodec.tuple(
-            PacketCodecs.collection(ArrayList::new, SlotlessItem.CODEC), SyncSlotlessContainerS2CPacket::items,
+            PacketCodecs.collection(ArrayList::new, SlotlessItem.PACKET_CODEC), SyncSlotlessContainerS2CPacket::items,
             BlockPos.PACKET_CODEC, SyncSlotlessContainerS2CPacket::blockPos,
             SyncSlotlessContainerS2CPacket::new
     );

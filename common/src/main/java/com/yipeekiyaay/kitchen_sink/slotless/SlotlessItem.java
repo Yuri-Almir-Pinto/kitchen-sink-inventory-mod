@@ -1,5 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.slotless;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
@@ -213,7 +215,7 @@ public class SlotlessItem {
         return new SlotlessItem(itemStack, x, y, count);
     }
 
-    public static final PacketCodec<RegistryByteBuf, SlotlessItem> CODEC = PacketCodec.of(
+    public static final PacketCodec<RegistryByteBuf, SlotlessItem> PACKET_CODEC = PacketCodec.of(
             (value, buf) -> {
                 if (value.isEmpty()) {
                     buf.writeBoolean(true);
@@ -242,4 +244,11 @@ public class SlotlessItem {
                 return item;
             }
     );
+
+    public static final Codec<SlotlessItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ItemStack.CODEC.fieldOf("stack").forGetter(SlotlessItem::getStack),
+            Codec.DOUBLE.fieldOf("x").forGetter(SlotlessItem::getX),
+            Codec.DOUBLE.fieldOf("y").forGetter(SlotlessItem::getY),
+            Codec.LONG.fieldOf("count").forGetter(SlotlessItem::getCount)
+    ).apply(instance, SlotlessItem::new));
 }

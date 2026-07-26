@@ -22,12 +22,12 @@ public record SlotlessOperation(Type type, SlotlessItem item, long seed) {
     public static final PacketCodec<RegistryByteBuf, SlotlessOperation> CODEC = PacketCodec.of(
             (value, buf) -> {
                 OPERATION_TYPE_CODEC.encode(buf, value.type());
-                SlotlessItem.CODEC.encode(buf, value.item());
+                SlotlessItem.PACKET_CODEC.encode(buf, value.item());
                 buf.writeLong(value.seed());
             },
             buf -> {
                 var type = OPERATION_TYPE_CODEC.decode(buf);
-                var item = SlotlessItem.CODEC.decode(buf);
+                var item = SlotlessItem.PACKET_CODEC.decode(buf);
                 var seed = buf.readLong();
 
                 return new SlotlessOperation(type, item, seed);

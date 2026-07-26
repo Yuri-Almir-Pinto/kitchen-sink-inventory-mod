@@ -18,7 +18,7 @@ public record InsertSlotlessItemS2CPacket(List<SlotlessItem> itemsToInsert) impl
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "insert_slotless_item"));
 
     public static final PacketCodec<RegistryByteBuf, InsertSlotlessItemS2CPacket> CODEC = PacketCodec.tuple(
-            PacketCodecs.collection(ArrayList::new, SlotlessItem.CODEC), InsertSlotlessItemS2CPacket::itemsToInsert,
+            PacketCodecs.collection(ArrayList::new, SlotlessItem.PACKET_CODEC), InsertSlotlessItemS2CPacket::itemsToInsert,
             InsertSlotlessItemS2CPacket::new
     );
 

@@ -17,7 +17,7 @@ public record MoveSlotlessItemC2SPacket(SlotlessItem item, DefaultArgs args) imp
             new CustomPayload.Id<>(Identifier.of(KitchenSinkMod.MOD_ID, "move_slotless_item"));
 
     public static final PacketCodec<RegistryByteBuf, MoveSlotlessItemC2SPacket> CODEC = PacketCodec.tuple(
-            SlotlessItem.CODEC, MoveSlotlessItemC2SPacket::item,
+            SlotlessItem.PACKET_CODEC, MoveSlotlessItemC2SPacket::item,
             DefaultArgs.CODEC, MoveSlotlessItemC2SPacket::args,
             MoveSlotlessItemC2SPacket::new
     );
