@@ -6,10 +6,9 @@ import com.yipeekiyaay.kitchen_sink.slotless.ISlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessInventory;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import com.yipeekiyaay.kitchen_sink.slotless.SlotlessSize;
-import com.yipeekiyaay.kitchen_sink.utils.ClientUtils;
 import com.yipeekiyaay.kitchen_sink.utils.InventoryUtils;
 import dev.architectury.networking.NetworkManager;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import dev.architectury.utils.Env;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -162,14 +161,11 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
         if (player.isCreative()) return;
 
         if (player.getWorld().isClient() && kitchen_sink$slotlessInventory.consumeDirtyInventoryTick()) {
-            var client = ClientUtils.getClient();
-            if (client.currentScreen instanceof InventoryScreen inventoryScreen) {
-                var recipeBook = inventoryScreen.getRecipeBookWidget();
-
-                if (recipeBook != null && recipeBook.isOpen()) {
-                    recipeBook.reset();
-                }
-            }
+            // NeoForge aggressively strips out client classes, so I can't reference ClientUtils directly.
+            dev.architectury.utils.EnvExecutor.runInEnv(
+                    Env.CLIENT,
+                    () -> com.yipeekiyaay.kitchen_sink.utils.ClientUtils::refreshRecipeBook
+            );
         }
 
         if (!player.getWorld().isClient()) {

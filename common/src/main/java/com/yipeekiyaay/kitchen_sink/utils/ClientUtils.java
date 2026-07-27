@@ -1,6 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.utils;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 
 import java.util.Objects;
 
@@ -27,5 +28,15 @@ public class ClientUtils {
         double rawY = client.mouse.getY();
 
         return (int)(rawY * (double)client.getWindow().getScaledHeight() / (double)client.getWindow().getHeight());
+    }
+
+    public static void refreshRecipeBook() {
+        var client = net.minecraft.client.MinecraftClient.getInstance();
+        if (client.currentScreen instanceof RecipeBookProvider provider) {
+            var recipeBook = provider.getRecipeBookWidget();
+            if (recipeBook != null && recipeBook.isOpen()) {
+                recipeBook.reset();
+            }
+        }
     }
 }

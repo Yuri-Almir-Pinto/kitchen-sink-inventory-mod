@@ -119,6 +119,7 @@ public class ModRegistries {
         SCREEN_HANDLER_TYPES.register();
         DATA_COMPONENTS.register();
 
-        CreativeTabRegistry.append(ItemGroups.FUNCTIONAL, SLOTLESS_CRATE_ITEM.get());
+        // NeoForge, at this point, has not yet initialized items at least, so do not try to get the registry yet.
+        CreativeTabRegistry.append(ItemGroups.FUNCTIONAL, SLOTLESS_CRATE_ITEM);
     }
 }
