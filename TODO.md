@@ -9,6 +9,7 @@
 - Adicionar uma pia como slotless storage, hahaha, I'm so **funni**
 - Adicionar descrição nos botões da área slotless
 - Considerar alterar o comportamento do shift click em um bloco slotless, para ao invés de mandar todo o item slotless de um container para o outro, mandar apenas um stack (E talvez segurar ctrl para mandar todo o item slotless)
+- Implementar dar shift-click do inventário slotless para slot de armadura
 
 ## Refatoração
 
@@ -28,3 +29,6 @@
 
 - Ao segurar algum dos botões da hotbar para dar swap constante em um slotless storage, o item pode se desincronizar com o servidor, fazendo ele sumir ou duplicar para o cliente (Não parece fazer nada ao servidor). Nada parece acontecer se segurar F.
 - Nitpick: ao pegar um item de uma área slotless com um click do mouse, as vezes o itemstack no mouse está piscando por um frame.
+- Por meio de uma causa desconhecida, o inventário do cliente da desync com o servidor, com tentativas de puxar um item pegando outro. Eu tenho fortes suspeitas que é algum item vazio na lista, mas é necessário testar.
+- Consertar compatibilidade com Curios =w= ' (Curios ta escondendo a área slotless por algum motivo)
+- Também consertar incompatibilidade com mods de gravestone talvez? Apesar de que eles seria um saco...
