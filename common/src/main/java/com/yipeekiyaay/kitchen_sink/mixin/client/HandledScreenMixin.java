@@ -46,18 +46,25 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Shadow protected int backgroundHeight;
 
+    @Shadow protected @Nullable Slot focusedSlot;
+
     @Unique
     protected HandledScreenQuery kitchen_sink$handlerQuery;
 
-    @Shadow protected @Nullable Slot focusedSlot;
+    @Unique
+    protected boolean kitchen_sink$initialized = false;
 
     protected HandledScreenMixin(Text title) {
         super(title);
     }
 
-    @Inject(method = "init", at = @At("RETURN"))
-    protected void kitchen_sink$initSlotlessAreas(CallbackInfo ci) {
-        kitchen_sink$handlerQuery = new HandledScreenQuery(x, y, handler.slots, client != null ? client.player : null);
+    @Unique
+    public boolean kitchen_sink$attemptInit() {
+        if (kitchen_sink$initialized) return true;
+        if (x == 0 && y == 0) return false;
+        if (client == null) return false;
+
+        kitchen_sink$handlerQuery = new HandledScreenQuery(x, y, handler.slots, client.player);
         kitchen_sink$manager.from(this.handler, kitchen_sink$handlerQuery);
 
         kitchen_sink$data.handler = this.handler;
@@ -73,10 +80,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                 area.setSlotlessInventory(slotlessInventory);
             }
         }
+
+        kitchen_sink$initialized = true;
+        return true;
     }
 
     @Inject(method = "renderBackground", at = @At("TAIL"))
     public void kitchen_sink$renderKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!kitchen_sink$attemptInit()) return;
         if (client == null || client.player == null) return;
         if (!kitchen_sink$manager.hasArea()) return;
 
