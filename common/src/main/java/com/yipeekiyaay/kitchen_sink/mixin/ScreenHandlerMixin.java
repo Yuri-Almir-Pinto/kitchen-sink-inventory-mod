@@ -85,6 +85,9 @@ public abstract class ScreenHandlerMixin {
         for (var i = fromLast ? endIndex - 1 : startIndex; fromLast ? i >= startIndex : i < endIndex; i += (fromLast ? -1 : 1)) {
             var slot = slots.get(i);
 
+            // Armor slot does not count as the player inventory (Since you can't insert in it)
+            if (slot.getIndex() >= 36 && slot.getIndex() <= 39) continue;
+
             if ((slot.inventory instanceof PlayerInventory inventory)) {
                 if (slotlessInventory == null)
                     slotlessInventory = ((ISlotlessInventory) inventory).kitchen_sink$getSlotlessInventory();
