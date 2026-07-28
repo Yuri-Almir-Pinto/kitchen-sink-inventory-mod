@@ -187,9 +187,18 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             }
         }
 
+        var hasEmpty = false;
+
         for (var item : kitchen_sink$slotlessInventory.getItems()) {
+            if (item.isEmpty()) {
+                hasEmpty = true;
+                continue;
+            }
             item.getStack().inventoryTick(player.getWorld(), player, 9, false); // 9 is the first slot of the main inventory.
         }
+
+        if (hasEmpty)
+            kitchen_sink$slotlessInventory.clearEmpty();
 
         if (this.player instanceof ServerPlayerEntity serverPlayer && !kitchen_sink$slotlessInventory.slotlessSync.isEmpty()) {
             NetworkManager.sendToPlayer(

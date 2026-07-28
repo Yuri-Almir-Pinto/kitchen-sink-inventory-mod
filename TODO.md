@@ -28,5 +28,4 @@
 ## Bugs
 
 - Ao segurar algum dos botões da hotbar para dar swap constante em um slotless storage, o item pode se desincronizar com o servidor, fazendo ele sumir ou duplicar para o cliente (Não parece fazer nada ao servidor). Nada parece acontecer se segurar F.
-- Nitpick: ao pegar um item de uma área slotless com um click do mouse, as vezes o itemstack no mouse está piscando por um frame.
-- Por meio de uma causa desconhecida, o inventário do cliente da desync com o servidor, com tentativas de puxar um item pegando outro. Eu tenho fortes suspeitas que é algum item vazio na lista, mas é necessário testar.
+- Nitpick: ao pegar um item de uma área slotless com um click do mouse, as vezes o itemstack no mouse está piscando por um frame.w
