@@ -168,7 +168,7 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             );
         }
 
-        if (!player.getWorld().isClient()) {
+        if (!player.getWorld().isClient() && !player.isDead()) {
             for (var i = 9; i < main.size(); i++) {
                 if ((i % 9) >= 7 || main.get(i).isEmpty()) continue;
 
