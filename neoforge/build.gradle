@@ -34,6 +34,11 @@ repositories {
         name = 'Modrinth'
         url = 'https://api.modrinth.com/maven'
     }
+
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
 }
 
 dependencies {
@@ -44,6 +49,9 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
+
+    // To test locally (Does not add a hard depdency)
+    modLocalRuntime "mezz.jei:jei-1.21.1-neoforge:19.42.0.385"
 }
 
 processResources {

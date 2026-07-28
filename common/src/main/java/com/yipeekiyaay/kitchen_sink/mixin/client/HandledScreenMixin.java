@@ -1,5 +1,7 @@
 package com.yipeekiyaay.kitchen_sink.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.yipeekiyaay.kitchen_sink.network.DefaultArgs;
 import com.yipeekiyaay.kitchen_sink.network.packets.*;
 import com.yipeekiyaay.kitchen_sink.render.SlotlessGuiRenderer;
@@ -17,14 +19,12 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -51,6 +51,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Unique protected HandledScreenQuery kitchen_sink$handlerQuery;
 
     @Unique protected boolean kitchen_sink$initialized = false;
+
+    @Unique protected Slot kitchen_sink$lastVanillaSlot = null;
 
     protected HandledScreenMixin(Text title) {
         super(title);
@@ -83,7 +85,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         return true;
     }
 
-    @Inject(method = "renderBackground", at = @At("TAIL"))
+    @Inject(method = "render", at = @At("RETURN"))
     public void kitchen_sink$renderKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!kitchen_sink$attemptInit()) return;
         if (client == null || client.player == null) return;
@@ -97,47 +99,46 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
             var moving = d.moving != null && d.currentArea == area ? d.moving : null;
 
-            if (area.shouldRender()) {
-                var overIndex = SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y, this.backgroundWidth, this.backgroundHeight,
-                        mouseX, mouseY, moving);
+            if (!area.shouldRender()) continue;
 
-                area.setOverIndex(overIndex);
+            var overIndex = SlotlessGuiRenderer.renderSlotlessArea(context, area,
+                    this.x, this.y,
+                    this.backgroundWidth, this.backgroundHeight,
+                    mouseX, mouseY,
+                    moving);
+
+            area.setOverIndex(overIndex);
+
+            if (overIndex != -1) {
+                var item = area.getItems().get(overIndex);
+
+                if (focusedSlot != null && !(focusedSlot instanceof DummySlot)) {
+                    kitchen_sink$lastVanillaSlot = focusedSlot;
+                }
+
+                focusedSlot = DummySlot.getFocusedDummySlotWith(item.getStack());
+            } else if (kitchen_sink$lastVanillaSlot != null) {
+                focusedSlot = kitchen_sink$lastVanillaSlot;
+                kitchen_sink$lastVanillaSlot = null;
             }
         }
     }
 
-    @Redirect(
-            method = "drawMouseoverTooltip",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;focusedSlot:Lnet/minecraft/screen/slot/Slot;", opcode = Opcodes.GETFIELD)
-    )
-    private Slot kitchen_sink$redirectFocusedSlot(HandledScreen<?> screen, DrawContext context, int x, int y) {
-        if (client == null || client.player == null) return focusedSlot;
-        int guiMouseX = x - this.x;
-        int guiMouseY = y - this.y;
-        var area = kitchen_sink$manager.getArea(guiMouseX, guiMouseY);
-
-        if (area != null && kitchen_sink$data.moving == null) {
-            SlotlessItem item = area.getHoveredItem(guiMouseX, guiMouseY);
-
-            if (item == null || item.isEmpty()) return focusedSlot;
-
-            return DummySlot.getDummySlotWith(item.getStack());
+    @WrapMethod(method = "drawMouseoverTooltip")
+    public void kitchen_sink$drawMouseoverTooltipPushMatrix(DrawContext context, int x, int y, Operation<Void> original) {
+        if (client == null || client.player == null) {
+            original.call(context, x, y);
+            return;
         }
 
-        return this.focusedSlot;
-    }
-
-    @Inject(method = "drawMouseoverTooltip", at = @At("HEAD"))
-    public void kitchen_sink$drawMouseoverTooltipPushMatrix(DrawContext context, int x, int y, CallbackInfo ci) {
-        if (client == null || client.player == null) return;
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, 50);
-    }
 
-    @Inject(method = "drawMouseoverTooltip", at = @At("TAIL"))
-    public void kitchen_sink$drawMouseoverTooltipPopMatrix(DrawContext context, int x, int y, CallbackInfo ci) {
-        if (client == null || client.player == null) return;
-        context.getMatrices().pop();
+        try {
+            original.call(context, x, y);
+        } finally {
+            context.getMatrices().pop();
+        }
     }
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)

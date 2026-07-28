@@ -1,6 +1,5 @@
 
 ## Polimentos finos
-- Tentar implementar compatibilidade com JEI e similares (para poder usar U e R direto no slotless)
 - Implementar permitir mover multiplos itens ao mesmo tempo, se estiverem sobrepostos, através de alguma keybind.
 - Adicionar usar o rolamento do mouse para dar quick move de itens individuais de e para o slotless storage (Enquanto segura shift)
 - Adicionar usar o rolamento do mouse para selecionar itens que estão abaixo em uma pilha (Padrão)
@@ -15,7 +14,6 @@
 - Atualizar o packet de mover item para receber o index, x e y no lugar do SlotlessItem completo.
 - Atualizar os arquivos do NeoForge e Fabric para não usarem o nome do example mod.
 - Alterar a versão para ser um beta ou alfa e não release (1.0.0 o caralho)
-- Remover o uso do mixin de Redirect em HandledScreenMixin para o método drawMouseoverTooltip (É um mixin perigoso)
 
 ## Melhorias
 
