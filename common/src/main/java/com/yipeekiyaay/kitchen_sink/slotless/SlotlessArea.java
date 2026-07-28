@@ -27,6 +27,7 @@ public class SlotlessArea {
     private SlotlessSize size;
     private int x;
     private int y;
+    private int overIndex = -1;
     private InventoryType areaType;
     private HandledScreenQuery handlerQuery;
     private SlotlessInventory inventory = new SlotlessInventory();
@@ -68,6 +69,10 @@ public class SlotlessArea {
 
     public List<SlotlessItem> getItems() {
         return this.inventory.getItems();
+    }
+
+    public void setOverIndex(int overIndex) {
+        this.overIndex = overIndex;
     }
 
     public SlotlessArea setSize(SlotlessSize size) {
@@ -163,6 +168,9 @@ public class SlotlessArea {
     }
 
     public int getHoveredItemIndex(double mouseX, double mouseY) {
+        if (Screen.hasAltDown())
+            return overIndex;
+
         var items = this.getItems();
 
         var x = mouseX - this.getX();

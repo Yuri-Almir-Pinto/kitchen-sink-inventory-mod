@@ -48,11 +48,9 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Shadow protected @Nullable Slot focusedSlot;
 
-    @Unique
-    protected HandledScreenQuery kitchen_sink$handlerQuery;
+    @Unique protected HandledScreenQuery kitchen_sink$handlerQuery;
 
-    @Unique
-    protected boolean kitchen_sink$initialized = false;
+    @Unique protected boolean kitchen_sink$initialized = false;
 
     protected HandledScreenMixin(Text title) {
         super(title);
@@ -99,8 +97,12 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
             var moving = d.moving != null && d.currentArea == area ? d.moving : null;
 
-            if (area.shouldRender())
-                SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y, this.backgroundWidth, this.backgroundHeight, moving);
+            if (area.shouldRender()) {
+                var overIndex = SlotlessGuiRenderer.renderSlotlessArea(context, area, this.x, this.y, this.backgroundWidth, this.backgroundHeight,
+                        mouseX, mouseY, moving);
+
+                area.setOverIndex(overIndex);
+            }
         }
     }
 

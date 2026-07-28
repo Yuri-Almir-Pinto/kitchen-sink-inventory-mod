@@ -8,6 +8,8 @@ import com.yipeekiyaay.kitchen_sink.slotless.SlotlessItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
@@ -19,8 +21,8 @@ public class SlotlessGuiRenderer {
     private static SlotlessInventory slotlessPlayerCopy = null;
     private static SlotlessInventory slotlessContainerCopy = null;
 
-    public static void renderSlotlessArea(DrawContext context, SlotlessArea area, int guiX, int guiY,
-                                          int guiWidth, int guiHeight, @Nullable SlotlessItem moving) {
+    public static int renderSlotlessArea(DrawContext context, SlotlessArea area, int guiX, int guiY,
+                                          int guiWidth, int guiHeight, int mouseX, int mouseY, @Nullable SlotlessItem moving) {
         if (area.getInventoryType() == InventoryType.inventory && (slotlessPlayerCopy == null || area.getInventory().consumeDirty())) {
             slotlessPlayerCopy = area.getInventory().copy();
         }
@@ -56,6 +58,9 @@ public class SlotlessGuiRenderer {
                 scissorY + areaHeight - 1
         );
 
+        var overIndex = -1;
+        var isPressingAlt = Screen.hasAltDown();
+
         var items = memo.getItems();
         for (var i = 0; i < items.size(); i++) {
             var item = items.get(i);
@@ -69,7 +74,19 @@ public class SlotlessGuiRenderer {
             // OpenGL on mac is problematic I guess? Idk, but if Subpocket was using it, who am I to disagree? =w=
             // Disables depth, forcing all the items to appear on drawn order.
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-            SlotlessGuiRenderer.renderSlotlessItem(context, item, absoluteX, absoluteY);
+            SlotlessGuiRenderer.renderSlotlessItem(context, item, absoluteX, absoluteY, !isPressingAlt);
+
+            if (overIndex != -1) continue;
+
+            var indexReversed = (items.size() - 1) - (i);
+            var itemReversed = items.get(indexReversed);
+            var absoluteXReversed = guiX + areaX + itemReversed.getX();
+            var absoluteYReversed = guiY + areaY + itemReversed.getY();
+            if (mouseX >= absoluteXReversed && mouseY >= absoluteYReversed
+                    && mouseX < (absoluteXReversed + 16) && mouseY < (absoluteYReversed + 16)) {
+                if (isMouseOverOpaquePixel(itemReversed.getStack(), absoluteXReversed, absoluteYReversed, mouseX, mouseY))
+                    overIndex = indexReversed;
+            }
         }
 
         context.disableScissor();
@@ -86,15 +103,17 @@ public class SlotlessGuiRenderer {
             );
 
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-            SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY);
+            SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY, !isPressingAlt);
 
             context.disableScissor();
         }
 
         context.getMatrices().pop();
+
+        return overIndex;
     }
 
-    public static void renderSlotlessItem(DrawContext context, SlotlessItem item, double x, double y) {
+    public static void renderSlotlessItem(DrawContext context, SlotlessItem item, double x, double y, boolean renderCount) {
         if (item.isEmpty()) return;
 
         context.getMatrices().push();
@@ -114,22 +133,51 @@ public class SlotlessGuiRenderer {
             context.getMatrices().push();
             context.getMatrices().translate(0.0F, 0.0F, 200.0F);
 
-            if (isHighCount) {
-                float scale = 0.50F;
+            if (renderCount) {
+                if (isHighCount) {
+                    float scale = 0.50F;
 
-                float textX = 32.0F - textWidth; // at 0.5x scale, 16x16 behaves like 32x32
-                float textY = 32.0F - textRenderer.fontHeight;
+                    float textX = 32.0F - textWidth; // at 0.5x scale, 16x16 behaves like 32x32
+                    float textY = 32.0F - textRenderer.fontHeight;
 
-                context.getMatrices().scale(scale, scale, 1.0F);
-                context.drawText(textRenderer, countText, (int) textX, (int) textY, 0xFFFFFF, true);
-            } else {
-                context.drawText(textRenderer, countText, 17 - textWidth, 9, 0xFFFFFF, true);
+                    context.getMatrices().scale(scale, scale, 1.0F);
+                    context.drawText(textRenderer, countText, (int) textX, (int) textY, 0xFFFFFF, true);
+                } else {
+                    context.drawText(textRenderer, countText, 17 - textWidth, 9, 0xFFFFFF, true);
+                }
             }
 
             context.getMatrices().pop();
         }
 
         context.getMatrices().pop();
+    }
+
+    public static boolean isMouseOverOpaquePixel(ItemStack stack, double itemX, double itemY, double mouseX, double mouseY) {
+        if (stack.isEmpty()) return false;
+
+        var localX = mouseX - itemX;
+        var localY = mouseY - itemY;
+
+        if (localX < 0 || localX >= 16 || localY < 0 || localY >= 16) {
+            return false;
+        }
+
+        var client = MinecraftClient.getInstance();
+        var model = client.getItemRenderer().getModel(stack, client.world, null, 0);
+
+        if (model == null) return false;
+        if (model.hasDepth()) return true;
+
+        var contents = model.getParticleSprite().getContents();
+
+        var pixelX = (int) ((localX / 16.0) * contents.getWidth());
+        var pixelY = (int) ((localY / 16.0) * contents.getHeight());
+
+        pixelX = Math.max(0, Math.min(contents.getWidth() - 1, pixelX));
+        pixelY = Math.max(0, Math.min(contents.getHeight() - 1, pixelY));
+
+        return !contents.isPixelTransparent(0, pixelX, pixelY);
     }
 
     private static String formatCount(long count) {

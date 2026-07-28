@@ -1,7 +1,6 @@
 
 ## Polimentos finos
 - Tentar implementar compatibilidade com JEI e similares (para poder usar U e R direto no slotless)
-- Implementar pixel picking (Ver como o subpocket fez) (Baixa prioridade. É complicado...)
 - Implementar permitir mover multiplos itens ao mesmo tempo, se estiverem sobrepostos, através de alguma keybind.
 - Adicionar usar o rolamento do mouse para dar quick move de itens individuais de e para o slotless storage (Enquanto segura shift)
 - Adicionar usar o rolamento do mouse para selecionar itens que estão abaixo em uma pilha (Padrão)
