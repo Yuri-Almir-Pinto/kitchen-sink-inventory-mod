@@ -167,31 +167,12 @@ public class SlotlessArea {
         optionsWidget.setY(y + 2);
     }
 
-    public int getHoveredItemIndex(double mouseX, double mouseY) {
-        if (Screen.hasAltDown())
-            return overIndex;
-
-        var items = this.getItems();
-
-        var x = mouseX - this.getX();
-        var y = mouseY - this.getY();
-
-        for (int i = items.size() - 1; i >= 0; i--) {
-            var item = items.get(i);
-
-            if (item.isEmpty()) continue;
-
-            if (item.getX() <= x && item.getX() + 16 >= x
-                    && item.getY() <= y && item.getY() + 16 >= y) {
-                return i;
-            }
-        }
-
-        return -1;
+    public int getHoveredItemIndex() {
+        return overIndex;
     }
 
-    public @Nullable SlotlessItem getHoveredItem(double mouseX, double mouseY) {
-        var index = getHoveredItemIndex(mouseX, mouseY);
+    public @Nullable SlotlessItem getHoveredItem() {
+        var index = getHoveredItemIndex();
 
         if (index == -1) return null;
 

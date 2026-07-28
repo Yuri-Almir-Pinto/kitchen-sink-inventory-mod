@@ -84,7 +84,7 @@ public class SlotlessGuiRenderer {
             var absoluteYReversed = guiY + areaY + itemReversed.getY();
             if (mouseX >= absoluteXReversed && mouseY >= absoluteYReversed
                     && mouseX < (absoluteXReversed + 16) && mouseY < (absoluteYReversed + 16)) {
-                if (isMouseOverOpaquePixel(itemReversed.getStack(), absoluteXReversed, absoluteYReversed, mouseX, mouseY))
+                if (!isPressingAlt || isMouseOverOpaquePixel(itemReversed.getStack(), absoluteXReversed, absoluteYReversed, mouseX, mouseY))
                     overIndex = indexReversed;
             }
         }

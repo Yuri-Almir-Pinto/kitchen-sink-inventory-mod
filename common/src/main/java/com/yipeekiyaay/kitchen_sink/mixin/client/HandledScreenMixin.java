@@ -186,7 +186,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         var area = kitchen_sink$manager.getArea(mouseX, mouseY);
         if (area == null) return;
         var args = DefaultArgs.with(area.getInventoryType());
-        var itemIndex = area.getHoveredItemIndex(mouseX, mouseY);
+        var itemIndex = area.getHoveredItemIndex();
 
         cir.setReturnValue(true);
 
@@ -245,7 +245,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         }
 
-        var item = area.getHoveredItem(guiMouseX, guiMouseY);
+        var item = area.getHoveredItem();
         if (item == null || item.isEmpty()) return;
 
         d.clickX = guiMouseX;
