@@ -10,7 +10,6 @@
 - Adicionar descrição nos botões da área slotless
 - Considerar alterar o comportamento do shift click em um bloco slotless, para ao invés de mandar todo o item slotless de um container para o outro, mandar apenas um stack (E talvez segurar ctrl para mandar todo o item slotless)
 - Implementar dar shift-click do inventário slotless para slot de armadura
-- Aumentar a distancia em que se considera um click na área slotless
 
 ## Refatoração
 

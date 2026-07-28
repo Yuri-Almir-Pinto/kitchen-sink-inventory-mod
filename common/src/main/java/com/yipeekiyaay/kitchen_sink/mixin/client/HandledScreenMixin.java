@@ -306,7 +306,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         } else {
             NetworkManager.sendToServer(new MoveSlotlessItemC2SPacket(d.moving, args));
 
-            if (d.isClose(guiMouseX, guiMouseY, 3) && (Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
+            if ((Util.getMeasuringTimeMs() - d.clickTime) <= 150) {
                 var index = d.currentArea.getInventory().getItems().size() - 1;
                 var hasShiftDown = Screen.hasShiftDown();
                 var shouldMassQuickMove = d.isDoubleClick() && d.lastClick != null && d.lastClick.moving != null
