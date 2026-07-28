@@ -3,7 +3,6 @@
 - Implementar permitir mover multiplos itens ao mesmo tempo, se estiverem sobrepostos, através de alguma keybind.
 - Adicionar usar o rolamento do mouse para dar quick move de itens individuais de e para o slotless storage (Enquanto segura shift)
 - Adicionar usar o rolamento do mouse para selecionar itens que estão abaixo em uma pilha (Padrão)
-- Substituir o uso da textura da GUI da shulker box na GUI slotless por uma textura própria
 - Adicionar uma pia como slotless storage, hahaha, I'm so **funni**
 - Adicionar descrição nos botões da área slotless
 - Considerar alterar o comportamento do shift click em um bloco slotless, para ao invés de mandar todo o item slotless de um container para o outro, mandar apenas um stack (E talvez segurar ctrl para mandar todo o item slotless)

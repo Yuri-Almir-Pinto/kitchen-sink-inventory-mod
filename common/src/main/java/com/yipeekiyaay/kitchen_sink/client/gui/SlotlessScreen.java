@@ -1,5 +1,6 @@
 package com.yipeekiyaay.kitchen_sink.client.gui;
 
+import com.yipeekiyaay.kitchen_sink.KitchenSinkMod;
 import com.yipeekiyaay.kitchen_sink.screen.SlotlessScreenHandler;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -8,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class SlotlessScreen extends HandledScreen<SlotlessScreenHandler> {
-    private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
+    private static final Identifier TEXTURE = Identifier.of(KitchenSinkMod.MOD_ID, "textures/gui/slotless_gui.png");
 
     public SlotlessScreen(SlotlessScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
