@@ -85,8 +85,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         return true;
     }
 
-    @Inject(method = "render", at = @At("RETURN"))
-    public void kitchen_sink$renderKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "renderBackground", at = @At("RETURN"))
+    public void kitchen_sink$renderBackgroundKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!kitchen_sink$attemptInit()) return;
         if (client == null || client.player == null) return;
         if (!kitchen_sink$manager.hasArea()) return;
@@ -94,7 +94,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         kitchen_sink$handlerQuery.update(x, y, handler.slots, client.player);
         var d = kitchen_sink$data;
 
-        for (SlotlessArea area : kitchen_sink$manager.getAreas()) {
+        var currentArea = kitchen_sink$data.currentArea;
+        var reverse = currentArea != null && currentArea.getInventoryType() == InventoryType.inventory;
+        var areas = kitchen_sink$manager.getAreas();
+
+        // Reverse if current area is the container so that the container gets drawn first and the inventory last
+        // allowing the item being moved to be drawn on top of the items in the container (Looks better)
+        for (var i = reverse ? areas.size() - 1 : 0; reverse ? i >= 0 : i < areas.size(); i += reverse ? -1 : 1) {
+            var area = areas.get(i);
             area.updateRender(client.player.isCreative());
 
             var moving = d.moving != null && d.currentArea == area ? d.moving : null;
@@ -108,6 +115,27 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                     moving);
 
             area.setOverIndex(overIndex);
+        }
+    }
+
+    // This code is in render instead of renderBackground, as render happens *after* renderBackground, meaning it overwrites any
+    // changes made to the focusedSlot
+    @Inject(method = "render", at = @At("RETURN"))
+    public void kitchen_sink$renderKitchenSinkMixin(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!kitchen_sink$attemptInit()) return;
+        if (client == null || client.player == null) return;
+        if (!kitchen_sink$manager.hasArea()) return;
+        if (kitchen_sink$data.moving != null) {
+            if (kitchen_sink$lastVanillaSlot != null)
+                focusedSlot = kitchen_sink$lastVanillaSlot;
+
+            return;
+        }
+
+        boolean foundHover = false;
+
+        for (var area : kitchen_sink$manager.getAreas()) {
+            var overIndex = area.getHoveredItemIndex();
 
             if (overIndex != -1) {
                 var item = area.getItems().get(overIndex);
@@ -117,10 +145,14 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
                 }
 
                 focusedSlot = DummySlot.getFocusedDummySlotWith(item.getStack());
-            } else if (kitchen_sink$lastVanillaSlot != null) {
-                focusedSlot = kitchen_sink$lastVanillaSlot;
-                kitchen_sink$lastVanillaSlot = null;
+                foundHover = true;
+                break;
             }
+        }
+
+        if (!foundHover && kitchen_sink$lastVanillaSlot != null) {
+            focusedSlot = kitchen_sink$lastVanillaSlot;
+            kitchen_sink$lastVanillaSlot = null;
         }
     }
 

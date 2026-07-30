@@ -19,4 +19,3 @@
 ## Bugs
 - Ao segurar algum dos botões da hotbar para dar swap constante em um slotless storage, o item pode se desincronizar com o servidor, fazendo ele sumir ou duplicar para o cliente (Não parece fazer nada ao servidor). Nada parece acontecer se segurar F.
 - Nitpick: ao pegar um item de uma área slotless com um click do mouse, as vezes o itemstack no mouse está piscando por um frame.w
-- Mod está mostrando e selecionando itens mesmo quando movendo um item com o mouse, e mostrando itens fantasma (Provavelmente o último que não está sendo renderizado)

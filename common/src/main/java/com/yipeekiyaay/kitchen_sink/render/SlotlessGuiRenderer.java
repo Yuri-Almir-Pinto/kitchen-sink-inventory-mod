@@ -60,32 +60,42 @@ public class SlotlessGuiRenderer {
 
         var overIndex = -1;
         var isPressingAlt = Screen.hasAltDown();
-
         var items = memo.getItems();
+
+        // Item rendering
         for (var i = 0; i < items.size(); i++) {
-            var item = items.get(i);
             if (moving != null && i == items.size() - 1) continue;
 
+            var item = items.get(i);
             double absoluteX = areaX + item.getX();
             double absoluteY = areaY + item.getY();
 
             context.draw();
-
             // OpenGL on mac is problematic I guess? Idk, but if Subpocket was using it, who am I to disagree? =w=
             // Disables depth, forcing all the items to appear on drawn order.
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
             SlotlessGuiRenderer.renderSlotlessItem(context, item, absoluteX, absoluteY, !isPressingAlt);
+        }
 
-            if (overIndex != -1) continue;
+        var absAreaX = areaX + guiX;
+        var absAreaY = areaY + guiY;
 
-            var indexReversed = (items.size() - 1) - (i);
-            var itemReversed = items.get(indexReversed);
-            var absoluteXReversed = guiX + areaX + itemReversed.getX();
-            var absoluteYReversed = guiY + areaY + itemReversed.getY();
-            if (mouseX >= absoluteXReversed && mouseY >= absoluteYReversed
-                    && mouseX < (absoluteXReversed + 16) && mouseY < (absoluteYReversed + 16)) {
-                if (!isPressingAlt || isMouseOverOpaquePixel(itemReversed.getStack(), absoluteXReversed, absoluteYReversed, mouseX, mouseY))
-                    overIndex = indexReversed;
+        // Hit detection (Is present here since pixel picking needs to be done during rendering)
+        if (moving == null && mouseX >= absAreaX && mouseY >= absAreaY
+                && mouseX < (absAreaX + areaWidth) && mouseY < (absAreaY + areaHeight)) {
+
+            for (var i = items.size() - 1; i >= 0; i--) {
+                var item = items.get(i);
+                var screenX = guiX + areaX + item.getX();
+                var screenY = guiY + areaY + item.getY();
+
+                if (mouseX >= screenX && mouseY >= screenY
+                        && mouseX < (screenX + 16) && mouseY < (screenY + 16)) {
+                    if (!isPressingAlt || isMouseOverOpaquePixel(item.getStack(), screenX, screenY, mouseX, mouseY)) {
+                        overIndex = i;
+                        break;
+                    }
+                }
             }
         }
 
@@ -102,8 +112,13 @@ public class SlotlessGuiRenderer {
                     guiY + guiHeight
             );
 
+            context.getMatrices().push();
+            context.getMatrices().translate(0, 0, 100.0F);
+
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
             SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY, !isPressingAlt);
+
+            context.getMatrices().pop();
 
             context.disableScissor();
         }
