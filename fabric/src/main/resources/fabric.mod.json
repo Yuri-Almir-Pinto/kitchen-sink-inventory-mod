@@ -3,15 +3,15 @@
   "id": "kitchen_sink",
   "version": "${version}",
   "name": "Kitchen Sink",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "Removes a considerable portion of your inventory slots, turning them into a space you can drag items around freeform instead.",
   "authors": [
-    "Me!"
+    "Yipeekiyaay"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/Yuri-Almir-Pinto/kitchen-sink-inventory-mod",
+    "sources": "https://github.com/Yuri-Almir-Pinto/kitchen-sink-inventory-mod"
   },
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/kitchen_sink/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -19,7 +19,7 @@
       "com.yipeekiyaay.kitchen_sink.fabric.KitchenSinkModFabric"
     ],
     "client": [
-      "com.yipeekiyaay.kitchen_sink.fabric.client.ExampleModFabricClient"
+      "com.yipeekiyaay.kitchen_sink.fabric.client.KitchenSinkModFabricClient"
     ]
   },
   "mixins": [

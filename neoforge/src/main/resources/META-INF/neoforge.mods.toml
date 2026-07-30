@@ -1,17 +1,18 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
-#issueTrackerURL = ""
-license = "Insert License Here"
+issueTrackerURL = "https://github.com/Yuri-Almir-Pinto/kitchen-sink-inventory-mod/issues"
+license = "MIT"
 
 [[mods]]
 modId = "kitchen_sink"
 version = "${version}"
 displayName = "Kitchen Sink"
-authors = "Me!"
+authors = "Yipeekiyaay"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Removes a considerable portion of your inventory slots, turning them into a space you can drag items around freeform
+instead.
 '''
-#logoFile = ""
+logoFile = "assets/kitchen_sink/icon.png"
 
 [[dependencies.kitchen_sink]]
 modId = "neoforge"
