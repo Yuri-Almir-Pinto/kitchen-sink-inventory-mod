@@ -1,0 +1,86 @@
+name: Bug Report
+description: File a bug report to help improve Unslotted
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please provide as much details as possible so I'm able to reproduce the error and fix it!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Explain step-by-step how to trigger this bug.
+      placeholder: |
+        1. Place a slotless crate down
+        2. Shift-click items into it...
+        3. See error
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mc-version
+    attributes:
+      label: Minecraft Version
+      options:
+        - "1.21.1"
+        - "Other (Specify in additional context)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modloader
+    attributes:
+      label: Mod Loader
+      options:
+        - "Fabric"
+        - "NeoForge"
+    validations:
+      required: true
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod Version
+      description: What version of Unslotted are you using?
+      placeholder: e.g. 1.0.0-beta.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modpack
+    attributes:
+      label: Environment
+      description: Are you playing this in a custom modpack? (A Testing Instance is much more reliable!)
+      options:
+        - "Standalone / Testing Instance (Just Unslotted + Dependencies)"
+        - "Custom Modpack"
+        - "Public Modpack (Specify name below)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Crash Log / Debug Output
+      description: |
+        Please paste crash reports or console logs using a site like [mclo.gs](https://mclo.gs/) or paste the relevant log lines in the box below.
+      placeholder: Paste logs here or attach a mclo.gs link...
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context & Screenshots
+      description: Add any other context (e.g., modpack name, conflicting inventory/UI mods) or drag-and-drop screenshots here.
+      placeholder: Mention any other relevant details...
