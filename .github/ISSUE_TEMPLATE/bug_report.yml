@@ -2,6 +2,8 @@ name: Bug Report
 description: File a bug report to help improve Unslotted
 title: "[BUG]: "
 labels: ["bug"]
+assignees:
+  - Yuri-Almir-Pinto
 body:
   - type: markdown
     attributes:
