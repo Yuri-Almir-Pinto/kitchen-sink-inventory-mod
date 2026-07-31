@@ -28,13 +28,13 @@ as a storage block instead:
 
 <figure>
     <img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif">
-    <br>
+    <br><br>
     <figcaption>You can drag and drop items from your inventory to the slotless crate and vice-versa.</figcaption>
 </figure>
 
 <figure>
     <img alt="Recipe of the slotless crate: four planks in the corners and four sticks between them." src="images/crafting_slotless_crate.gif">
-    <br>
+    <br><br>
     <figcaption>Four planks in the corners and four sticks in between makes a slotless crate.</figcaption>
 </figure>
 
@@ -66,12 +66,12 @@ view of the inventory, and thus impossible to grab. If you ever lose an item by 
 
 <figure>
     <img alt="Clicking the reset icon" src="images/reset_action.gif">
-    <br>
+    <br><br>
     <figcaption>Not holding shift only resets the position of what's outside your vision</figcaption>
 </figure>
 <figure>
     <img alt="Clicking the reset icon while holding shift" src="images/reset_all_action.gif">
-    <br>
+    <br><br>
     <figcaption>If you hold shift, you will reset the positions of <b>all</b> items in your inventory</figcaption>
 </figure>
 
