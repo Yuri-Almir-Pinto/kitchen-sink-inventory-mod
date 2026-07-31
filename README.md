@@ -2,7 +2,7 @@
 
 Unslotted is an inventory mod that removes a portion of the slots within your inventory, turning them into an area
 where it's possible to store an unlimited amount of items, with one catch: items can be dragged around and overlap, turning
-an inventory with too many items into something that's difficult to sift through. So... get to organizing!
+an inventory with way too many items into something that's difficult to sift through. So... get to organizing!
 
 ![Messy inventory](common/src/main/resources/assets/unslotted/icon.png)
 
@@ -29,7 +29,7 @@ You can move items from one container to another by just dragging them around:
 
 ![Moving into slotless crate](images/moving_into_slotless_crate.gif)
 
-The recipe of the slotless crate is four planks on each corners, and four sticks in between all the planks:
+The recipe for the slotless crate uses four planks in the corners and four sticks between them:
 
 ![Slotless Crate Recipe](images/crafting_slotless_crate.gif)
 
@@ -53,7 +53,7 @@ Using it on self:
 ### Reset Magnet
 
 There is a button in the corner of the slotless inventory, which when clicked, will pull all items that are *outside* your
-view of the inventory, and thus impossible to grab. If you ever lose an item by dragging them outside, just click there!
+view of the inventory, and thus impossible to grab. If you ever lose an item by dragging it outside, just click there!
 
 ![Reset action](images/reset_action.gif)
 
