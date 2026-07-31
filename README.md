@@ -27,12 +27,14 @@ Alongside your inventory, there is also a new block, called the slotless crate, 
 as a storage block instead:
 
 <figure>
-    <div><img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif"></div>
+    <img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif">
+    <br>
     <figcaption>You can drag and drop items from your inventory to the slotless crate and vice-versa.</figcaption>
 </figure>
 
 <figure>
-    <div><img alt="Recipe of the slotless crate: four planks in the corners and four sticks between them." src="images/crafting_slotless_crate.gif"></div>
+    <img alt="Recipe of the slotless crate: four planks in the corners and four sticks between them." src="images/crafting_slotless_crate.gif">
+    <br>
     <figcaption>Four planks in the corners and four sticks in between makes a slotless crate.</figcaption>
 </figure>
 
@@ -63,11 +65,13 @@ There is a button in the corner of the slotless inventory, which when clicked, w
 view of the inventory, and thus impossible to grab. If you ever lose an item by dragging it outside, just click there!
 
 <figure>
-    <div><img alt="Clicking the reset icon" src="images/reset_action.gif"></div>
+    <img alt="Clicking the reset icon" src="images/reset_action.gif">
+    <br>
     <figcaption>Not holding shift only resets the position of what's outside your vision</figcaption>
 </figure>
 <figure>
-    <div><img alt="Clicking the reset icon while holding shift" src="images/reset_all_action.gif"></div>
+    <img alt="Clicking the reset icon while holding shift" src="images/reset_all_action.gif">
+    <br>
     <figcaption>If you hold shift, you will reset the positions of <b>all</b> items in your inventory</figcaption>
 </figure>
 
