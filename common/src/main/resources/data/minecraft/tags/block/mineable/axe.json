@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "kitchen_sink:slotless_crate"
+    "unslotted:slotless_crate"
   ]
 }

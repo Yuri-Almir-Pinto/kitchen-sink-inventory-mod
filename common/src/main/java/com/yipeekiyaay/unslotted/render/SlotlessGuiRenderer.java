@@ -1,0 +1,208 @@
+package com.yipeekiyaay.unslotted.render;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.yipeekiyaay.unslotted.slotless.InventoryType;
+import com.yipeekiyaay.unslotted.slotless.SlotlessArea;
+import com.yipeekiyaay.unslotted.slotless.SlotlessInventory;
+import com.yipeekiyaay.unslotted.slotless.SlotlessItem;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Locale;
+
+public class SlotlessGuiRenderer {
+    private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final TextRenderer textRenderer = client.textRenderer;
+    private static SlotlessInventory slotlessPlayerCopy = null;
+    private static SlotlessInventory slotlessContainerCopy = null;
+
+    public static int renderSlotlessArea(DrawContext context, SlotlessArea area, int guiX, int guiY,
+                                          int guiWidth, int guiHeight, int mouseX, int mouseY, @Nullable SlotlessItem moving) {
+        if (area.getInventoryType() == InventoryType.inventory && (slotlessPlayerCopy == null || area.getInventory().consumeDirty())) {
+            slotlessPlayerCopy = area.getInventory().copy();
+        }
+
+        if (area.getInventoryType() == InventoryType.container && (slotlessContainerCopy == null || area.getInventory().consumeDirty())) {
+            slotlessContainerCopy = area.getInventory().copy();
+        }
+
+        var memo = area.getInventoryType() == InventoryType.inventory ? slotlessPlayerCopy : slotlessContainerCopy;
+
+        var areaX = area.getX();
+        var areaY = area.getY();
+        var areaHeight = area.getSize().height();
+        var areaWidth = area.getSize().width();
+        var areaTexture = area.getSize().texture();
+
+        context.getMatrices().push();
+        context.getMatrices().translate(guiX, guiY, 0.0F);
+
+        context.drawTexture(
+                areaTexture,
+                areaX, areaY,
+                0, 0,
+                areaWidth, areaHeight, areaWidth, areaHeight);
+
+        int scissorX = guiX + areaX;
+        int scissorY = guiY + areaY;
+
+        context.enableScissor(
+                scissorX + 1,
+                scissorY + 1,
+                scissorX + areaWidth - 1,
+                scissorY + areaHeight - 1
+        );
+
+        var overIndex = -1;
+        var isPressingAlt = Screen.hasAltDown();
+        var items = memo.getItems();
+
+        // Item rendering
+        for (var i = 0; i < items.size(); i++) {
+            if (moving != null && i == items.size() - 1) continue;
+
+            var item = items.get(i);
+            double absoluteX = areaX + item.getX();
+            double absoluteY = areaY + item.getY();
+
+            context.draw();
+            // OpenGL on mac is problematic I guess? Idk, but if Subpocket was using it, who am I to disagree? =w=
+            // Disables depth, forcing all the items to appear on drawn order.
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+            SlotlessGuiRenderer.renderSlotlessItem(context, item, absoluteX, absoluteY, !isPressingAlt);
+        }
+
+        var absAreaX = areaX + guiX;
+        var absAreaY = areaY + guiY;
+
+        // Hit detection (Is present here since pixel picking needs to be done during rendering)
+        if (moving == null && mouseX >= absAreaX && mouseY >= absAreaY
+                && mouseX < (absAreaX + areaWidth) && mouseY < (absAreaY + areaHeight)) {
+
+            for (var i = items.size() - 1; i >= 0; i--) {
+                var item = items.get(i);
+                var screenX = guiX + areaX + item.getX();
+                var screenY = guiY + areaY + item.getY();
+
+                if (mouseX >= screenX && mouseY >= screenY
+                        && mouseX < (screenX + 16) && mouseY < (screenY + 16)) {
+                    if (!isPressingAlt || isMouseOverOpaquePixel(item.getStack(), screenX, screenY, mouseX, mouseY)) {
+                        overIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        context.disableScissor();
+
+        if (moving != null) {
+            double absoluteX = areaX + moving.getX();
+            double absoluteY = areaY + moving.getY();
+
+            context.enableScissor(
+                    guiX,
+                    guiY,
+                    guiX + guiWidth,
+                    guiY + guiHeight
+            );
+
+            context.getMatrices().push();
+            context.getMatrices().translate(0, 0, 100.0F);
+
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+            SlotlessGuiRenderer.renderSlotlessItem(context, moving, absoluteX, absoluteY, !isPressingAlt);
+
+            context.getMatrices().pop();
+
+            context.disableScissor();
+        }
+
+        context.getMatrices().pop();
+
+        return overIndex;
+    }
+
+    public static void renderSlotlessItem(DrawContext context, SlotlessItem item, double x, double y, boolean renderCount) {
+        if (item.isEmpty()) return;
+
+        context.getMatrices().push();
+
+        context.getMatrices().translate((float) x, (float) y, 0.0F);
+
+        context.drawItem(item.getStack(), 0, 0);
+
+        context.drawItemInSlot(textRenderer, item.getStack(), 0, 0, "");
+
+        var count = item.getCount();
+        if (count != 1) {
+            boolean isHighCount = count > 99;
+            String countText = formatCount(count);
+            int textWidth = textRenderer.getWidth(countText);
+
+            context.getMatrices().push();
+            context.getMatrices().translate(0.0F, 0.0F, 200.0F);
+
+            if (renderCount) {
+                if (isHighCount) {
+                    float scale = 0.50F;
+
+                    float textX = 32.0F - textWidth; // at 0.5x scale, 16x16 behaves like 32x32
+                    float textY = 32.0F - textRenderer.fontHeight;
+
+                    context.getMatrices().scale(scale, scale, 1.0F);
+                    context.drawText(textRenderer, countText, (int) textX, (int) textY, 0xFFFFFF, true);
+                } else {
+                    context.drawText(textRenderer, countText, 17 - textWidth, 9, 0xFFFFFF, true);
+                }
+            }
+
+            context.getMatrices().pop();
+        }
+
+        context.getMatrices().pop();
+    }
+
+    public static boolean isMouseOverOpaquePixel(ItemStack stack, double itemX, double itemY, double mouseX, double mouseY) {
+        if (stack.isEmpty()) return false;
+
+        var localX = mouseX - itemX;
+        var localY = mouseY - itemY;
+
+        if (localX < 0 || localX >= 16 || localY < 0 || localY >= 16) {
+            return false;
+        }
+
+        var client = MinecraftClient.getInstance();
+        var model = client.getItemRenderer().getModel(stack, client.world, null, 0);
+
+        if (model == null) return false;
+        if (model.hasDepth()) return true;
+
+        var contents = model.getParticleSprite().getContents();
+
+        var pixelX = (int) ((localX / 16.0) * contents.getWidth());
+        var pixelY = (int) ((localY / 16.0) * contents.getHeight());
+
+        pixelX = Math.max(0, Math.min(contents.getWidth() - 1, pixelX));
+        pixelY = Math.max(0, Math.min(contents.getHeight() - 1, pixelY));
+
+        return !contents.isPixelTransparent(0, pixelX, pixelY);
+    }
+
+    private static String formatCount(long count) {
+        if (count < 100) {
+            return String.valueOf(count);
+        } else if (count < 1000) {
+            return String.format(Locale.ROOT, "%.1fK", count / 1000.0);
+        } else if (count < 1000000) {
+            return (count / 1000) + "K";
+        }
+        return (count / 1000000) + "M";
+    }
+}

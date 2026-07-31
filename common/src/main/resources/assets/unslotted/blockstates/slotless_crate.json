@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "unslotted:block/slotless_crate"
+    }
+  }
+}

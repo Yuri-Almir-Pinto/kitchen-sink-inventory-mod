@@ -1,0 +1,120 @@
+package com.yipeekiyaay.unslotted.screen;
+
+import com.yipeekiyaay.unslotted.block.entity.SlotlessBlockEntity;
+import com.yipeekiyaay.unslotted.registry.ModRegistries;
+import com.yipeekiyaay.unslotted.slotless.InventoryType;
+import com.yipeekiyaay.unslotted.slotless.SlotlessInventory;
+import com.yipeekiyaay.unslotted.slotless.SlotlessItem;
+import com.yipeekiyaay.unslotted.slotless.SlotlessOperation;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
+public class SlotlessScreenHandler extends ScreenHandler {
+    private final ScreenHandlerContext context;
+    private final PlayerInventory playerInventory;
+    private final BlockPos pos;
+
+    public SlotlessScreenHandler(int syncId, PlayerInventory playerInventory, BlockPos pos) {
+        super(ModRegistries.SLOTLESS_SCREEN_HANDLER.get(), syncId);
+        this.playerInventory = playerInventory;
+        this.pos = pos;
+        this.context = ScreenHandlerContext.create(playerInventory.player.getWorld(), pos);
+
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 9; ++col) {
+                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+            }
+        }
+
+        for (int col = 0; col < 9; ++col) {
+            this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
+        }
+    }
+
+    public @Nullable SlotlessBlockEntity getSlotlessBlockEntity() {
+        if (playerInventory.player.getWorld().getBlockEntity(this.pos) instanceof SlotlessBlockEntity slotlessBE) {
+            return slotlessBE;
+        }
+
+        return null;
+    }
+
+    public @Nullable SlotlessInventory getSlotlessInventory() {
+        var slotlessBlockEntity = getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity != null)
+            return slotlessBlockEntity.getSlotlessInventory();
+
+        return null;
+    }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+
+        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+
+        var slotlessBlockEntity = getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity == null) return;
+
+        slotlessBlockEntity.removeObserver(serverPlayer);
+        slotlessBlockEntity.playCloseSound();
+    }
+
+    @Override
+    public boolean canUse(PlayerEntity player) {
+        return canUse(this.context, player, ModRegistries.SLOTLESS_CRATE_BLOCK.get());
+    }
+
+    @Override
+    public ItemStack quickMove(PlayerEntity player, int slotIndex) {
+        if (slotIndex < 0 || slotIndex >= slots.size()) return ItemStack.EMPTY;
+
+        var slot = slots.get(slotIndex);
+
+        if (!(slot.inventory instanceof PlayerInventory)) return ItemStack.EMPTY;
+        if (slot.getStack().isEmpty()) return ItemStack.EMPTY;
+
+        var slotStack = slot.getStack();
+
+        var slotlessInventory = getSlotlessInventory();
+
+        if (slotlessInventory == null) return ItemStack.EMPTY;
+
+        var item = new SlotlessItem(slotStack.copy());
+
+        long seed = Objects.hash(
+                player.getUuid(), slotIndex, Registries.ITEM.getRawId(slotStack.getItem()),
+                slotStack.getCount(), player.getWorld().getTime() / 10
+        );
+
+        slotlessInventory.addItem(item.copy());
+
+        var last = slotlessInventory.getItems().getLast();
+        if (last.getCount() == item.getCount())
+            last.randomizePos(Random.create(seed));
+
+        SlotlessOperation.addIfServer(player, item.copy(), InventoryType.container, seed);
+
+        slot.markDirty();
+
+        var slotlessBlockEntity = getSlotlessBlockEntity();
+
+        if (slotlessBlockEntity != null)
+            slotlessBlockEntity.markDirty();
+
+        return slotStack.copyAndEmpty();
+    }
+}

@@ -1,11 +1,9 @@
 
 ## Polimentos finos
-- Implementar permitir mover multiplos itens ao mesmo tempo, se estiverem sobrepostos, através de alguma keybind.
 - Adicionar usar o rolamento do mouse para dar quick move de itens individuais de e para o slotless storage (Enquanto segura shift)
 - Adicionar usar o rolamento do mouse para selecionar itens que estão abaixo em uma pilha (Padrão)
 - Adicionar uma pia como slotless storage, hahaha, I'm so **funni**
 - Adicionar descrição nos botões da área slotless
-- Considerar alterar o comportamento do shift click em um bloco slotless, para ao invés de mandar todo o item slotless de um container para o outro, mandar apenas um stack (E talvez segurar ctrl para mandar todo o item slotless)
 
 ## Refatoração
 - Atualizar o packet de mover item para receber o index, x e y no lugar do SlotlessItem completo.
@@ -18,4 +16,5 @@
 
 ## Bugs
 - Ao segurar algum dos botões da hotbar para dar swap constante em um slotless storage, o item pode se desincronizar com o servidor, fazendo ele sumir ou duplicar para o cliente (Não parece fazer nada ao servidor). Nada parece acontecer se segurar F.
-- Nitpick: ao pegar um item de uma área slotless com um click do mouse, as vezes o itemstack no mouse está piscando por um frame.w
+- Nitpick: ao pegar um item de uma área slotless com um click do mouse, as vezes o itemstack no mouse está piscando por um frame.
+- O minecraft tem um limite de tamanho de packet e NBT do jogador de cerca de 2MB. O mod permite fácil superar isso. Alterar onde guarda o inventário slotless para o persistent storage, e referenciar ele usando um UUID. Além disso, para os packets de syncinc de inventário, quebrar eles em packets menores com base no tamanho em bytes do que vai ser enviado.

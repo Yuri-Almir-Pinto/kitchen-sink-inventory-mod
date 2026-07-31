@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'kitchen_sink'
+rootProject.name = 'unslotted'
 
 include 'common'
 include 'fabric'

@@ -4,31 +4,30 @@ issueTrackerURL = "https://github.com/Yuri-Almir-Pinto/kitchen-sink-inventory-mo
 license = "MIT"
 
 [[mods]]
-modId = "kitchen_sink"
+modId = "unslotted"
 version = "${version}"
-displayName = "Kitchen Sink"
+displayName = "Unslotted"
 authors = "Yipeekiyaay"
 description = '''
-Removes a considerable portion of your inventory slots, turning them into a space you can drag items around freeform
-instead.
+Removes a considerable portion of your inventory slots, turning them into a space you can drag items around freeform instead.
 '''
-logoFile = "assets/kitchen_sink/icon.png"
+logoFile = "assets/unslotted/icon.png"
 
-[[dependencies.kitchen_sink]]
+[[dependencies.unslotted]]
 modId = "neoforge"
 type = "required"
 versionRange = "[21.1,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.kitchen_sink]]
+[[dependencies.unslotted]]
 modId = "minecraft"
 type = "required"
 versionRange = "[1.21.1,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.kitchen_sink]]
+[[dependencies.unslotted]]
 modId = "architectury"
 type = "required"
 versionRange = "[13.0.8,)"
@@ -36,4 +35,4 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[mixins]]
-config = "kitchen_sink.mixins.json"
+config = "unslotted.mixins.json"

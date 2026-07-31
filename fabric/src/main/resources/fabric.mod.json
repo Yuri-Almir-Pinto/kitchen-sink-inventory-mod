@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "kitchen_sink",
+  "id": "unslotted",
   "version": "${version}",
-  "name": "Kitchen Sink",
+  "name": "Unslotted",
   "description": "Removes a considerable portion of your inventory slots, turning them into a space you can drag items around freeform instead.",
   "authors": [
     "Yipeekiyaay"
@@ -12,18 +12,18 @@
     "sources": "https://github.com/Yuri-Almir-Pinto/kitchen-sink-inventory-mod"
   },
   "license": "MIT",
-  "icon": "assets/kitchen_sink/icon.png",
+  "icon": "assets/unslotted/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.yipeekiyaay.kitchen_sink.fabric.KitchenSinkModFabric"
+      "com.yipeekiyaay.unslotted.fabric.UnslottedModFabric"
     ],
     "client": [
-      "com.yipeekiyaay.kitchen_sink.fabric.client.KitchenSinkModFabricClient"
+      "com.yipeekiyaay.unslotted.fabric.client.UnslottedModFabricClient"
     ]
   },
   "mixins": [
-    "kitchen_sink.mixins.json"
+    "unslotted.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.19.3",
