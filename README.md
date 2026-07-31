@@ -27,15 +27,17 @@ Alongside your inventory, there is also a new block, called the slotless crate, 
 as a storage block instead:
 
 <figure>
-    <img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif">
-    <br><br>
-    <figcaption>You can drag and drop items from your inventory to the slotless crate and vice-versa.</figcaption>
+    <img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif" width="50%">
+    <br>
+    <figcaption><i><small>You can drag and drop items from your inventory to the slotless crate and vice-versa.</small></i></figcaption>
 </figure>
 
+<br>
+
 <figure>
-    <img alt="Recipe of the slotless crate: four planks in the corners and four sticks between them." src="images/crafting_slotless_crate.gif">
-    <br><br>
-    <figcaption>Four planks in the corners and four sticks in between makes a slotless crate.</figcaption>
+    <img alt="Recipe of the slotless crate: four planks in the corners and four sticks between them." src="images/crafting_slotless_crate.gif" width="50%">
+    <br>
+    <figcaption><i><small>Four planks in the corners and four sticks in between makes a slotless crate.</small></i></figcaption>
 </figure>
 
 </details>
@@ -50,9 +52,9 @@ If a player dies, or a slotless crate gets destroyed, instead of dropping all it
 amount of items, might kill a server), the *item cluster* gets dropped instead, which may then be used on a slotless crate
 or on yourself to retrieve the items! The Item Cluster *should* be compatible with gravestone mods (Though I have not tested them all):
 
-<img alt="Item cluster description" src="images/item_cluster.png">
-<img alt="Using item cluster on a crate" src="images/cluster_item_crate.gif">
-<img alt="Using item cluster on self" src="images/item_cluster_inventory.gif">
+<img alt="Item cluster description" src="images/item_cluster.png" width="50%">
+<img alt="Using item cluster on a crate" src="images/cluster_item_crate.gif" width="50%">
+<img alt="Using item cluster on self" src="images/item_cluster_inventory.gif" width="50%">
 
 </details>
 
@@ -65,14 +67,17 @@ There is a button in the corner of the slotless inventory, which when clicked, w
 view of the inventory, and thus impossible to grab. If you ever lose an item by dragging it outside, just click there!
 
 <figure>
-    <img alt="Clicking the reset icon" src="images/reset_action.gif">
-    <br><br>
-    <figcaption>Not holding shift only resets the position of what's outside your vision</figcaption>
+    <img alt="Clicking the reset icon" src="images/reset_action.gif" width="50%">
+    <br>
+    <figcaption><i><small>Not holding shift only resets the position of what's outside your vision</small></i></figcaption>
 </figure>
+
+<br>
+
 <figure>
-    <img alt="Clicking the reset icon while holding shift" src="images/reset_all_action.gif">
-    <br><br>
-    <figcaption>If you hold shift, you will reset the positions of <b>all</b> items in your inventory</figcaption>
+    <img alt="Clicking the reset icon while holding shift" src="images/reset_all_action.gif" width="50%">
+    <br>
+    <figcaption><i><small>If you hold shift, you will reset the positions of <b>all</b> items in your inventory</small></i></figcaption>
 </figure>
 
 </details>
@@ -88,11 +93,11 @@ follow minecraft's art style. I have a few ideas on how to "fix" it, but they ar
 <details>
     <summary>Click here to expand</summary>
 
-<img alt="Moving items" src="images/move_action.gif"/>
-<img alt="Putting items" src="images/put_action.gif">
-<img alt="Shift clicking" src="images/shift_click_action.gif"/>
-<img alt="Pick up all" src="images/pick_up_all_action.gif"/>
-<img alt="Recipe book" src="images/recipe_book_action.gif"/>
-<img alt="Pick up world" src="images/pickup_world_action.gif"/>
+<img alt="Moving items" src="images/move_action.gif" width="50%"/>
+<img alt="Putting items" src="images/put_action.gif" width="50%">
+<img alt="Shift clicking" src="images/shift_click_action.gif" width="50%"/>
+<img alt="Pick up all" src="images/pick_up_all_action.gif" width="50%"/>
+<img alt="Recipe book" src="images/recipe_book_action.gif" width="50%"/>
+<img alt="Pick up world" src="images/pickup_world_action.gif" width="50%"/>
 
 </details>
