@@ -44,7 +44,7 @@ have not tested them all):
 
 Using it on a slotless crate:
 
-![Item cluster on crate](images/item_cluster_crate.gif)
+![Item cluster on crate](images/cluster_item_crate.gif)
 
 Using it on self:
 
