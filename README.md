@@ -20,11 +20,11 @@ and update the mod with care.
 
 ### Slotless Crate
 
-<details>
-    <summary>Click here to expand</summary>    
-
 Alongside your inventory, there is also a new block, called the slotless crate, which works much like your inventory, but
 as a storage block instead:
+
+<details>
+    <summary>Click here to expand</summary>    
 
 <figure>
     <img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif" width="50%">
@@ -45,12 +45,12 @@ as a storage block instead:
 
 ### Item Cluster
 
-<details>
-    <summary>Click here to expand</summary>
-
 If a player dies, or a slotless crate gets destroyed, instead of dropping all items on the ground (which, depending on the
 amount of items, might kill a server), the *item cluster* gets dropped instead, which may then be used on a slotless crate
 or on yourself to retrieve the items! The Item Cluster *should* be compatible with gravestone mods (Though I have not tested them all):
+
+<details>
+    <summary>Click here to expand</summary>
 
 <img alt="Item cluster description" src="images/item_cluster.png" width="50%">
 <img alt="Using item cluster on a crate" src="images/cluster_item_crate.gif" width="50%">
@@ -60,11 +60,11 @@ or on yourself to retrieve the items! The Item Cluster *should* be compatible wi
 
 ### Reset Magnet
 
-<details>
-    <summary>Click here to expand</summary>
-
 There is a button in the corner of the slotless inventory, which when clicked, will pull all items that are *outside* your
 view of the inventory, and thus impossible to grab. If you ever lose an item by dragging it outside, just click there!
+
+<details>
+    <summary>Click here to expand</summary>
 
 <figure>
     <img alt="Clicking the reset icon" src="images/reset_action.gif" width="50%">
