@@ -1,3 +1,26 @@
+<style>
+    .zoom-60 {
+        zoom: 0.6;
+    }
+
+    .zoom-50 {
+        zoom: 0.5;
+    }
+
+    figure {
+      display: inline-block; /* Keeps the container wrapped tightly around the image */
+      text-align: center;   /* Centers the annotation text */
+      margin: 0;
+    }
+    
+    figcaption {
+      font-size: 0.85rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 1px; /* Spacing between image and text */
+    }
+</style>
+
 # Unslotted
 
 Unslotted is an inventory mod that removes a portion of the slots within your inventory, turning them into an area
@@ -20,46 +43,58 @@ and update the mod with care.
 
 ### Slotless Crate
 
+<details>
+    <summary>Click here to expand</summary>    
+
 Alongside your inventory, there is also a new block, called the slotless crate, which works much like your inventory, but
 as a storage block instead:
 
-![Slotless Crate](images/slotless_crate.png)
+<figure>
+    <img alt="Moving items around the slotless crate" src="images/moving_into_slotless_crate.gif" class="zoom-60">
+    <figcaption>You can drag and drop items from your inventory to the slotless crate and vice-versa.</figcaption>
+</figure>
 
-You can move items from one container to another by just dragging them around:
+<figure>
+    <img alt="Recipe of the slotless crate: four planks in the corners and four sticks between them." src="images/crafting_slotless_crate.gif" class="zoom-60">
+    <figcaption>Four planks in the corners and four sticks in between makes a slotless crate.</figcaption>
+</figure>
 
-![Moving into slotless crate](images/moving_into_slotless_crate.gif)
+</details>
 
-The recipe for the slotless crate uses four planks in the corners and four sticks between them:
-
-![Slotless Crate Recipe](images/crafting_slotless_crate.gif)
 
 ### Item Cluster
 
+<details>
+    <summary>Click here to expand</summary>
+
 If a player dies, or a slotless crate gets destroyed, instead of dropping all items on the ground (which, depending on the
 amount of items, might kill a server), the *item cluster* gets dropped instead, which may then be used on a slotless crate
-or on yourself, to retrieve the items! The Item Cluster *should* be compatible with gravestone mods (Though I obviously
-have not tested them all):
+or on yourself to retrieve the items! The Item Cluster *should* be compatible with gravestone mods (Though I have not tested them all):
 
-![Item Cluster](images/item_cluster.png)
+<img alt="Item cluster description" src="images/item_cluster.png" class="zoom-50">
+<img alt="Using item cluster on a crate" src="images/cluster_item_crate.gif" class="zoom-50">
+<img alt="Using item cluster on self" src="images/item_cluster_inventory.gif" class="zoom-50">
 
-Using it on a slotless crate:
-
-![Item cluster on crate](images/cluster_item_crate.gif)
-
-Using it on self:
-
-![Item cluster on inventory](images/item_cluster_inventory.gif)
+</details>
 
 ### Reset Magnet
+
+<details>
+    <summary>Click here to expand</summary>
 
 There is a button in the corner of the slotless inventory, which when clicked, will pull all items that are *outside* your
 view of the inventory, and thus impossible to grab. If you ever lose an item by dragging it outside, just click there!
 
-![Reset action](images/reset_action.gif)
+<figure>
+    <img alt="Clicking the reset icon" src="images/reset_action.gif" class="zoom-60">
+    <figcaption>Not holding shift only resets the position of what's outside your vision</figcaption>
+</figure>
+<figure>
+    <img alt="Clicking the reset icon while holding shift" src="images/reset_all_action.gif" class="zoom-60">
+    <figcaption>If you hold shift, you will reset the positions of <b>all</b> items in your inventory</figcaption>
+</figure>
 
-If you hold shift, you will reset the positions of *all* items in your inventory:
-
-![Reset all action](images/reset_all_action.gif)
+</details>
 
 ## Demonstration
 
@@ -69,9 +104,14 @@ as I find them! The mod should feel as close as possible to the player's vanilla
 also be compatible with modded GUIs that show the player's inventory (Although it will look weird if the modded GUI does not
 follow minecraft's art style. I have a few ideas on how to "fix" it, but they are definitely experimental).
 
-![Moving items](images/move_action.gif)
-![Putting items](images/put_action.gif)
-![Shift clicking](images/shift_click_action.gif)
-![Pick up all](images/pick_up_all_action.gif)
-![Recipe book](images/recipe_book_action.gif)
-![Pick up world](images/pickup_world_action.gif)
+<details>
+    <summary>Click here to expand</summary>
+
+<img alt="Moving items" src="images/move_action.gif" class="zoom-50"/>
+<img alt="Putting items" src="images/put_action.gif" class="zoom-50"/>
+<img alt="Shift clicking" src="images/shift_click_action.gif" class="zoom-50"/>
+<img alt="Pick up all" src="images/pick_up_all_action.gif" class="zoom-50"/>
+<img alt="Recipe book" src="images/recipe_book_action.gif" class="zoom-50"/>
+<img alt="Pick up world" src="images/pickup_world_action.gif" class="zoom-50"/>
+
+</details>
