@@ -1,10 +1,22 @@
 {
   "block.unslotted.slotless_crate": "Slotless Crate",
-  "item.unslotted.slotless_crate": "Slotless Crate",
+
   "container.unslotted.slotless_crate": "Slotless Crate",
+
+  "item.unslotted.slotless_crate": "Slotless Crate",
   "item.unslotted.cluster_item": "Item Cluster",
   "item.unslotted.cluster_item.empty": "§7Empty",
   "item.unslotted.cluster_item.filled": "§7Contains §f%d §7types, with §f%d §7items total.",
   "item.unslotted.cluster_item.instruction.1": "Use on a slotless container or",
-  "item.unslotted.cluster_item.instruction.2": "on self to retrieve its contents!"
+  "item.unslotted.cluster_item.instruction.2": "on self to retrieve its contents!",
+
+  "command.unslotted.source_not_player": "Source is not a player. This can be caused by a server attempting to call the command without specifying the player name.",
+  "command.unslotted.no_slotless_inventory": "Player does not have a slotless inventory, or it has not been found.",
+  "command.unslotted.no_player_found": "Could not find the following player, online or offline: %s",
+  "command.unslotted.cleared_online": "Cleared slotless inventory for online player: %s",
+  "command.unslotted.cleared_offline": "Cleared slotless inventory for offline player: %s",
+  "command.unslotted.fail_clear_offline": "Failed to clear offline slotless inventory data of: %s",
+  "command.unslotted.fail_fill": "Unable to fill the slotless inventory of: %s",
+  "command.unslotted.fill": "Added a total of %1$s types, and %2$s total items to the inventory of %3$s.",
+  "command.unslotted.inventory_size_report": "Inventory NBT Size:\n- Uncompressed: %1$s\n- Compressed (Disk/Packet): %2$s\n- Total Unique Items: %3$s"
 }

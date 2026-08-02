@@ -1,5 +1,6 @@
 package com.yipeekiyaay.unslotted;
 
+import com.yipeekiyaay.unslotted.command.UnslottedCommands;
 import com.yipeekiyaay.unslotted.item.ItemClusterItem;
 import com.yipeekiyaay.unslotted.network.UnslottedNetworking;
 import com.yipeekiyaay.unslotted.network.packets.SyncSlotlessInventoryS2CPacket;
@@ -20,6 +21,8 @@ public final class UnslottedMod {
         UnslottedNetworking.init();
 
         ModRegistries.init();
+
+        UnslottedCommands.register();
 
         // Creates compatibility with gravestone mods (At least it does for henkelmax's gravestone mod)
         EntityEvent.LIVING_DEATH.register((entity, source) -> {
