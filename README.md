@@ -101,3 +101,26 @@ follow minecraft's art style. I have a few ideas on how to "fix" it, but they ar
 <img alt="Pick up world" src="images/pickup_world_action.gif" width="50%"/>
 
 </details>
+
+## Roadmap
+
+### Status Legend
+* 🟢 **Done** - Already released
+* 🟡 **In Progress** - Currently coding/testing
+* 🔵 **Planned** - Planned, to be developed
+* 🔴 **Won't do** - Will not do for whatever reason
+
+### 📋 Feature & Update Tracker
+
+| Status | Feature / Idea | Reason / About |
+| :---: | :--- | :--- |
+| 🟢 | Core Slotless Inventory Mechanic | --- |
+| 🟢 | Slotless Crate Block | Content | Initial Release | --- |
+| 🟡 | Fix Storing Slotless Storage Data in Nbt | --- |
+| 🔵 | Disable Changes on Player Inventory | Suggestion by @unilock ([#1](https://github.com/Yuri-Almir-Pinto/unslotted-mod/issues/1)) |
+| 🔵 | Friendly Config Toggles | --- |
+| 🔵 | Add Toggleable "Culling" on Large Item Piles | --- |
+
+---
+
+> *Got a feature request or bug? Feel free to open an issue on [GitHub](https://github.com/Yuri-Almir-Pinto/unslotted-mod) or discuss it in our `#suggestions` channel in [Discord](https://discord.gg/8YbVjm7ztV). Discord is also open for any questions.*
