@@ -1,5 +1,7 @@
 package com.yipeekiyaay.unslotted.block.entity;
 
+import com.yipeekiyaay.unslotted.network.InventorySyncArgs;
+import com.yipeekiyaay.unslotted.network.PacketSyncer;
 import com.yipeekiyaay.unslotted.network.packets.SyncSlotlessContainerS2CPacket;
 import com.yipeekiyaay.unslotted.network.packets.SyncSlotlessOperationS2CPacket;
 import com.yipeekiyaay.unslotted.registry.ModRegistries;
@@ -83,12 +85,20 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
 
         var playerManager = world.getServer().getPlayerManager();
 
+        var registries = world.getServer().getRegistryManager();
+        var items = slotlessInventory.getItems();
+
+        var syncList = PacketSyncer.getSyncList(items, registries);
+        var args = InventorySyncArgs.withTotal(syncList.size());
+
         this.observerUuids.removeIf(uuid -> {
-            ServerPlayerEntity observer = playerManager.getPlayer(uuid);
+            var observer = playerManager.getPlayer(uuid);
+
             if (observer != null && !observer.isDisconnected()) {
-                NetworkManager.sendToPlayer(observer, new SyncSlotlessContainerS2CPacket(slotlessInventory.getItems(), this.pos));
+                SyncSlotlessContainerS2CPacket.startSync(observer, syncList, args, pos);
                 return false;
             }
+
             return true;
         });
     }
@@ -126,8 +136,14 @@ public class SlotlessBlockEntity extends BlockEntity implements ExtendedMenuProv
 
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        if (player instanceof ServerPlayerEntity serverPlayer) {
-            NetworkManager.sendToPlayer(serverPlayer, new SyncSlotlessContainerS2CPacket(slotlessInventory.getItems(), this.pos));
+        if (player instanceof ServerPlayerEntity serverPlayer && world != null && world.getServer() != null) {
+            var registries = world.getServer().getRegistryManager();
+            var items = slotlessInventory.getItems();
+
+            var syncList = PacketSyncer.getSyncList(items, registries);
+            var args = InventorySyncArgs.withTotal(syncList.size());
+
+            SyncSlotlessContainerS2CPacket.startSync(serverPlayer, syncList, args, pos);
             addObserver(serverPlayer);
         }
 

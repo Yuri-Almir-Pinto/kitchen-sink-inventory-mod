@@ -5,17 +5,19 @@ import com.yipeekiyaay.unslotted.item.ItemClusterItem;
 import com.yipeekiyaay.unslotted.network.UnslottedNetworking;
 import com.yipeekiyaay.unslotted.network.packets.SyncSlotlessInventoryS2CPacket;
 import com.yipeekiyaay.unslotted.registry.ModRegistries;
-import com.yipeekiyaay.unslotted.slotless.ISlotlessInventory;
 import com.yipeekiyaay.unslotted.utils.InventoryUtils;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class UnslottedMod {
     public static final String MOD_ID = "unslotted";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static void init() {
         UnslottedNetworking.init();
@@ -58,22 +60,14 @@ public final class UnslottedMod {
             return EventResult.pass();
         });
 
-        PlayerEvent.PLAYER_JOIN.register(player -> {
-            var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).unslotted$getSlotlessInventory().getItems();
+        PlayerEvent.PLAYER_JOIN.register(SyncSlotlessInventoryS2CPacket::startSync);
 
-            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
-        });
+        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) ->
+                SyncSlotlessInventoryS2CPacket.startSync(player)
+        );
 
-        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> {
-            var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).unslotted$getSlotlessInventory().getItems();
-
-            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
-        });
-
-        PlayerEvent.CHANGE_DIMENSION.register((player, oldLevel, newLevel) -> {
-            var slotlessInventoryItems = ((ISlotlessInventory) player.getInventory()).unslotted$getSlotlessInventory().getItems();
-
-            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventoryItems));
-        });
+        PlayerEvent.CHANGE_DIMENSION.register((player, oldLevel, newLevel) ->
+                SyncSlotlessInventoryS2CPacket.startSync(player)
+        );
     }
 }

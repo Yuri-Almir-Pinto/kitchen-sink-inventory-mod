@@ -131,8 +131,8 @@ public class PlayerInventoryMixin implements ISlotlessInventory {
             cir.setReturnValue(finalTotal);
         }
 
-        if (slotlessRemovedTotal > 0 && !player.getWorld().isClient()) {
-            NetworkManager.sendToPlayer((ServerPlayerEntity) player, new SyncSlotlessInventoryS2CPacket(unslotted$slotlessInventory.getItems()));
+        if (slotlessRemovedTotal > 0 && player instanceof ServerPlayerEntity serverPlayer) {
+            SyncSlotlessInventoryS2CPacket.startSync(serverPlayer);
         }
     }
 

@@ -5,7 +5,6 @@ import com.yipeekiyaay.unslotted.network.packets.SyncSlotlessInventoryS2CPacket;
 import com.yipeekiyaay.unslotted.slotless.SlotlessItem;
 import com.yipeekiyaay.unslotted.utils.InventoryUtils;
 import com.yipeekiyaay.unslotted.utils.ServerUtils;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
@@ -70,7 +69,7 @@ public class FillCommand {
         int finalAmountAdded = amountAdded;
 
         if (player != null) {
-            NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(inventory.getItems()));
+            SyncSlotlessInventoryS2CPacket.startSync(player);
             player.sendMessageToClient(Text.translatable("command.unslotted.fill",
                     itemStacks.size(),
                     finalAmountAdded,

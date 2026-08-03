@@ -12,10 +12,10 @@
 - Alterar para o mod jogar *todos* os slots no inventário principal para slotless storage, e fazer com que os slots livres apenas se mantenham livres *caso* o usuário insira um item lá dentro *diretamente*. O slot então permanece lockado apenas enquanto aquele stack especifico não for esvaziado.
 - Implementar GUI no inventário para configuração e ações especiais:
   * Botão a esquerda da slotless area que permite dar resize na slotless area, escondendo ou mostrando slots a direita
-- Adicionar tradução aos textos dos comandos
 - A adição de novos itens pode ser lenta porque todo o inventário é iterado procurando se o item já tem uma cópia. Implementar um dicionário apontando para o index para ser mais rápido.
 - Após implementar guardar itens no persistent state, atualizar o comando de size para corretamente puxar o tamanho do persistent state.
 - Alterar o logging does comandos de printStackTrace pra um logging melhor.
+- Considerar em algum momento futuro, fazer com que ItemStacks massivos (+2mb) sejam enviados como SlotlessItems dummy com um UUID de sincronização para ser lazy-synced.
 
 
 ## Bugs

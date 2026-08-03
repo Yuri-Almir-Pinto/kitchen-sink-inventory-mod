@@ -13,6 +13,8 @@
   "command.unslotted.source_not_player": "Source is not a player. This can be caused by a server attempting to call the command without specifying the player name.",
   "command.unslotted.no_slotless_inventory": "Player does not have a slotless inventory, or it has not been found.",
   "command.unslotted.no_player_found": "Could not find the following player, online or offline: %s",
+  "command.unslotted.player_not_found_or_offline": "The following player could not be found or is offline: %s",
+  "command.unslotted.synced_inventory": "Synced the inventory of '%s'",
   "command.unslotted.cleared_online": "Cleared slotless inventory for online player: %s",
   "command.unslotted.cleared_offline": "Cleared slotless inventory for offline player: %s",
   "command.unslotted.fail_clear_offline": "Failed to clear offline slotless inventory data of: %s",

@@ -6,7 +6,6 @@ import com.yipeekiyaay.unslotted.registry.ModRegistries;
 import com.yipeekiyaay.unslotted.slotless.SlotlessInventory;
 import com.yipeekiyaay.unslotted.slotless.SlotlessItem;
 import com.yipeekiyaay.unslotted.utils.InventoryUtils;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -80,7 +79,9 @@ public class ItemClusterItem extends Item {
         if (slotlessInventory == null) return stack;
 
         ItemClusterItem.insertCluster(stack, slotlessInventory);
-        NetworkManager.sendToPlayer(player, new SyncSlotlessInventoryS2CPacket(slotlessInventory.getItems()));
+
+        SyncSlotlessInventoryS2CPacket.startSync(player);
+
         clusterUseSound(world, player.getBlockPos());
 
         return ItemStack.EMPTY;

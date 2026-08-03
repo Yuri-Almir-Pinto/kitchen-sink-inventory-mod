@@ -4,7 +4,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.yipeekiyaay.unslotted.network.packets.SyncSlotlessInventoryS2CPacket;
 import com.yipeekiyaay.unslotted.utils.InventoryUtils;
 import com.yipeekiyaay.unslotted.utils.ServerUtils;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
@@ -32,7 +31,7 @@ public class ClearCommand {
 
             inventory.markDirty();
 
-            NetworkManager.sendToPlayer(onlinePlayer, new SyncSlotlessInventoryS2CPacket(inventory.getItems()));
+            SyncSlotlessInventoryS2CPacket.startSync(onlinePlayer);
             source.sendFeedback(() -> Text.translatable("command.unslotted.cleared_online", onlinePlayer.getName().getString()), true);
             return 1;
         }
